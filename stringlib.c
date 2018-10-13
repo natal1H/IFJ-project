@@ -46,6 +46,7 @@ int tstring_append_char(TString *tstr, char c) {
   }
 
   tstr->string[tstr->length] = c;
+  tstr->string[tstr->length+1] = '\0';
   tstr->length += 1;
 
   return 0;

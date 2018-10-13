@@ -29,7 +29,14 @@ Token *token_initialize() {
 }
 
 void token_free(Token *token) {
-  free(token->attribute);
+  // TODO: Why? Prečo to vyhadzuje seg fault
+ // printf("=1\n");
+  //if (token->attribute == NULL)
+  //  printf(" je null\n");
+  //else
+  //  printf(" nie je null\n");
+  //free(token->attribute);
+ // printf("=2\n");
   free(token);
 }
 
@@ -63,21 +70,15 @@ int get_next_token(Token *token) {
   tstring_clear_string(read_string); // str := '';
 
   TState state = START; // Nastavenie počiatočného stavu v DKA
-  int c;
+  int c = getc(stdin);
 
-  while ((c = getc(stdin)) != EOF) {
-
-    printf("Reading: %c, (%d)\n", c, (int) c);
-    printf("State: %d\n", state);
-    printf("Je alpha: %d\n", scanner_is_alpha(c));
+  do {
 
     switch(state) {
       case START: // Starting point
-        printf("START\n");
 
-        if (scanner_is_alpha(c)) {
+        if (scanner_is_alpha(c) || c == (int) '_') {
           // START -> F_ID
-          printf("START -> F_ID\n");
 
           state = F_ID;
 
@@ -86,9 +87,77 @@ int get_next_token(Token *token) {
         }
         else if (scanner_is_number(c)) {
           // START -> F_INT
-          printf("START -> F_INT\n");
 
           state = F_INT;
+
+          // TODO ošetriť či prebehlo správne pridanie symbolu
+          tstring_append_char(read_string, c); // str := symbol
+        }
+        else if (c == (int) '=') {
+          // START -> F_ASSIGN
+          state = F_ASSIGN;
+
+          // TODO ošetriť či prebehlo správne pridanie symbolu
+          tstring_append_char(read_string, c); // str := symbol
+        }
+        else if (c == (int) '+') {
+          // START -> F_ADDITION
+
+          printf("ADDITION\n");
+
+          token = token_initialize();
+          token_set_type_attribute(token, ADDITION, "");
+
+          print_token(token);
+
+          return 0;
+        }
+        else if (c == (int) '*') {
+          // START -> F_MULTIPLICATION
+
+          printf("MULTIPLICATION\n");
+
+          token = token_initialize();
+          token_set_type_attribute(token, MULTIPLICATION, "");
+
+          print_token(token);
+
+          return 0;
+        }
+        else if (c == (int) '-') {
+          // START -> F_SUBSTRACTION
+
+          printf("SUBTRACTION\n");
+
+          token = token_initialize();
+          token_set_type_attribute(token, SUBTRACTION, "");
+
+          print_token(token);
+
+          return 0;
+        }
+        else if (c == (int) '/') {
+          // START -> F_DIVISION
+
+          printf("DIVISION\n");
+
+          token = token_initialize();
+          token_set_type_attribute(token, DIVISION, "");
+
+          print_token(token);
+
+          return 0;
+        }
+        else if (c == (int) '<') {
+          // START -> F_LESS
+          state = F_LESS;
+
+          // TODO ošetriť či prebehlo správne pridanie symbolu
+          tstring_append_char(read_string, c); // str := symbol
+        }
+        else if (c == (int) '>') {
+          // START -> F_GREATER
+          state = F_GREATER;
 
           // TODO ošetriť či prebehlo správne pridanie symbolu
           tstring_append_char(read_string, c); // str := symbol
@@ -96,22 +165,18 @@ int get_next_token(Token *token) {
 
         break;
       case F_ID:
-        printf("F_ID\n");
 
-        if (scanner_is_alpha(c) || scanner_is_number(c)) {
+        if (scanner_is_alpha(c) || scanner_is_number(c) || c == (int) '_') {
           // F_ID -> F_ID
-          printf("F_ID -> F_ID\n");
-
 
           // TODO ošetriť či prebehlo správne pridanie symbolu
           tstring_append_char(read_string, c);
         }
         else {
-          printf("ELSE\n");
-
           // Znak mimo povolených pre identifikátor
 
           // unget znak
+          ungetc(c, stdin);
 
           // zisti, či ten string je medzi kľúčovými slovami
 
@@ -119,31 +184,51 @@ int get_next_token(Token *token) {
           //    TOKEN = get_keyword(str);
           // else
           //    TOKEN = IDENTIFIER
-          printf("INDENTIFIKATOR\n");
+          printf("IDENTIFIKATOR\n");
 
           token = token_initialize();
           token_set_type_attribute(token, IDENTIFIER, read_string->string);
 
           print_token(token);
 
-          break;
+          return 0;
         }
 
         break;
+      case F_INT:
+        if (scanner_is_number(c)) {
+          // F_INT -> F_INT
+        }
+        else {
+          ungetc(c, stdin);
+
+          printf("INT\n");
+
+          token = token_initialize();
+          token_set_type_attribute(token, INTEGER, read_string->string);
+
+          print_token(token);
+
+          return 0;
+        }
+        break;
     }
 
-  }
+
+  //}
+  } while((c = getc(stdin)) != EOF);
+
+
+  // TODO: pridať tu ošetrenie, že c sa dostalo až na EOF
+  // Nech pozrie na koncový stav, ak je v F_nieco, nech vytvorí token s príslušným typom a do attribute nahrá zostatok v read_string
 
   return 0;
 }
 
 // MAIN - only for temp testing
 int main(int argc, char** argv) {
-  printf("SCANNER\n");
+  printf("SCANNER TEST\n");
 
-  for (int i = 0; i < argc; i++) {
-    printf("Arg no.%d:\t%s\n", i, argv[i]);
-  }
 
   // inicializuj scanner najprv cez scanner_initialize()
 
@@ -155,12 +240,19 @@ int main(int argc, char** argv) {
   }
 
   Token *token;
-
   get_next_token(token);
 
+  token_free(token);
+  get_next_token(token);
+
+
+  token_free(token);
+  get_next_token(token);
 
   // po skončení práce uvoľni miesto po read_string
   tstring_free_struct(read_string);
 
   return 0;
 }
+
+// TODO: Na konci musi byť \n aby zobralo posledny token - fix it later!!!!

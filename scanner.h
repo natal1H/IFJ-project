@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+//#include <stdbool.h>
 
 #include "stringlib.h"
 
@@ -8,7 +9,11 @@ typedef enum token_type {
     IDENTIFIER,
     INTEGER,
     FLOAT,
-    KEYWORD
+    KEYWORD,
+    ADDITION,
+    MULTIPLICATION,
+    SUBTRACTION,
+    DIVISION
 } Token_Type;
 
 typedef struct token {
@@ -22,7 +27,14 @@ typedef enum state {
     F_ID,
     F_INT,
     F_FLOAT,
-    F_STRING
+    F_STRING,
+    F_ASSIGN,
+    F_ADDITION,
+    F_MULTIPLICATION,
+    F_SUBTRACTION,
+    F_DIVISION,
+    F_LESS,
+    F_GREATER
 } TState;
 
 // Reťazec, do ktorého sa bude načítavať
