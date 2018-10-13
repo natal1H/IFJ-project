@@ -16,7 +16,49 @@ int scanner_initialize() {
   }
 }
 
-int get_next_token() {
+Token *token_initialize() {
+  // Alokuj miesto pre štruktúru token
+  Token *token = (Token *) malloc(sizeof(Token));
+  if (token == NULL) {
+    return NULL;
+  }
+
+  token->attribute = NULL;
+
+  return token;
+}
+
+void token_free(Token *token) {
+  free(token->attribute);
+  free(token);
+}
+
+int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
+  // Token nesmie byť neinicializovaný
+  if (token == NULL) {
+    return -1; // TODO: return actual error code
+  }
+  // Nastav token type
+  token->type = type;
+
+  // Nastav attribute - treba alokovať miesto pre string
+  token->attribute = (char *) malloc(sizeof(char) * strlen(attribute));
+  if (token->attribute == NULL) {
+    return -1; // TODO: return actual error code
+  }
+
+  // Skopírovať string do token->attribute
+  strcpy(token->attribute, attribute);
+
+  return 0;
+}
+
+void print_token(Token *token) {
+  printf("Token type: %d\n", token->type);
+  printf("Token attribute: %s\n", token->attribute);
+}
+
+int get_next_token(Token *token) {
 
   tstring_clear_string(read_string); // str := '';
 
@@ -79,6 +121,11 @@ int get_next_token() {
           //    TOKEN = IDENTIFIER
           printf("INDENTIFIKATOR\n");
 
+          token = token_initialize();
+          token_set_type_attribute(token, IDENTIFIER, read_string->string);
+
+          print_token(token);
+
           break;
         }
 
@@ -100,13 +147,16 @@ int main(int argc, char** argv) {
 
   // inicializuj scanner najprv cez scanner_initialize()
 
+
   if ( scanner_initialize() != 0 ) {
     // chyba pri inicializácii
     printf("Chyba pri inicializácii scannera");
     return -1; // TODO return actual error code
   }
 
-  get_next_token();
+  Token *token;
+
+  get_next_token(token);
 
 
   // po skončení práce uvoľni miesto po read_string

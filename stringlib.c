@@ -13,8 +13,8 @@ int tstring_intialize(TString *tstr) {
 }
 
 TString *tstring_struct_initialize() {
-  //printf("Allocating: %ld, (%ld + %ld + %ld)\n", sizeof(int) + sizeof(int) + sizeof(char *), sizeof(int), sizeof(int), sizeof(char *));
-  TString *mystruct = (TString *) malloc(sizeof(int) + sizeof(int) + sizeof(char *));
+  //printf("Allocating: %ld, (%ld + %ld + %ld)\n", sizeof(TString), sizeof(int), sizeof(int), sizeof(char *));
+  TString *mystruct = (TString *) malloc(sizeof(TString));
   if (mystruct == NULL) {
     return NULL;
   }

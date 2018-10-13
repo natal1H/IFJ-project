@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "stringlib.h"
 
@@ -27,6 +28,14 @@ typedef enum state {
 // Reťazec, do ktorého sa bude načítavať
 TString *read_string;
 
-int get_next_token();
+Token *token_initialize();
+
+void token_free(Token *token);
+
+int token_set_type_attribute(Token *token, Token_Type type, char *attribute);
+
+void print_token(Token *token);
+
+int get_next_token(Token *token);
 
 int scanner_initialize();
