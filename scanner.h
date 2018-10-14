@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-//#include <stdbool.h>
+#include <stdbool.h>
 
 #include "stringlib.h"
 
@@ -20,6 +20,18 @@ typedef enum token_type {
     LESS,
     GREATER
 } Token_Type;
+
+typedef enum keyword {
+    KEYWORD_DEF,
+    KEYWORD_DO,
+    KEYWORD_ELSE,
+    KEYWORD_END,
+    KEYWORD_IF,
+    KEYWORD_NOT,
+    KEYWORD_NIL,
+    KEYWORD_THEN,
+    KEYWORD_WHILE
+} Keyword;
 
 typedef struct token {
     Token_Type type;
@@ -48,6 +60,10 @@ TString *read_string;
 Token *token_initialize();
 
 void token_free(Token *token);
+
+bool is_keyword(char *str);
+
+Keyword get_keyword_type(char *str);
 
 int token_set_type_attribute(Token *token, Token_Type type, char *attribute);
 

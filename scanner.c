@@ -34,6 +34,52 @@ void token_free(Token *token) {
   free(token);
 }
 
+bool is_keyword(char *str) {
+  if (strcmp(str, "def") == 0)
+    return true;
+  else if (strcmp(str, "do") == 0)
+    return true;
+  else if (strcmp(str, "else") == 0)
+    return true;
+  else if (strcmp(str, "end") == 0)
+    return true;
+  else if (strcmp(str, "if") == 0)
+    return true;
+  else if (strcmp(str, "not") == 0)
+    return true;
+  else if (strcmp(str, "nil") == 0)
+    return true;
+  else if (strcmp(str, "then") == 0)
+    return true;
+  else if (strcmp(str, "while") == 0)
+    return true;
+  else
+    return false;
+}
+
+Keyword get_keyword_type(char *str) {
+  if (strcmp(str, "def") == 0)
+    return KEYWORD_DEF;
+  else if (strcmp(str, "do") == 0)
+    return KEYWORD_DO;
+  else if (strcmp(str, "else") == 0)
+    return KEYWORD_ELSE;
+  else if (strcmp(str, "end") == 0)
+    return KEYWORD_END;
+  else if (strcmp(str, "if") == 0)
+    return KEYWORD_IF;
+  else if (strcmp(str, "not") == 0)
+    return KEYWORD_NOT;
+  else if (strcmp(str, "nil") == 0)
+    return KEYWORD_NIL;
+  else if (strcmp(str, "then") == 0)
+    return KEYWORD_THEN;
+  else if (strcmp(str, "while") == 0)
+    return KEYWORD_WHILE;
+  else
+    return -1;
+}
+
 int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
   // Token nesmie byť neinicializovaný
   if (token == NULL) {
@@ -150,12 +196,12 @@ int get_next_token(Token *token) {
 
           // zisti, či ten string je medzi kľúčovými slovami
 
-          // if (je_klucove)
-          //    TOKEN = get_keyword(str);
-          // else
-          //    TOKEN = IDENTIFIER
-
-          token_set_type_attribute(token, IDENTIFIER, read_string->string);
+          if (is_keyword(read_string->string)) {
+            token_set_type_attribute(token, KEYWORD, read_string->string);
+          }
+          else {
+            token_set_type_attribute(token, IDENTIFIER, read_string->string);
+          }
 
           return 0;
         }
