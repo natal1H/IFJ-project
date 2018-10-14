@@ -6,14 +6,19 @@
 
 // Typ tokenu
 typedef enum token_type {
+    NO_TYPE,
     IDENTIFIER,
     INTEGER,
     FLOAT,
+    STRING,
     KEYWORD,
+    ASSIGN,
     ADDITION,
     MULTIPLICATION,
     SUBTRACTION,
-    DIVISION
+    DIVISION,
+    LESS,
+    GREATER
 } Token_Type;
 
 typedef struct token {

@@ -24,19 +24,13 @@ Token *token_initialize() {
   }
 
   token->attribute = NULL;
+  token->type = NO_TYPE;
 
   return token;
 }
 
 void token_free(Token *token) {
-  // TODO: Why? Prečo to vyhadzuje seg fault
- // printf("=1\n");
-  //if (token->attribute == NULL)
-  //  printf(" je null\n");
-  //else
-  //  printf(" nie je null\n");
-  //free(token->attribute);
- // printf("=2\n");
+  free(token->attribute);
   free(token);
 }
 
@@ -102,50 +96,26 @@ int get_next_token(Token *token) {
         }
         else if (c == (int) '+') {
           // START -> F_ADDITION
-
-          printf("ADDITION\n");
-
-          token = token_initialize();
+          //token = token_initialize();
           token_set_type_attribute(token, ADDITION, "");
-
-          print_token(token);
-
           return 0;
         }
         else if (c == (int) '*') {
           // START -> F_MULTIPLICATION
-
-          printf("MULTIPLICATION\n");
-
-          token = token_initialize();
+          //token = token_initialize();
           token_set_type_attribute(token, MULTIPLICATION, "");
-
-          print_token(token);
-
           return 0;
         }
         else if (c == (int) '-') {
           // START -> F_SUBSTRACTION
-
-          printf("SUBTRACTION\n");
-
-          token = token_initialize();
+          //token = token_initialize();
           token_set_type_attribute(token, SUBTRACTION, "");
-
-          print_token(token);
-
           return 0;
         }
         else if (c == (int) '/') {
           // START -> F_DIVISION
-
-          printf("DIVISION\n");
-
-          token = token_initialize();
+          //token = token_initialize();
           token_set_type_attribute(token, DIVISION, "");
-
-          print_token(token);
-
           return 0;
         }
         else if (c == (int) '<') {
@@ -184,12 +154,8 @@ int get_next_token(Token *token) {
           //    TOKEN = get_keyword(str);
           // else
           //    TOKEN = IDENTIFIER
-          printf("IDENTIFIKATOR\n");
 
-          token = token_initialize();
           token_set_type_attribute(token, IDENTIFIER, read_string->string);
-
-          print_token(token);
 
           return 0;
         }
@@ -198,32 +164,67 @@ int get_next_token(Token *token) {
       case F_INT:
         if (scanner_is_number(c)) {
           // F_INT -> F_INT
+          tstring_append_char(read_string, c);
         }
         else {
           ungetc(c, stdin);
-
-          printf("INT\n");
-
-          token = token_initialize();
           token_set_type_attribute(token, INTEGER, read_string->string);
-
-          print_token(token);
-
           return 0;
         }
         break;
     }
 
-
-  //}
   } while((c = getc(stdin)) != EOF);
 
 
   // TODO: pridať tu ošetrenie, že c sa dostalo až na EOF
   // Nech pozrie na koncový stav, ak je v F_nieco, nech vytvorí token s príslušným typom a do attribute nahrá zostatok v read_string
 
-  return 0;
+  if (c == EOF) {
+      switch (state) {
+          case F_ID:
+              token_set_type_attribute(token, IDENTIFIER, read_string->string);
+              return 0;
+          case F_INT:
+              token_set_type_attribute(token, INTEGER, read_string->string);
+              return 0;
+          case F_FLOAT:
+              token_set_type_attribute(token, FLOAT, read_string->string);
+              return 0;
+          case F_STRING:
+              token_set_type_attribute(token, STRING, read_string->string);
+              return 0;
+          case F_ASSIGN:
+              token_set_type_attribute(token, ASSIGN, "");
+              return 0;
+          case F_ADDITION:
+              token_set_type_attribute(token, ADDITION, "");
+              return 0;
+          case F_MULTIPLICATION:
+              token_set_type_attribute(token, MULTIPLICATION, "");
+              return 0;
+          case F_SUBTRACTION:
+              token_set_type_attribute(token, SUBTRACTION, "");
+              return 0;
+          case F_DIVISION:
+              token_set_type_attribute(token, DIVISION, "");
+              return 0;
+          case F_LESS:
+              token_set_type_attribute(token, LESS, "");
+              return 0;
+          case F_GREATER:
+              token_set_type_attribute(token, GREATER, "");
+              return 0;
+      }
+  }
+
+  // TODO: temp solution
+  token->type = NO_TYPE;
+  token->attribute = NULL;
+  return EOF;
+
 }
+
 
 // MAIN - only for temp testing
 int main(int argc, char** argv) {
@@ -231,23 +232,25 @@ int main(int argc, char** argv) {
 
 
   // inicializuj scanner najprv cez scanner_initialize()
-
-
   if ( scanner_initialize() != 0 ) {
     // chyba pri inicializácii
     printf("Chyba pri inicializácii scannera");
     return -1; // TODO return actual error code
   }
 
-  Token *token;
-  get_next_token(token);
+
+  Token *token =  token_initialize();
+
+  int ret = get_next_token(token);
+  while (ret != EOF) {
+    printf("RET: %d\n", ret);
+    print_token(token);
+    token_free(token);
+    token = token_initialize();
+    ret = get_next_token(token);
+  }
 
   token_free(token);
-  get_next_token(token);
-
-
-  token_free(token);
-  get_next_token(token);
 
   // po skončení práce uvoľni miesto po read_string
   tstring_free_struct(read_string);
@@ -255,4 +258,4 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-// TODO: Na konci musi byť \n aby zobralo posledny token - fix it later!!!!
+// TODO: = token nie je ešte ošetrený
