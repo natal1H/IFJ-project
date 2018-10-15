@@ -18,7 +18,11 @@ typedef enum token_type {
     SUBTRACTION,
     DIVISION,
     LESS,
-    GREATER
+    LESS_OR_EQUALS,
+    GREATER,
+    GREATER_OR_EQUALS,
+    EQUALS,
+    NOT_EQUALS,
 } Token_Type;
 
 typedef enum keyword {
@@ -40,18 +44,40 @@ typedef struct token {
 
 // Stavy konečného automatu
 typedef enum state {
+    // Počiatočný stav
     START,
+
+    // Koncové stavy
     F_ID,
     F_INT,
     F_FLOAT,
     F_STRING,
-    F_ASSIGN,
-    F_ADDITION,
-    F_MULTIPLICATION,
-    F_SUBTRACTION,
-    F_DIVISION,
-    F_LESS,
-    F_GREATER
+    F_ASSIGN, // =
+    F_ADDITION, // +
+    F_MULTIPLICATION, // *
+    F_SUBTRACTION, // -
+    F_DIVISION, // /
+    F_LESS, // <
+    F_GREATER, // >
+    F_EQUALS, // ==
+    F_NOT_EQUALS, // !=
+    F_LESS_OR_EQUALS, // <=
+    F_GREATER_OR_EQUALS, // >=
+
+    // Prechodné stavy
+    Q_LINE_COMMENT,
+
+    Q_BLOCK_COMMENT_BEGIN_1, // =b
+    Q_BLOCK_COMMENT_BEGIN_2, // =be
+    Q_BLOCK_COMMENT_BEGIN_3, // =beg
+    Q_BLOCK_COMMENT_BEGIN_4, // =begi
+    Q_BLOCK_COMMENT, // =begin
+    Q_BLOCK_COMMENT_END_1, // =
+    Q_BLOCK_COMMENT_END_2, // =e
+    Q_BLOCK_COMMENT_END_3, // =en
+    Q_BLOCK_COMMENT_END_4, // =end
+
+    Q_NOT_EQUALS
 } TState;
 
 // Reťazec, do ktorého sa bude načítavať

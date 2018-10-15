@@ -178,6 +178,14 @@ int get_next_token(Token *token) {
           // TODO ošetriť či prebehlo správne pridanie symbolu
           tstring_append_char(read_string, c); // str := symbol
         }
+        else if (c == (int) '#') {
+          // START -> Q_LINE_COMMENT
+          state = Q_LINE_COMMENT;
+        }
+        else if (c == (int) '!') {
+          // START -> Q_NOT_EQUALS
+          state = Q_NOT_EQUALS;
+        }
 
         break;
       case F_ID:
@@ -218,6 +226,71 @@ int get_next_token(Token *token) {
           return 0;
         }
         break;
+      case Q_LINE_COMMENT:
+        if (c == (int) '\n') {
+          // Q_LINE_COMMENT -> START
+          state = START;
+        }
+        break;
+      case F_ASSIGN:
+        if (c == (int) '=') {
+          // F_ASSIGN -> F_EQUALS
+          state = F_EQUALS;
+        }
+        else {
+          // TOKEN =
+          ungetc(c, stdin);
+          token_set_type_attribute(token, ASSIGN, "");
+          return 0;
+        }
+        //break;
+      case F_EQUALS:
+        // TOKEN ==
+        token_set_type_attribute(token, EQUALS, "");
+        return 0;
+        //break;
+      case Q_NOT_EQUALS:
+        if (c == (int) '=') {
+          // Q_NOT_EQUALS -> F_NOT_EQUALS
+          state = F_NOT_EQUALS;
+        }
+        break;
+      case F_NOT_EQUALS:
+        // TOKEN !=
+        token_set_type_attribute(token, NOT_EQUALS, "");
+        return 0;
+      case F_GREATER:
+        if (c == (int) '=') {
+          // F_GREATER -> F_GREATER_OR_EQUALS
+          state = F_GREATER_OR_EQUALS;
+        }
+        else {
+          // TOKEN >
+          ungetc(c, stdin);
+          token_set_type_attribute(token, GREATER, "");
+          return 0;
+        }
+        break;
+      case F_LESS:
+        if (c == (int) '=') {
+          // F_LESS -> F_LESS_OR_EQUALS
+          state = F_LESS_OR_EQUALS;
+        }
+        else {
+          // TOKEN <
+          ungetc(c, stdin);
+          token_set_type_attribute(token, LESS, "");
+          return 0;
+        }
+        break;
+      case F_GREATER_OR_EQUALS:
+        // TOKEN >=
+        token_set_type_attribute(token, GREATER_OR_EQUALS, "");
+        return 0;
+      case F_LESS_OR_EQUALS:
+        // TOKEN >=
+        token_set_type_attribute(token, LESS_OR_EQUALS, "");
+        return 0;
     }
 
   } while((c = getc(stdin)) != EOF);
