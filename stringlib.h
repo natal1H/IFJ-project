@@ -1,26 +1,25 @@
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef _STRINGLIB_H
 
-#define TSTRING_INITIAL_SIZE 16
+    #define _STRINGLIB_H
 
-typedef struct tstring {
-    int allocated;
-    int length;
-    char *string;
-} TString;
+    #include <stdlib.h>
+    #include <stdio.h>
 
-int tstring_intialize(TString *tstr);
+    #define TSTRING_INITIAL_SIZE 16
 
-TString *tstring_struct_initialize();
+    typedef struct tstring {
+        int allocated;
+        int length;
+        char *string;
+    } TString;
 
-int tstring_increase_size(TString *tstr);
+    int tstring_intialize(TString *tstr);
+    TString *tstring_struct_initialize();
+    int tstring_increase_size(TString *tstr);
+    int tstring_append_char(TString *tstr, char c);
+    int tstring_clear_string(TString *tstr);
+    void tstring_free_string(TString *tstr);
+    void tstring_free_struct(TString *tstr);
+    void tstring_print_string_info(TString *tstr);
 
-int tstring_append_char(TString *tstr, char c);
-
-int tstring_clear_string(TString *tstr);
-
-void tstring_free_string(TString *tstr);
-
-void tstring_free_struct(TString *tstr);
-
-void tstring_print_string_info(TString *tstr);
+#endif
