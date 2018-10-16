@@ -276,7 +276,7 @@ int get_next_token(Token *token) {
         }
         else {
           // Q_STRING -> F_STRING
-          ungetc(c, stdin);
+          //ungetc(c, stdin);
           token_set_type_attribute(token, STRING, read_string->string);
           return ERR_OK;
         }
