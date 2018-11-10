@@ -14,7 +14,7 @@ bool static first_negative_number = true;
 //Ak je cislo kladne, negative_number osetri aby '-' pred akymkolvek
 //cislom bolo brane ako minus nie ako znamienko daneho cisla
 //Ak su cisla v tvare (-26-27) potom tokeny su "(" "-26" "-" "27" ")"
-bool static negative_number = false;      //
+bool static negative_number = false;
 //-------------------------------------------------------------------------
 
 
@@ -432,8 +432,6 @@ int get_next_token(Token *token) {
           return ERR_OK; //case F_LESS_OR_EQUALS:
 
         } //switch(state)
-
-//      previous_char = c;
 
       //Pokym nie je EOF suboru
   } while((c = getc(stdin)) != EOF);
