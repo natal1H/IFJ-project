@@ -4,6 +4,20 @@
 #define scanner_is_number(c) (c >= '0' && c <= '9')
 
 
+//----------------------------GLOBALNE_PREMENNE----------------------------
+//Flag zaporneho cisla
+
+//Ak je prve cislo zaporne, first_negative_number osetri aby znak '-'
+//bolo brane ako znamienko nie ako minus
+bool static first_negative_number = true;
+
+//Ak je cislo kladne, negative_number osetri aby '-' pred akymkolvek
+//cislom bolo brane ako minus nie ako znamienko daneho cisla
+//Ak su cisla v tvare (-26-27) potom tokeny su "(" "-26" "-" "27" ")"
+bool static negative_number = false;
+//-------------------------------------------------------------------------
+
+
 int scanner_initialize() {
   // Inicializuj read_string, do ktorého sa budú pri načítaní tokenov ukladať znaky
   read_string = tstring_struct_initialize();
@@ -105,305 +119,375 @@ void print_token(Token *token) {
   printf("Token attribute: %s\n", token->attribute);
 }
 
+
 int get_next_token(Token *token) {
 
-  tstring_clear_string(read_string); // str := '';
+    tstring_clear_string(read_string); // str := '';
 
-  TState state = START; // Nastavenie počiatočného stavu v DKA
-  int c = getc(stdin);
+    TState state = START; // Nastavenie počiatočného stavu v DKA
+    int c = getc(stdin);
 
-  do {
+    do {
 
-    switch(state) {
-      case START: // Starting point
+        switch(state) {
+          case START: // Starting point
 
-        if (scanner_is_alpha(c) || c == (int) '_') {
-          // START -> F_ID
+              if (scanner_is_alpha(c) || c == (int) '_') {
+                // START -> F_ID
 
-          state = F_ID;
+                state = F_ID;
 
-          tstring_append_char(read_string, c); // str := symbol
-        }
-        else if (scanner_is_number(c)) {
-          // START -> F_INT
+                tstring_append_char(read_string, c); // str := symbol
+              }
+              else if (scanner_is_number(c)) {
+                // START -> F_INT
 
-          state = F_INT;
+                state = F_INT;
 
-          tstring_append_char(read_string, c); // str := symbol
-        }
-        else if (c == (int) '"') {
-          // START -> Q_STRING
-          state = Q_STRING;
-        }
-        else if (c == (int) '=') {
-          // START -> F_ASSIGN
-          state = F_ASSIGN;
+                tstring_append_char(read_string, c); // str := symbol
+              }
+              else if (c == (int) '"') {
+                // START -> Q_STRING
+                state = Q_STRING;
+              }
+              else if (c == (int) '=') {
+                // START -> F_ASSIGN
+                state = F_ASSIGN;
 
-          // TODO ošetriť či prebehlo správne pridanie symbolu
-          tstring_append_char(read_string, c); // str := symbol
-        }
-        else if (c == (int) '+') {
-          // START -> F_ADDITION
-          token_set_type_attribute(token, ADDITION, "");
-          return ERR_OK;
-        }
-        else if (c == (int) '*') {
-          // START -> F_MULTIPLICATION
-          token_set_type_attribute(token, MULTIPLICATION, "");
-          return ERR_OK;
-        }
-        else if (c == (int) '-') {
-          // START -> F_SUBSTRACTION
-          state = F_SUBTRACTION;
-          tstring_append_char(read_string, c);
-        }
-        else if (c == (int) '/') {
-          // START -> F_DIVISION
-          //token = token_initialize();
-          token_set_type_attribute(token, DIVISION, "");
-          return ERR_OK;
-        }
-        else if (c == (int) '<') {
-          // START -> F_LESS
-          state = F_LESS;
-          tstring_append_char(read_string, c); // str := symbol
-        }
-        else if (c == (int) '>') {
-          // START -> F_GREATER
-          state = F_GREATER;
-          tstring_append_char(read_string, c); // str := symbol
-        }
-        else if (c == (int) '#') {
-          // START -> Q_LINE_COMMENT
-          state = Q_LINE_COMMENT;
-        }
-        else if (c == (int) '!') {
-          // START -> Q_NOT_EQUALS
-          state = Q_NOT_EQUALS;
-        }
+                // TODO ošetriť či prebehlo správne pridanie symbolu
+                tstring_append_char(read_string, c); // str := symbol
+              }
+              else if (c == (int) '+') {
+                // START -> F_ADDITION
+                token_set_type_attribute(token, ADDITION, "");
+                return ERR_OK;
+              }
+              else if (c == (int) '*') {
+                // START -> F_MULTIPLICATION
+                token_set_type_attribute(token, MULTIPLICATION, "");
+                return ERR_OK;
+              }
+              else if (c == (int) '-') {
+                // START -> F_SUBSTRACTION
+                state = F_SUBTRACTION;
+                tstring_append_char(read_string, c);
+              }
+              else if (c == (int) '/') {
+                // START -> F_DIVISION
+                //token = token_initialize();
+                token_set_type_attribute(token, DIVISION, "");
+                return ERR_OK;
+              }
+              else if (c == (int) '<') {
+                // START -> F_LESS
+                state = F_LESS;
+                tstring_append_char(read_string, c); // str := symbol
+              }
+              else if (c == (int) '>') {
+                // START -> F_GREATER
+                state = F_GREATER;
+                tstring_append_char(read_string, c); // str := symbol
+              }
+              else if (c == (int) '#') {
+                // START -> Q_LINE_COMMENT
+                state = Q_LINE_COMMENT;
+              }
+              else if (c == (int) '!') {
+                // START -> Q_NOT_EQUALS
+                state = Q_NOT_EQUALS;
+              }
 
-        break;
-      case F_ID:
+              else if (c == (int) '(') {
+                // START -> Q_NOT_EQUALS
+                state = F_LEFT_ROUND_BRACKET;
+              }
 
-        if (scanner_is_alpha(c) || scanner_is_number(c) || c == (int) '_') {
-          // F_ID -> F_ID
+              else if (c == (int) ')') {
+                // START -> Q_NOT_EQUALS
+                state = F_RIGHT_ROUND_BRACKET;
+              }
+          break; //case START:
 
-          tstring_append_char(read_string, c);
-        }
-        else {
-          // Znak mimo povolených pre identifikátor
 
-          // unget znak
-          ungetc(c, stdin);
+          case F_ID:
+              if (scanner_is_alpha(c) || scanner_is_number(c) || c == (int) '_') {
+                // F_ID -> F_ID
 
-          // zisti, či ten string je medzi kľúčovými slovami
-          if (is_keyword(read_string->string)) {
-            token_set_type_attribute(token, KEYWORD, read_string->string);
-          }
-          else {
-            token_set_type_attribute(token, IDENTIFIER, read_string->string);
-          }
+                tstring_append_char(read_string, c);
+              }
+              else {
+                // Znak mimo povolených pre identifikátor
 
-          return ERR_OK;
-        }
+                // unget znak
+                ungetc(c, stdin);
 
-        break;
-      case F_INT:
-        if (scanner_is_number(c)) {
-          // F_INT -> F_INT
-          tstring_append_char(read_string, c);
-        }
-        else if (c == (int) '.') {
-            // F_INT -> Q_FLOAT_1
-            state = Q_FLOAT_1;
-            tstring_append_char(read_string, c);
-        }
-        else if (c == (int) 'e' || c == (int) 'E') {
-            // F_INT -> Q_FLOAT_2
-            state = Q_FLOAT_2;
-            tstring_append_char(read_string, c);
-        }
-        else {
-          ungetc(c, stdin);
-          token_set_type_attribute(token, INTEGER, read_string->string);
-          return ERR_OK;
-        }
-        break;
-      case Q_FLOAT_1:
-        if (scanner_is_number(c)) {
-            // Q_FLOAT_1 -> F_FLOAT
-            state = F_FLOAT;
-            tstring_append_char(read_string, c);
-        }
-        break;
-      case Q_FLOAT_2:
-        if (scanner_is_number(c)) {
-          // Q_FLOAT_2 -> F_FLOAT
-          state = F_FLOAT;
-          tstring_append_char(read_string, c);
-        }
-        else if (c == (int) '+' || c == (int) '-') {
-          // Q_FLOAT_2 -> Q_FLOAT_3
-          state = Q_FLOAT_3;
-          tstring_append_char(read_string, c);
-        }
-        break;
-      case Q_FLOAT_3:
-        if (scanner_is_number(c)) {
-          // Q_FLOAT_3 -> F_FLOAT
-          state = F_FLOAT;
-          tstring_append_char(read_string, c);
-        }
-        break;
+                // zisti, či ten string je medzi kľúčovými slovami
+                if (is_keyword(read_string->string)) {
+                  token_set_type_attribute(token, KEYWORD, read_string->string);
+                }
+                else {
+                  token_set_type_attribute(token, IDENTIFIER, read_string->string);
+                }
 
-      case F_FLOAT:
-        if (scanner_is_number(c)) {
-            // F_FLOAT -> F_FLOAT
-            tstring_append_char(read_string, c);
-        }
-        else {
-            // TOKEN FLOAT
-            ungetc(c, stdin);
-            token_set_type_attribute(token, FLOAT, read_string->string);
-            return ERR_OK;
-        }
+                return ERR_OK;
+              }
+          break; //case F_ID:
 
-        break;
-      case Q_STRING:
-        if (c != (int) '"') {
-          // Q_STRING -> Q_STRING
-          tstring_append_char(read_string, c);
-        }
-        else {
-          // Q_STRING -> F_STRING
-          //ungetc(c, stdin);
-          token_set_type_attribute(token, STRING, read_string->string);
-          return ERR_OK;
-        }
-        break;
-      case F_SUBTRACTION:
-        if (scanner_is_number(c)) {
-            // F_SUBSTACTION -> F_INT
-            state = F_INT;
-            tstring_append_char(read_string, c);
-        }
-        else {
-            // TOKEN -
-            ungetc(c, stdin);
-            token_set_type_attribute(token, SUBTRACTION, "");
-            return ERR_OK;
-        }
-        break;
-      case Q_LINE_COMMENT:
-        if (c == (int) '\n') {
-          // Q_LINE_COMMENT -> START
-          state = START;
-        }
-        break;
-      case F_ASSIGN:
-        if (c == (int) '=') {
-          // F_ASSIGN -> F_EQUALS
-          state = F_EQUALS;
-        }
-        else {
-          // TOKEN =
-          ungetc(c, stdin);
-          token_set_type_attribute(token, ASSIGN, "");
-          return ERR_OK;
-        }
-        //break;
-      case F_EQUALS:
-        // TOKEN ==
-        token_set_type_attribute(token, EQUALS, "");
-        return ERR_OK;
-        //break;
-      case Q_NOT_EQUALS:
-        if (c == (int) '=') {
-          // Q_NOT_EQUALS -> F_NOT_EQUALS
-          state = F_NOT_EQUALS;
-        }
-        break;
-      case F_NOT_EQUALS:
-        // TOKEN !=
-        token_set_type_attribute(token, NOT_EQUALS, "");
-        return ERR_OK;
-      case F_GREATER:
-        if (c == (int) '=') {
-          // F_GREATER -> F_GREATER_OR_EQUALS
-          state = F_GREATER_OR_EQUALS;
-        }
-        else {
-          // TOKEN >
-          ungetc(c, stdin);
-          token_set_type_attribute(token, GREATER, "");
-          return ERR_OK;
-        }
-        break;
-      case F_LESS:
-        if (c == (int) '=') {
-          // F_LESS -> F_LESS_OR_EQUALS
-          state = F_LESS_OR_EQUALS;
-        }
-        else {
-          // TOKEN <
-          ungetc(c, stdin);
-          token_set_type_attribute(token, LESS, "");
-          return ERR_OK;
-        }
-        break;
-      case F_GREATER_OR_EQUALS:
-        // TOKEN >=
-        token_set_type_attribute(token, GREATER_OR_EQUALS, "");
-        return ERR_OK;
-      case F_LESS_OR_EQUALS:
-        // TOKEN >=
-        token_set_type_attribute(token, LESS_OR_EQUALS, "");
-        return ERR_OK;
-    }
 
+          case F_INT:
+              if (scanner_is_number(c)) {
+                // F_INT -> F_INT
+                tstring_append_char(read_string, c);
+              }
+              else if (c == (int) '.') {
+                  // F_INT -> Q_FLOAT_1
+                  state = Q_FLOAT_1;
+                  tstring_append_char(read_string, c);
+              }
+              else if (c == (int) 'e' || c == (int) 'E') {
+                  // F_INT -> Q_FLOAT_2
+                  state = Q_FLOAT_2;
+                  tstring_append_char(read_string, c);
+              }
+              else {
+                ungetc(c, stdin);
+                negative_number = false;
+                token_set_type_attribute(token, INTEGER, read_string->string);
+                return ERR_OK;
+              }
+          break; //case F_INT:
+
+
+          case Q_FLOAT_1: // x.
+              if (scanner_is_number(c)) {
+                  // Q_FLOAT_1 -> F_FLOAT
+                  state = F_FLOAT;
+                  tstring_append_char(read_string, c);
+              }
+          break; //case Q_FLOAT_1:
+
+
+          case Q_FLOAT_2: // xe / xE
+              if (scanner_is_number(c)) {
+                // Q_FLOAT_2 -> F_FLOAT
+                state = F_FLOAT;
+                tstring_append_char(read_string, c);
+              }
+              else if (c == (int) '+' || c == (int) '-') {
+                // Q_FLOAT_2 -> Q_FLOAT_3
+                state = Q_FLOAT_3;
+                tstring_append_char(read_string, c);
+              }
+          break; //case Q_FLOAT_2:
+
+
+          case Q_FLOAT_3: // xe+ / xE+ / xe- / xE-
+              if (scanner_is_number(c)) {
+                // Q_FLOAT_3 -> F_FLOAT
+                state = F_FLOAT;
+                tstring_append_char(read_string, c);
+              }
+          break; //case Q_FLOAT_3:
+
+
+          case F_FLOAT:
+              if (scanner_is_number(c)) {
+                  // F_FLOAT -> F_FLOAT
+                  tstring_append_char(read_string, c);
+              }
+              else {
+                  // TOKEN FLOAT
+                  ungetc(c, stdin);
+                  token_set_type_attribute(token, FLOAT, read_string->string);
+                  return ERR_OK;
+              }
+          break; //case F_FLOAT:
+
+
+          case Q_STRING:
+              if (c != (int) '"') {
+                // Q_STRING -> Q_STRING
+                tstring_append_char(read_string, c);
+              }
+              else {
+                // Q_STRING -> F_STRING
+                //ungetc(c, stdin);
+                token_set_type_attribute(token, STRING, read_string->string);
+                return ERR_OK;
+              }
+          break; //case Q_STRING:
+
+
+          case F_SUBTRACTION:
+              //negative_number, first_negative_number su typu bool -> auto-vyhodnotenie
+              if (scanner_is_number(c) && (negative_number || first_negative_number) ) {
+                  // F_SUBSTACTION -> F_INT
+                  state = F_INT;
+                  tstring_append_char(read_string, c);
+                  negative_number = false;       //Ak cislo za "(" je zaporne
+                  first_negative_number = false; //Ak prve cislo je zaporne
+              }
+              else {
+                  // TOKEN -
+                  ungetc(c, stdin);
+                  token_set_type_attribute(token, SUBTRACTION, "");
+                  return ERR_OK;
+              }
+           break; //case F_SUBTRACTION:
+
+
+          case Q_LINE_COMMENT:
+              if (c == (int) '\n') {
+                // Q_LINE_COMMENT -> START
+                state = START;
+              }
+          break; //case Q_LINE_COMMENT:
+
+
+          case F_ASSIGN:
+              if (c == (int) '=') {
+                // F_ASSIGN -> F_EQUALS
+                state = F_EQUALS;
+              }
+              else {
+                // TOKEN =
+                ungetc(c, stdin);
+                token_set_type_attribute(token, ASSIGN, "");
+                return ERR_OK;
+              }
+          //break;case F_ASSIGN:
+
+
+          case F_EQUALS:
+              // TOKEN ==
+              token_set_type_attribute(token, EQUALS, "");
+              return ERR_OK;
+          //break; //case F_EQUALS:
+
+
+          case Q_NOT_EQUALS:
+              if (c == (int) '=') {
+                // Q_NOT_EQUALS -> F_NOT_EQUALS
+                state = F_NOT_EQUALS;
+              }
+          break; //case Q_NOT_EQUALS:
+
+
+          case F_NOT_EQUALS:
+              // TOKEN !=
+              token_set_type_attribute(token, NOT_EQUALS, "");
+          return ERR_OK; //F_NOT_EQUALS:
+
+
+          case F_GREATER:
+              if (c == (int) '=') {
+                // F_GREATER -> F_GREATER_OR_EQUALS
+                state = F_GREATER_OR_EQUALS;
+              }
+              else {
+                // TOKEN >
+                ungetc(c, stdin);
+                token_set_type_attribute(token, GREATER, "");
+                return ERR_OK;
+              }
+          break; //case F_NOT_EQUALS:
+
+
+          case F_LESS:
+              if (c == (int) '=') {
+                // F_LESS -> F_LESS_OR_EQUALS
+                state = F_LESS_OR_EQUALS;
+              }
+              else {
+                // TOKEN <
+                ungetc(c, stdin);
+                token_set_type_attribute(token, LESS, "");
+                return ERR_OK;
+              }
+          break; //case F_LESS:
+
+
+          case F_GREATER_OR_EQUALS:
+              // TOKEN >=
+              token_set_type_attribute(token, GREATER_OR_EQUALS, "");
+          return ERR_OK; //case F_GREATER_OR_EQUALS:
+
+
+          case F_LESS_OR_EQUALS:
+              // TOKEN >=
+              token_set_type_attribute(token, LESS_OR_EQUALS, "");
+          return ERR_OK; //case F_LESS_OR_EQUALS:
+
+          case F_LEFT_ROUND_BRACKET:
+              // TOKEN (
+              negative_number = true;
+              ungetc(c, stdin);
+              token_set_type_attribute(token, LEFT_ROUND_BRACKET, "");
+          return ERR_OK; //case F_LESS_OR_EQUALS:
+
+          case F_RIGHT_ROUND_BRACKET:
+              // TOKEN )
+              ungetc(c, stdin);
+              token_set_type_attribute(token, RIGHT_ROUND_BRACKET, "");
+          return ERR_OK; //case F_LESS_OR_EQUALS:
+
+        } //switch(state)
+
+      //Pokym nie je EOF suboru
   } while((c = getc(stdin)) != EOF);
 
 
   // TODO: pridať tu ošetrenie, že c sa dostalo až na EOF
   // Nech pozrie na koncový stav, ak je v F_nieco, nech vytvorí token s príslušným typom a do attribute nahrá zostatok v read_string
 
-  if (c == EOF) {
+  if (c == EOF) { //Ak koniec suboru
       switch (state) {
+
           case F_ID:
               token_set_type_attribute(token, IDENTIFIER, read_string->string);
               return ERR_OK;
+
           case F_INT:
               token_set_type_attribute(token, INTEGER, read_string->string);
               return ERR_OK;
+
           case F_FLOAT:
               token_set_type_attribute(token, FLOAT, read_string->string);
               return ERR_OK;
+
           case F_STRING:
               token_set_type_attribute(token, STRING, read_string->string);
               return ERR_OK;
+
           case F_ASSIGN:
               token_set_type_attribute(token, ASSIGN, "");
               return ERR_OK;
+
           case F_ADDITION:
               token_set_type_attribute(token, ADDITION, "");
               return ERR_OK;
+
           case F_MULTIPLICATION:
               token_set_type_attribute(token, MULTIPLICATION, "");
               return ERR_OK;
+
           case F_SUBTRACTION:
               token_set_type_attribute(token, SUBTRACTION, "");
               return ERR_OK;
+
           case F_DIVISION:
               token_set_type_attribute(token, DIVISION, "");
               return ERR_OK;
+
           case F_LESS:
               token_set_type_attribute(token, LESS, "");
               return ERR_OK;
+
           case F_GREATER:
               token_set_type_attribute(token, GREATER, "");
               return ERR_OK;
       }
-  }
+  } //(c == EOF)
 
   // TODO: temp solution
   token->type = NO_TYPE;
@@ -434,6 +518,7 @@ int main(int argc, char** argv) {
     print_token(token);
     token_free(token);
     token = token_initialize();
+    first_negative_number = false; //Po vypisani vzdy nasleduje druhy znak, navzdy false
     ret = get_next_token(token);
   }
 
