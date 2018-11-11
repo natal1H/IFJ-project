@@ -9,36 +9,41 @@
     #include "error.h"
 
     // Typ tokenu
+    //Cislovanie od 1
     typedef enum token_type {
-        NO_TYPE,
-        IDENTIFIER,
-        INTEGER,
-        FLOAT,
-        STRING,
-        KEYWORD,
-        ASSIGN,
-        ADDITION,
-        MULTIPLICATION,
-        SUBTRACTION,
-        DIVISION,
-        LESS,
-        LESS_OR_EQUALS,
-        GREATER,
-        GREATER_OR_EQUALS,
-        EQUALS,
-        NOT_EQUALS,
+        //Nazov tokenu     //ID_cislo
+        NO_TYPE,           //1
+        IDENTIFIER,        //2
+        INTEGER,           //3
+        FLOAT,             //4
+        STRING,            //5
+        KEYWORD,           //6
+        ASSIGN,            //7
+        ADDITION,          //8
+        MULTIPLICATION,    //9
+        SUBTRACTION,       //10
+        DIVISION,          //11
+        LESS,              //12
+        LESS_OR_EQUALS,    //13
+        GREATER,           //14
+        GREATER_OR_EQUALS, //15
+        EQUALS,            //16
+        NOT_EQUALS,        //17
+        LEFT_ROUND_BRACKET,  //18
+        RIGHT_ROUND_BRACKET, //19
     } Token_Type;
 
     typedef enum keyword {
-        KEYWORD_DEF,
-        KEYWORD_DO,
-        KEYWORD_ELSE,
-        KEYWORD_END,
-        KEYWORD_IF,
-        KEYWORD_NOT,
-        KEYWORD_NIL,
-        KEYWORD_THEN,
-        KEYWORD_WHILE
+        //Nazov tokenu  //ID_cislo
+        KEYWORD_DEF,    //1
+        KEYWORD_DO,     //2
+        KEYWORD_ELSE,   //3
+        KEYWORD_END,    //4
+        KEYWORD_IF,     //5
+        KEYWORD_NOT,    //6
+        KEYWORD_NIL,    //7
+        KEYWORD_THEN,   //8
+        KEYWORD_WHILE   //9
     } Keyword;
 
     typedef struct token {
@@ -67,6 +72,8 @@
         F_NOT_EQUALS, // !=
         F_LESS_OR_EQUALS, // <=
         F_GREATER_OR_EQUALS, // >=
+        F_LEFT_ROUND_BRACKET,  // (
+        F_RIGHT_ROUND_BRACKET, // )
 
         // Prechodné stavy
         Q_LINE_COMMENT,
