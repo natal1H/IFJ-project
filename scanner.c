@@ -517,7 +517,7 @@ int get_next_token(Token *token) {
   } //(c == EOF)
 
   // TODO: temp solution
-  token->type = NO_TYPE;
+  token->type = TYPE_EOF;
   token->attribute = NULL;
   return EOF;
 

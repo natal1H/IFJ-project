@@ -33,6 +33,7 @@
         RIGHT_ROUND_BRACKET, //18
         COMMA,               //19
         EOL,                 //20
+        TYPE_EOF,            //21
     } Token_Type;
 
     typedef enum keyword {
