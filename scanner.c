@@ -206,8 +206,15 @@ int get_next_token(Token *token) {
                 // START -> Q_NOT_EQUALS
                 state = F_RIGHT_ROUND_BRACKET;
               }
+              else if (c == (int) '\n') {
+                // START -> F_EOL
+                state = F_EOL;
+              }
+              else if (c == (int) ',') {
+                // START -> F_COMMA
+                state = F_COMMA;
+              }
           break; //case START:
-
 
           case F_ID:
               if (scanner_is_alpha(c) || scanner_is_number(c) || c == (int) '_') {
@@ -431,6 +438,18 @@ int get_next_token(Token *token) {
               token_set_type_attribute(token, RIGHT_ROUND_BRACKET, "");
           return ERR_OK; //case F_LESS_OR_EQUALS:
 
+          case F_EOL:
+              // TOKEN EOL
+              ungetc(c, stdin);
+              token_set_type_attribute(token, EOL, "");
+          return ERR_OK;
+
+          case F_COMMA:
+              // TOKEN ,
+              ungetc(c, stdin);
+              token_set_type_attribute(token, COMMA, "");
+          return ERR_OK;
+
         } //switch(state)
 
       //Pokym nie je EOF suboru
@@ -486,11 +505,19 @@ int get_next_token(Token *token) {
           case F_GREATER:
               token_set_type_attribute(token, GREATER, "");
               return ERR_OK;
+
+          case F_EOL:
+              token_set_type_attribute(token, EOL, "");
+              return ERR_OK;
+
+          case F_COMMA:
+              token_set_type_attribute(token, COMMA, "");
+              return ERR_OK;
       }
   } //(c == EOF)
 
   // TODO: temp solution
-  token->type = NO_TYPE;
+  token->type = TYPE_EOF;
   token->attribute = NULL;
   return EOF;
 
@@ -498,6 +525,7 @@ int get_next_token(Token *token) {
 
 
 // MAIN - only for temp testing
+/*
 int main(int argc, char** argv) {
   printf("SCANNER TEST\n");
 
@@ -529,5 +557,4 @@ int main(int argc, char** argv) {
 
   return 0;
 }
-
-// TODO: = token nie je ešte ošetrený
+*/
