@@ -4,6 +4,7 @@
 
     #include <stdlib.h>
     #include <stdio.h>
+    #include <string.h>
 
     #define TSTRING_INITIAL_SIZE 16
 
@@ -21,5 +22,7 @@
     void tstring_free_string(TString *tstr);
     void tstring_free_struct(TString *tstr);
     void tstring_print_string_info(TString *tstr);
+
+    int tstring_add_line(TString *tstr, char *line);
 
 #endif
