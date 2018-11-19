@@ -1,6 +1,6 @@
-#include "scanner.h"
-#include "error.h"
-
+//#include "scanner.h"
+//#include "error.h"
+#include "parser.h"
 
 /*	
 	TODO:	Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
@@ -11,8 +11,8 @@
 /*
 	Počítadlá pre očakávané kľúčové slová END a ELSE
 */
-global int 	expecting_end = 0,
-			expecting_else = 0;
+//int 	expecting_end = 0,
+//			expecting_else = 0;
 /*
 	Funkcia pre stav <prog>.
 	
@@ -24,29 +24,28 @@ global int 	expecting_end = 0,
 */
 int prog (Token *token) {
 
+	expecting_end = 0;
+	expecting_else = 0;
+
 	// Pravidlo 1: <prog> -> <stat_list> EOF
 
 	if (token->type == KEYWORD) {
-		switch (token->attribute) {
-			case KEYWORD_DEF:
-				return stat_list(token);
-				break;
-
-			case KEYWORD_IF:
-				return stat_list(token);
-				break;
-
-			case KEYWORD_WHILE:
-				return stat_list(token);
-				break;
-
-			case KEYWORD_PRINT:
-				return stat_list(token);
-				break;
-
-			default: 
-				return ERR_SYNTAX;
+		if (strcmp(token->attribute, "def") == 0) {
+			return stat_list(token);
 		}
+		else if (strcmp(token->attribute, "if") == 0) {
+			return stat_list(token);
+		}
+		else if (strcmp(token->attribute, "while") == 0) {
+			return stat_list(token);
+		}
+		else if (strcmp(token->attribute, "print") == 0) {
+			return stat_list(token);
+		}
+		else {
+			return ERR_SYNTAX;
+		}
+
 	}
 	else if (token->type == IDENTIFIER) {
 		return stat_list(token);
@@ -70,78 +69,70 @@ int stat_list (Token *token) {
 	// Pravidlo 2: <stat_list> -> <stat> EOL <stat_list>
 
 	if (token->type == KEYWORD) {
-		switch (token->attribute) {
-			case KEYWORD_DEF:
-				if (stat(token) == ERR_OK) {
+		if (strcmp(token->attribute, "def") == 0) {
+			if (stat(token) == ERR_OK) {
+				get_next_token(token);
+
+				if (token->type == EOL) {
 					get_next_token(token);
 
-					if (token->type == EOL) {
-						get_next_token(token);
-
-						return stat_list(token);
-					}
+					return stat_list(token);
 				}
-				break;
-
-			case KEYWORD_IF:
-				if (stat(token) == ERR_OK) {
-					get_next_token(token);
-
-					if (token->type == EOL) {
-						get_next_token(token);
-
-						return stat_list(token);
-					}
-				}
-				break;
-
-			case KEYWORD_WHILE:
-				if (stat(token) == ERR_OK) {
-					get_next_token(token);
-
-					if (token->type == EOL) {
-						get_next_token(token);
-
-						return stat_list(token);
-					}
-				}
-				break;
-
-			case KEYWORD_PRINT:
-				if (stat(token) == ERR_OK) {
-					get_next_token(token);
-
-					if (token->type == EOL) {
-						get_next_token(token);
-
-						return stat_list(token);
-					}
-				}
-				break;
-
-			case KEYWORD_END:
-				if (expecting_end > 0) {	//Kontrola, či sa v kóde očakáva END
-					expecting_end--;		//Ak áno, počítadlo očakávaných END-ov sa dekrementuje
-											//a vracia sa návratová hodnota ERR_OK
-					return ERR_OK;			//Ak by táto kontrola nebola vykonaná, program by akceptoval
-				}							//END a ELSE aj mimo If-ov atď.
-				else return ERR_SYNTAX;
-
-				break;
-
-			case KEYWORD_ELSE:				//To isté, ako pre END
-				if (expecting_else > 0) {
-					expecting_else--;
-
-					return ERR_OK;
-				}
-				else return ERR_SYNTAX;
-
-				break;
-
-			default: 
-				return ERR_SYNTAX;
+			}
 		}
+		else if (strcmp(token->attribute, "if") == 0) {
+			if (stat(token) == ERR_OK) {
+				get_next_token(token);
+
+				if (token->type == EOL) {
+					get_next_token(token);
+
+					return stat_list(token);
+				}
+			}
+		}
+		else if (strcmp(token->attribute, "while") == 0) {
+			if (stat(token) == ERR_OK) {
+				get_next_token(token);
+
+				if (token->type == EOL) {
+					get_next_token(token);
+
+					return stat_list(token);
+				}
+			}
+		}
+		else if (strcmp(token->attribute, "print") == 0) {
+			if (stat(token) == ERR_OK) {
+				get_next_token(token);
+
+				if (token->type == EOL) {
+					get_next_token(token);
+
+					return stat_list(token);
+				}
+			}
+		}
+		else if (strcmp(token->attribute, "end") == 0) {
+			if (expecting_end > 0) {	//Kontrola, či sa v kóde očakáva END
+				expecting_end--;		//Ak áno, počítadlo očakávaných END-ov sa dekrementuje
+				//a vracia sa návratová hodnota ERR_OK
+				return ERR_OK;			//Ak by táto kontrola nebola vykonaná, program by akceptoval
+			}							//END a ELSE aj mimo If-ov atď.
+			else return ERR_SYNTAX;
+		}
+		else if (strcmp(token->attribute, "else") == 0) {
+			if (expecting_else > 0) {
+				expecting_else--;
+
+				return ERR_OK;
+			}
+			else return ERR_SYNTAX;
+		}
+		else {
+			return ERR_SYNTAX;
+		}
+
 	}
 	else if (token->type == IDENTIFIER) {
 		if (stat(token) == ERR_OK) {
@@ -206,13 +197,13 @@ int stat (Token *token) {
 
 	// Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END
 
-	else if (token->attribute == KEYWORD_IF) {
+	else if (token->attribute == "if") {
 		get_next_token(token);
 
 		if (expr(token) == ERR_OK) {
 			get_next_token(token);
 
-			if (token->attribute == KEYWORD_THEN) {
+			if (token->attribute == "then") {
 				get_next_token(token);
 
 				if (token->type == EOL) {
@@ -235,13 +226,13 @@ int stat (Token *token) {
 
 	// Pravidlo 5: WHILE <expr> DO EOL <stat_list> END
 
-	else if (token->attribute == KEYWORD_WHILE) {
+	else if (token->attribute == "while") {
 		get_next_token(token);
 
 		if (expr(token) == ERR_OK) {
 			get_next_token(token);
 
-			if (token->attribute == KEYWORD_DO) {
+			if (token->attribute == "do") {
 				get_next_token(token);
 
 				if (token->type == EOL) {
@@ -259,7 +250,7 @@ int stat (Token *token) {
 
 	// Pravidlo 6: PRINT ( <arg> )
 
-	else if (token->type == IDENTIFIER && token->attribute == PRINT) {
+	else if (token->type == IDENTIFIER && token->attribute == "print") {
 		get_next_token(token);
 
 		if (token->type == LEFT_ROUND_BRACKET) {
@@ -328,7 +319,7 @@ int arg (Token *token) {
 	// Pravidlo 12: <arg> -> <value> <arg_next>
 
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
-		token->type == NIL || token->type == IDENTIFIER) {
+			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
 		return (value(token) && arg_next(token));
 	}
 	else return ERR_SYNTAX;
@@ -345,7 +336,7 @@ int arg_next (Token *token) {
 		get_next_token(token);
 
 		if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
-		token->type == NIL || token->type == IDENTIFIER) {
+				(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
 
 			return arg_next(token);
 		}
@@ -387,7 +378,7 @@ int after_id (Token *token) {
 	// Pravidlo 17: <after_id> = <def_value>
 
 	else if (token->type == ASSIGN) {
-		return def_value;
+		return def_value(token);
 	}
 	else return ERR_SYNTAX;
 }
@@ -398,7 +389,7 @@ int def_value (Token *token) {
 	// Pravidlo 18: <def_value> -> <value>
 
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
-		token->type == NIL || token->type == IDENTIFIER) {
+			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
 		return value(token);
 	}
 
@@ -430,6 +421,10 @@ int value (Token *token) {
 
 	//Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID
 
+	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {
+		return ERR_OK;
+	}
+
 	switch (token->type) {
 		case INTEGER:
 			return ERR_OK;
@@ -443,9 +438,9 @@ int value (Token *token) {
 			return ERR_OK;
 			break;
 
-		case NIL:
-			return ERR_OK;
-			break;
+		//case NIL:
+		//	return ERR_OK;
+		//	break;
 
 		case IDENTIFIER:
 			get_next_token(token);
@@ -464,4 +459,9 @@ int value (Token *token) {
 		default:
 			return ERR_SYNTAX;
 	}
+}
+
+// TODO odstrániť keď bude analýza výrazov
+int expr (Token *token) {
+	return ERR_OK;
 }

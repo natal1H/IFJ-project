@@ -90,6 +90,8 @@ Keyword get_keyword_type(char *str) {
     return KEYWORD_THEN;
   else if (strcmp(str, "while") == 0)
     return KEYWORD_WHILE;
+  else if (strcmp(str, "print") == 0)
+    return KEYWORD_PRINT;
   else
     return -1;
 }

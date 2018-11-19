@@ -46,7 +46,8 @@
         KEYWORD_NOT,    //5
         KEYWORD_NIL,    //6
         KEYWORD_THEN,   //7
-        KEYWORD_WHILE   //8
+        KEYWORD_WHILE,  //8
+        KEYWORD_PRINT   //9
     } Keyword;
 
     typedef struct token {
