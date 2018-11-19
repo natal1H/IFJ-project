@@ -80,3 +80,22 @@ void tstring_print_string_info(TString *tstr) {
   printf("String: %s\n", tstr->string);
 }
 
+int tstring_add_line(TString *tstr, char *line) {
+  // Pozri, či je ešte miesto na pridanie celeho riadku
+  while (tstr->length + strlen(line) > tstr->allocated - 1) {
+    // Treba najskôr zväčšiť alokované miesto
+    if (tstring_increase_size(tstr) != 0) {
+      // Nastala chyba pri rozširovaní - zlyhala aj táto funkcia
+      return -1; // TODO: return actual error code
+    }
+  }
+
+  // pridaj na koniec
+  for (int i = 0; i < strlen(line); i++) {
+    tstr->string[tstr->length + i] = line[i];
+  }
+  tstr->string[tstr->length + strlen(line)] = '\0';
+  tstr->length += strlen(line);
+  return 0;
+}
+
