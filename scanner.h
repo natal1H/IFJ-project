@@ -100,7 +100,9 @@
         Q_FLOAT_2, // xe / xE
         Q_FLOAT_3, // xe+ / xE+ / xe- / xE-
 
-        Q_STRING
+        Q_STRING,
+
+        F_LEX_ERROR // Lexikálna chyba
     } TState;
 
     // Reťazec, do ktorého sa bude načítavať

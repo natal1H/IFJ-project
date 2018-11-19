@@ -1,11 +1,11 @@
-
 CC=gcc
-CFLAGS=-Wall -std=c99 -pedantic -lm
+#CFLAGS=-Wall -std=c99 -pedantic -lm
 
-all: scanner
+all: main
 
-scanner: scanner.c
-	$(CC) $(CFLAGS) scanner.c stringlib.c -o scanner
+main: main.c parser.c scanner.c stringlib.c
+	$(CC) main.c parser.c scanner.c stringlib.c -o main
 
 clean:
-	rm -f scanner
+	rm -f main
+git s
