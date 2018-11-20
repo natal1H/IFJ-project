@@ -34,6 +34,7 @@
         COMMA,               //19
         EOL,                 //20
         TYPE_EOF,            //21
+        LEX_ERROR,           //22
     } Token_Type;
 
     typedef enum keyword {

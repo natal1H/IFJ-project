@@ -216,6 +216,21 @@ int get_next_token(Token *token) {
                 // START -> F_COMMA
                 state = F_COMMA;
               }
+
+              else if (c == (int) ' ' || c == (int) '\t') {
+                  // START -> START
+                  //state = START;
+              }
+              else if (c == EOF) {
+                  // Koniec súboru
+                  token->type = TYPE_EOF;
+                  token->attribute = NULL;
+                  return EOF;
+              }
+              else {
+                  // START -> F_LEX_ERROR
+                  state = F_LEX_ERROR;
+              }
           break; //case START:
 
           case F_ID:
@@ -273,6 +288,10 @@ int get_next_token(Token *token) {
                   state = F_FLOAT;
                   tstring_append_char(read_string, c);
               }
+              else {
+                  // Q_FLOAT_1 -> F_LEX_ERROR
+                  state = F_LEX_ERROR;
+              }
           break; //case Q_FLOAT_1:
 
 
@@ -287,6 +306,10 @@ int get_next_token(Token *token) {
                 state = Q_FLOAT_3;
                 tstring_append_char(read_string, c);
               }
+              else {
+                  // Q_FLOAT_2 -> F_LEX_ERROR
+                  state = F_LEX_ERROR;
+              }
           break; //case Q_FLOAT_2:
 
 
@@ -295,6 +318,10 @@ int get_next_token(Token *token) {
                 // Q_FLOAT_3 -> F_FLOAT
                 state = F_FLOAT;
                 tstring_append_char(read_string, c);
+              }
+              else {
+                  // Q_FLOAT_3 -> F_LEX_ERROR
+                  state = F_LEX_ERROR;
               }
           break; //case Q_FLOAT_3:
 
@@ -379,6 +406,10 @@ int get_next_token(Token *token) {
                 // Q_NOT_EQUALS -> F_NOT_EQUALS
                 state = F_NOT_EQUALS;
               }
+              else {
+                  // Q_NOT_EQUALS -> F_LEX_ERROR
+                  state = F_LEX_ERROR;
+              }
           break; //case Q_NOT_EQUALS:
 
 
@@ -452,6 +483,10 @@ int get_next_token(Token *token) {
               token_set_type_attribute(token, COMMA, "");
           return ERR_OK;
 
+          case F_LEX_ERROR:
+              // LEX ERROR
+              token_set_type_attribute(token, LEX_ERROR, "");
+          return ERR_SCANNER;
         } //switch(state)
 
       //Pokym nie je EOF suboru
@@ -515,6 +550,10 @@ int get_next_token(Token *token) {
           case F_COMMA:
               token_set_type_attribute(token, COMMA, "");
               return ERR_OK;
+          case F_LEX_ERROR:
+              // LEX ERROR
+              token_set_type_attribute(token, LEX_ERROR, "");
+              return ERR_SCANNER;
       }
   } //(c == EOF)
 
@@ -549,7 +588,14 @@ int main(int argc, char** argv) {
     token_free(token);
     token = token_initialize();
     first_negative_number = false; //Po vypisani vzdy nasleduje druhy znak, navzdy false
-    ret = get_next_token(token);
+
+    if (ret == ERR_SCANNER) {
+        printf("Narazilo na lexikálnu chybu už.\n");
+        break;
+    }
+    else {
+        ret = get_next_token(token);
+    }
   }
 
   token_free(token);
