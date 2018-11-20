@@ -1,18 +1,78 @@
-//#include "scanner.h"
-//#include "error.h"
 #include "parser.h"
 
 /*	
 	TODO:	Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
 			<arg> pre print nesedi s gramatikou (v printe musia byt arumenty, nemoze byt epsilon)
-			Zmenit osetrovanie END a ELSE (asi na stack)
+			pridat pravidlo <stat_list> -> epsilon
 */
 
-/*
-	Počítadlá pre očakávané kľúčové slová END a ELSE
-*/
-//int 	expecting_end = 0,
-//			expecting_else = 0;
+/* ---------------------------------------
+ * Funkcie pre zásobník hodnôt typu tData.
+ * ---------------------------------------
+ * Zásobník slúži na počítanie nedokončených zložených príkazov, zisťuje sa tak,
+ * či program očakáva kľúčové slová END (alebo ELSE v prípade príkazu IF-ELSE).
+ * Dodatočne, sa pomocou zásobníku kontroluje či sa môže vykonať definícia funkcie,
+ * ktorá môže byť vykonaná iba mimo zložených príkazov (t.j. z8sobník musí byť prázdny).
+ */
+
+void StackInit (tStack *stack) {
+	stack->topPtr = NULL;
+}
+
+void StackPush (tStack *stack, tData data) {
+	tSElem *newElemPtr = (tSElem *) malloc(sizeof(tSElem));
+
+	if (newElemPtr != NULL) {
+		newElemPtr->data = data;
+		newElemPtr->nextPtr = stack->topPtr;
+		stack->topPtr = newElemPtr;
+	}
+	else {
+		fprintf (stderr, "Chyba pri alokácii pamäte.");
+		exit (ERR_INTERNAL);
+	}
+}
+
+void StackPop (tStack *stack) {
+	tSElem *elemPtr;
+
+	if (stack->topPtr != NULL) {
+		elemPtr = stack->topPtr;
+		stack->topPtr = stack->topPtr->nextPtr;
+		free (elemPtr);
+	}
+	else {
+		fprintf (stderr, "Chyba: Podtečenie zásobníku.");
+		exit (ERR_INTERNAL);
+	}
+}
+
+tData StackTop (tStack *stack) {
+	if (stack->topPtr != NULL) {
+		return (stack->topPtr->data);
+	}
+	else {
+		fprintf (stderr, "Chyba: Získavanie hodnoty prvku z prázndeho zásobíku");
+		exit (ERR_INTERNAL);
+	}
+}
+
+bool StackEmpty (tStack *stack) {
+	return (stack->topPtr == NULL);
+}
+
+void StackDispose (tStack *stack) {
+	tSElem *elemPtr;
+
+	while (stack->topPtr != NULL) {
+		elemPtr = stack->topPtr;
+		stack->topPtr = stack->topPtr->nextPtr;
+		free (elemPtr);
+	}
+}
+
+/* -------------------------------------------------------------------------------- */
+
 /*
 	Funkcia pre stav <prog>.
 	
@@ -22,25 +82,22 @@
 	V prípade, že prijatý token je EOF, preklad sa končí s návratovou hodnotou ERR_OK.
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
 */
-int prog (Token *token) {
-
-	expecting_end = 0;
-	expecting_else = 0;
+int prog (Token *token, tStack *endElseStack) {
 
 	// Pravidlo 1: <prog> -> <stat_list> EOF
 
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0) {
-			return stat_list(token);
+			return stat_list(token, endElseStack);
 		}
 		else if (strcmp(token->attribute, "if") == 0) {
-			return stat_list(token);
+			return stat_list(token, endElseStack);
 		}
 		else if (strcmp(token->attribute, "while") == 0) {
-			return stat_list(token);
+			return stat_list(token, endElseStack);
 		}
 		else if (strcmp(token->attribute, "print") == 0) {
-			return stat_list(token);
+			return stat_list(token, endElseStack);
 		}
 		else {
 			return ERR_SYNTAX;
@@ -48,7 +105,7 @@ int prog (Token *token) {
 
 	}
 	else if (token->type == IDENTIFIER) {
-		return stat_list(token);
+		return stat_list(token, endElseStack);
 	}
 	else if (token->type == EOF) {
 		return ERR_OK;
@@ -60,93 +117,85 @@ int prog (Token *token) {
 	Funkcia pre stav <stat_list>.
 	
 	Statement list musí začínať kľúčovým slovom alebo musí byť prázdny.
-	V prípade, že prijatý token je typu KEYWORD a má vhodný atribút, 
+	V prípade, že prijatý token je typu KEYWORD a má vhodný atribút alebo je typu IDENTIFIER
 	prechádza sa do stavu <stat>.
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
 */
-int stat_list (Token *token) {
+int stat_list (Token *token, tStack *endElseStack) {
 
 	// Pravidlo 2: <stat_list> -> <stat> EOL <stat_list>
 
 	if (token->type == KEYWORD) {
-		if (strcmp(token->attribute, "def") == 0) {
-			if (stat(token) == ERR_OK) {
+		if (strcmp(token->attribute, "def") == 0  &&  StackEmpty (endElseStack)) {	//Definícia funkcie sa nemôže nachádzať v zložených príkazoch ani v tele inej funkcie
+			if (stat(token, endElseStack) == ERR_OK) {
 				get_next_token(token);
 
 				if (token->type == EOL) {
 					get_next_token(token);
 
-					return stat_list(token);
+					return stat_list(token, endElseStack);
 				}
 			}
 		}
 		else if (strcmp(token->attribute, "if") == 0) {
-			if (stat(token) == ERR_OK) {
+			if (stat(token, endElseStack) == ERR_OK) {
 				get_next_token(token);
 
 				if (token->type == EOL) {
 					get_next_token(token);
 
-					return stat_list(token);
+					return stat_list(token, endElseStack);
 				}
 			}
 		}
 		else if (strcmp(token->attribute, "while") == 0) {
-			if (stat(token) == ERR_OK) {
+			if (stat(token, endElseStack) == ERR_OK) {
 				get_next_token(token);
 
 				if (token->type == EOL) {
 					get_next_token(token);
 
-					return stat_list(token);
+					return stat_list(token, endElseStack);
 				}
 			}
 		}
 		else if (strcmp(token->attribute, "print") == 0) {
-			if (stat(token) == ERR_OK) {
+			if (stat(token, endElseStack) == ERR_OK) {
 				get_next_token(token);
 
 				if (token->type == EOL) {
 					get_next_token(token);
 
-					return stat_list(token);
+					return stat_list(token, endElseStack);
 				}
 			}
 		}
-		else if (strcmp(token->attribute, "end") == 0) {
-			if (expecting_end > 0) {	//Kontrola, či sa v kóde očakáva END
-				expecting_end--;		//Ak áno, počítadlo očakávaných END-ov sa dekrementuje
-				//a vracia sa návratová hodnota ERR_OK
-				return ERR_OK;			//Ak by táto kontrola nebola vykonaná, program by akceptoval
-			}							//END a ELSE aj mimo If-ov atď.
-			else return ERR_SYNTAX;
-		}
-		else if (strcmp(token->attribute, "else") == 0) {
-			if (expecting_else > 0) {
-				expecting_else--;
+		else if (strcmp(token->attribute, "end") == 0  &&  StackTop (endElseStack) == END) {
+			StackPop (endElseStack);
 
-				return ERR_OK;
-			}
-			else return ERR_SYNTAX;
+			return ERR_OK;
 		}
-		else {
-			return ERR_SYNTAX;
+		else if (strcmp(token->attribute, "else") == 0  &&  StackTop (endElseStack) == ELSE) {
+			StackPop (endElseStack);
+
+			return ERR_OK;
 		}
+		else return ERR_SYNTAX;
 
 	}
 	else if (token->type == IDENTIFIER) {
-		if (stat(token) == ERR_OK) {
+		if (stat(token, endElseStack) == ERR_OK) {
 			get_next_token(token);
 
 			if (token->type == EOL) {
 				get_next_token(token);
 
-				return stat_list(token);
+				return stat_list(token, endElseStack);
 			}
 		}
 	}
 	else if (token->type == EOF) {
-		if (!expecting_end && !expecting_else) {
+		if (StackEmpty(endElseStack)) {
 			return ERR_OK;
 		}
 		else return ERR_SYNTAX;
@@ -154,113 +203,110 @@ int stat_list (Token *token) {
 	else return ERR_SYNTAX;
 }
 
+
 /*
 	Funkcia pre stav <stat>.
 	
 	Statement musí začínať kľúčovým slovom alebo identifikátorom.
 */
-int stat (Token *token) {
+int stat (Token *token, tStack *endElseStack) {
 
 	// Pravidlo 3: <stat> -> DEF ID ( <params> ) EOL <stat_list> END 
+	if (token->type == KEYWORD) {
+		if (strcmp(token->attribute, "def") == 0) {
+			get_next_token(token);
 
-	if (token->attribute == KEYWORD_DEF) {
-		get_next_token(token);
+			if (token->type == IDENTIFIER) {
+				get_next_token(token);
 
-		if (token->type == IDENTIFIER) {
+				if (token->type == LEFT_ROUND_BRACKET) {
+					get_next_token(token);
+
+					// Pravidlo 10: <params> -> epsilon
+
+					if (token->type == RIGHT_ROUND_BRACKET) {
+						get_next_token(token);	
+					}
+					else {
+						if (params(token) == ERR_OK) {
+							get_next_token(token);
+						}
+						else return ERR_SYNTAX;
+					}
+
+					if (token->type == EOL) {
+						get_next_token(token);
+						StackPush (endElseStack, END);
+
+						return stat_list(token, endElseStack);
+					}
+				}
+			}
+		}	
+	
+
+		// Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END
+
+		else if (strcmp(token->attribute, "if") == 0) {
+			get_next_token(token);
+
+			if (expr(token) == ERR_OK) {
+				get_next_token(token);
+
+				if (token->attribute == "then") {
+					get_next_token(token);
+
+					if (token->type == EOL) {
+						get_next_token(token);
+						StackPush (endElseStack, ELSE);
+
+						if (stat_list(token, endElseStack) == ERR_OK) {	//ELSE a END sa kontrolujú vo funkcii stat_list.
+							get_next_token(token);
+							StackPush (endElseStack, END);
+
+							return stat_list(token, endElseStack);		
+						}
+					}
+				}
+			}
+		}
+
+
+		// Pravidlo 5: WHILE <expr> DO EOL <stat_list> END
+
+		else if (strcmp(token->attribute, "while") == 0) {
+			get_next_token(token);
+
+			if (expr(token) == ERR_OK) {
+				get_next_token(token);
+
+				if (token->attribute == "do") {
+					get_next_token(token);
+
+					if (token->type == EOL) {
+						get_next_token(token);
+						StackPush (endElseStack, END);
+
+						return stat_list(token, endElseStack);
+					}
+				}
+			}
+		}
+	
+		// Pravidlo 6: PRINT ( <arg> )
+
+		else if (strcmp(token->attribute, "print") == 0) {
 			get_next_token(token);
 
 			if (token->type == LEFT_ROUND_BRACKET) {
 				get_next_token(token);
 
-				// Pravidlo 10: <params> -> epsilon
-
-				if (token->type == RIGHT_ROUND_BRACKET) {
-					get_next_token(token);	
-				}
-				else {
-					if (params(token) == ERR_OK) {
-						get_next_token(token);
-					}
-					else return ERR_SYNTAX;
-				}
-
-				if (token->type == EOL) {
+				if (arg(token) == ERR_OK) {
 					get_next_token(token);
-					expecting_end++;
 
-					return stat_list(token);
-				}
-			}
-		}
-	}
-	
-
-	// Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END
-
-	else if (token->attribute == "if") {
-		get_next_token(token);
-
-		if (expr(token) == ERR_OK) {
-			get_next_token(token);
-
-			if (token->attribute == "then") {
-				get_next_token(token);
-
-				if (token->type == EOL) {
-					get_next_token(token);
-					if (expecting_end > 0) {
-						expecting_end = -expecting_end;
+					if (token->type == RIGHT_ROUND_BRACKET) {
+						return ERR_OK;
 					}
-					expecting_else++;
-
-					if (stat_list(token) == ERR_OK) {	//ELSE a END sa kontrolujú vo funkcii stat_list.
-						get_next_token(token);
-
-						return stat_list(token);		
-					}
-				}
-			}
-		}
-	}
-
-
-	// Pravidlo 5: WHILE <expr> DO EOL <stat_list> END
-
-	else if (token->attribute == "while") {
-		get_next_token(token);
-
-		if (expr(token) == ERR_OK) {
-			get_next_token(token);
-
-			if (token->attribute == "do") {
-				get_next_token(token);
-
-				if (token->type == EOL) {
-					get_next_token(token);
-					expecting_end++;
-					if (expecting_else > 0){
-						expecting_else = -expecting_else;
-					}
-
-					return stat_list(token);
-				}
-			}
-		}
-	}
-
-	// Pravidlo 6: PRINT ( <arg> )
-
-	else if (token->type == IDENTIFIER && token->attribute == "print") {
-		get_next_token(token);
-
-		if (token->type == LEFT_ROUND_BRACKET) {
-			get_next_token(token);
-
-			if (arg(token) == ERR_OK) {
-				get_next_token(token);
-
-				if (token->type == RIGHT_ROUND_BRACKET) {
-					return ERR_OK;
 				}
 			}
 		}

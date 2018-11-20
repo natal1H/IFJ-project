@@ -10,19 +10,36 @@
 			Zmenit osetrovanie END a ELSE (asi na stack)
 */
 
-/*
-	Počítadlá pre očakávané kľúčové slová END a ELSE
-*/
-//int 	expecting_end = 0,
-//        expecting_else = 0;
-int 	expecting_end;
-int     expecting_else;
+typedef enum tdata {
+	ELSE, END
+} tData;
 
-int prog (Token *token);
+typedef struct tselem {
+	tData data;
+	struct tselem *nextPtr;
+} tSElem;
 
-int stat_list (Token *token);
+typedef struct tstack {
+	tSElem *topPtr;
+} tStack;
 
-int stat (Token *token);
+void StackInit (tStack *stack);
+
+void StackPush (tStack *stack, tData data);
+
+void StackPop (tStack *stack);
+
+tData StackTop (tStack *stack);
+
+bool StackEmpty (tStack *stack);
+
+void StackDispose (tStack *stack);
+
+int prog (Token *token, tStack *endElseStack);
+
+int stat_list (Token *token, tStack *endElseStack);
+
+int stat (Token *token, tStack *endElseStack);
 
 int params (Token *token);
 

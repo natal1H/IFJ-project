@@ -16,11 +16,12 @@ int main() {
 
 
     Token *token =  token_initialize();
-
     int ret = get_next_token(token);
+    tStack *endElseStack;
+    StackInit(endElseStack);
 
     if (ret != EOF && ret != ERR_SCANNER) {
-        int ret = prog(token);
+        int ret = prog(token, endElseStack);
         printf("%d\n", ret);
     }
 
