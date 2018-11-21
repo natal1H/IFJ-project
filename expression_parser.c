@@ -1,8 +1,67 @@
 //--------------INCLUDE--------------
 #include "expression_parser.h"
-#include "scanner.h"
+//#include "scanner.h"
 #include "stringlib.h"
 # include <stdio.h>
+
+
+
+const char precedenceTable[table_size][table_size]= {
+      //    0      1    2     3     4     5     6     7     8    9     10    11     12   13    14    15    16    17    18    19    20      21       22    23    24
+      //  unary-  not   *     /    div   mod   and    +     -    or    xor    =     <>    <    <=     >    >=    in     (    )     ID   function  array   ,      $
+        { '<'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '#' , '>' }, //unary  0
+        { '<'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // not   1
+        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // *     2
+        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // /     3
+        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // div   4
+        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // mod   5
+        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // and   6
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // +     7
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // -     8
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // or    9
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // xor   10
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // =     11
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <>    12
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <     13
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <=    14
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // >     15
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // >=    16
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // in    17
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' ,   '<'   ,  '<' , '=' , '#' }, // (     18
+        { '#'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '#' , '>' , '#' ,   '#'   ,  '#' , '>' , '>' }, // )     19
+        { '#'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '#' , '>' , '#' ,   '#'   ,  '#' , '>' , '>' }, // ID    20
+        { '#'  , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '=' , '#' , '#' ,   '#'   ,  '#' , '#' , '#' }, // func  21
+        { '#'  , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '=' , '#' , '#' ,   '#'   ,  '#' , '#' , '#' }, // array 22
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' ,   '<'   ,  '<' , '=' , '#' }, // ,     23
+        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '#' , '<' ,   '<'   ,  '<' , '#' , '#' }, // $     24
+};
+
+int TransformTable[22] = {
+             no_operation_pTable,       //0
+             id_pTable,                 //1
+             id_pTable,                 //2
+             id_pTable,                 //3
+             no_operation_pTable,       //4
+             no_operation_pTable,       //5
+             no_operation_pTable,       //6
+             addition_pTable,           //7
+             multiplication_pTable,     //8
+             substraction_pTable,       //9
+             division_pTable,           //10
+             less_pTable,               //11
+             less_or_equals_pTable,     //12
+             greater_pTable,            //13
+             grater_or_equals_pTable,   //14
+             equals_pTable,             //15
+             not_equals_pTable,         //16
+             left_round_bracket_pTable, //17
+             right_round_bracket_pTable,//18
+             comma_pTable,              //19
+             dollar_pTable,             //20
+             no_operation_pTable        //21
+};
+
+
 
 /* -------------------------------------------------------------------------- */
 void InitStack (tStackP *S)
@@ -214,7 +273,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
                 } else {
 
                     //Pokym je vacsia priorita
-                    while (precedence_table[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '>') {
+                    while (precedenceTable[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '>') {
 
                         //Ak sa token na zasobniku nerovna '(' alebo ')'
                         //Zatvorky nepushujeme do vysledneho vyrazu!
@@ -232,7 +291,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
 //                          PushStack(stack, ExprList->Act->Token);
 //                      }
                     }
-                    if(precedence_table[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '=' ){
+                    if(precedenceTable[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '=' ){
                         PopStack(stack);
 //                    } else if (1) {
                     } else {
@@ -651,7 +710,7 @@ bool CallExpressionParser(Token *token) {
     //TODO ak vrati error scanner potom vratit ten error
 //    while ( ( ret = get_next_token((token = token_initialize()))) != EOF) {
     
-     while ( (token->type) != EOF) {
+     while ( (token->type) != EOL || (token->type) != KEYWORD && (strcmp(token->attribute, "do") != 0 || strcmp(token->attribute, "then") != 0)) {
          
 //                print_token(token);
 
@@ -676,7 +735,7 @@ bool CallExpressionParser(Token *token) {
     // po skončení práce uvoľni miesto po read_string
 //    tstring_free_struct(read_string);
 
-    return MainSyntaxStatus;
+    return !MainSyntaxStatus;
 }
 
 
