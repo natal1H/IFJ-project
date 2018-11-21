@@ -128,10 +128,14 @@ int stat_list (Token *token, tStack *endElseStack) {
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0  &&  StackEmpty (endElseStack)) {	//Definícia funkcie sa nemôže nachádzať v zložených príkazoch ani v tele inej funkcie
 			if (stat(token, endElseStack) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				if (token->type == EOL) {
-					get_next_token(token);
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					return stat_list(token, endElseStack);
 				}
@@ -139,10 +143,14 @@ int stat_list (Token *token, tStack *endElseStack) {
 		}
 		else if (strcmp(token->attribute, "if") == 0) {
 			if (stat(token, endElseStack) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				if (token->type == EOL) {
-					get_next_token(token);
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					return stat_list(token, endElseStack);
 				}
@@ -150,10 +158,14 @@ int stat_list (Token *token, tStack *endElseStack) {
 		}
 		else if (strcmp(token->attribute, "while") == 0) {
 			if (stat(token, endElseStack) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				if (token->type == EOL) {
-					get_next_token(token);
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					return stat_list(token, endElseStack);
 				}
@@ -161,10 +173,14 @@ int stat_list (Token *token, tStack *endElseStack) {
 		}
 		else if (strcmp(token->attribute, "print") == 0) {
 			if (stat(token, endElseStack) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				if (token->type == EOL) {
-					get_next_token(token);
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					return stat_list(token, endElseStack);
 				}
@@ -185,10 +201,14 @@ int stat_list (Token *token, tStack *endElseStack) {
 	}
 	else if (token->type == IDENTIFIER) {
 		if (stat(token, endElseStack) == ERR_OK) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			if (token->type == EOL) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				return stat_list(token, endElseStack);
 			}
@@ -214,28 +234,40 @@ int stat (Token *token, tStack *endElseStack) {
 	// Pravidlo 3: <stat> -> DEF ID ( <params> ) EOL <stat_list> END 
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			if (token->type == IDENTIFIER) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				if (token->type == LEFT_ROUND_BRACKET) {
-					get_next_token(token);
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					// Pravidlo 10: <params> -> epsilon
 
 					if (token->type == RIGHT_ROUND_BRACKET) {
-						get_next_token(token);	
+						if (get_next_token(token) == ERR_SCANNER) {
+							return ERR_SCANNER;
+						}	
 					}
 					else {
 						if (params(token) == ERR_OK) {
-							get_next_token(token);
+							if (get_next_token(token) == ERR_SCANNER) {
+								return ERR_SCANNER;
+							}
 						}
 						else return ERR_SYNTAX;
 					}
 
 					if (token->type == EOL) {
-						get_next_token(token);
+						if (get_next_token(token) == ERR_SCANNER) {
+							return ERR_SCANNER;
+						}
 						StackPush (endElseStack, END);
 
 						return stat_list(token, endElseStack);
@@ -248,20 +280,30 @@ int stat (Token *token, tStack *endElseStack) {
 		// Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END
 
 		else if (strcmp(token->attribute, "if") == 0) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			if (expr(token) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
-				if (token->attribute == "then") {
-					get_next_token(token);
+				if (strcmp(token->attribute, "then") == 0) {
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					if (token->type == EOL) {
-						get_next_token(token);
+						if (get_next_token(token) == ERR_SCANNER) {
+							return ERR_SCANNER;
+						}
 						StackPush (endElseStack, ELSE);
 
 						if (stat_list(token, endElseStack) == ERR_OK) {	//ELSE a END sa kontrolujú vo funkcii stat_list.
-							get_next_token(token);
+							if (get_next_token(token) == ERR_SCANNER) {
+								return ERR_SCANNER;
+							}
 							StackPush (endElseStack, END);
 
 							return stat_list(token, endElseStack);		
@@ -275,16 +317,24 @@ int stat (Token *token, tStack *endElseStack) {
 		// Pravidlo 5: WHILE <expr> DO EOL <stat_list> END
 
 		else if (strcmp(token->attribute, "while") == 0) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			if (expr(token) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
-				if (token->attribute == "do") {
-					get_next_token(token);
+				if (strcmp(token->attribute, "do") == 0) {
+					if (get_next_token(token) == ERR_SCANNER) {
+						return ERR_SCANNER;
+					}
 
 					if (token->type == EOL) {
-						get_next_token(token);
+						if (get_next_token(token) == ERR_SCANNER) {
+							return ERR_SCANNER;
+						}
 						StackPush (endElseStack, END);
 
 						return stat_list(token, endElseStack);
@@ -293,21 +343,19 @@ int stat (Token *token, tStack *endElseStack) {
 			}
 		}
 	
-		// Pravidlo 6: PRINT ( <arg> )
+		// Pravidlo 6: PRINT ( <arg> ) ;   Pravá zátvorka je kontrolovaná vo funkcii arg_next
 
 		else if (strcmp(token->attribute, "print") == 0) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			if (token->type == LEFT_ROUND_BRACKET) {
-				get_next_token(token);
-
-				if (arg(token) == ERR_OK) {
-					get_next_token(token);
-
-					if (token->type == RIGHT_ROUND_BRACKET) {
-						return ERR_OK;
-					}
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
 				}
+
+				return arg(token);
 			}
 		}
 	}
@@ -315,7 +363,9 @@ int stat (Token *token, tStack *endElseStack) {
 	// Pravidlo 7: ID <after_id>
 
 	else if (token->type == IDENTIFIER) {
-		get_next_token(token);
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 
 		return after_id(token);
 	}
@@ -328,7 +378,9 @@ int params (Token *token) {
 	// Pravidlo 8: <params> -> ID <params_next>
 
 	if (token->type == IDENTIFIER) {
-		get_next_token(token);
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 
 		return params_next(token);
 	}
@@ -341,10 +393,14 @@ int params_next (Token *token) {
 	// Pravidlo 10: <params_next> -> , ID <params_next>
 
 	if (token->type == COMMA) {
-		get_next_token(token);
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 
 		if (token->type == IDENTIFIER) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			return params_next(token);
 		}
@@ -376,10 +432,14 @@ int arg_next (Token *token) {
 
 	// Pravidlo 14: <arg_next> -> , <value> <arg_next>
 
-	get_next_token(token);
+	if (get_next_token(token) == ERR_SCANNER) {
+		return ERR_SCANNER;
+	}
 
 	if (token->type == COMMA) {
-		get_next_token(token);
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 
 		if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
 				(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
@@ -403,7 +463,9 @@ int after_id (Token *token) {
 	// Pravidlo 16: <after_id> -> ( <arg> )
 
 	if (token->type == LEFT_ROUND_BRACKET) {
-		get_next_token(token);
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 
 		// Pravidlo 13: <arg> -> epsilon
 
@@ -413,7 +475,9 @@ int after_id (Token *token) {
 		}
 		else {
 			if (arg(token) == ERR_OK) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				return ERR_OK;
 			}
@@ -445,10 +509,14 @@ int def_value (Token *token) {
 	// Pravidlo 20: <def_value> -> ID ( <arg> )
 
 	else if (token->type == IDENTIFIER) {
-		get_next_token(token);
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 
 		if (token->type == LEFT_ROUND_BRACKET) {
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 
 			if (token->type == RIGHT_ROUND_BRACKET) {
 				return ERR_OK;
@@ -484,15 +552,15 @@ int value (Token *token) {
 			return ERR_OK;
 			break;
 
-		//case NIL:
-		//	return ERR_OK;
-		//	break;
-
 		case IDENTIFIER:
-			get_next_token(token);
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 			
 			if (token->type == LEFT_ROUND_BRACKET) {
-				get_next_token(token);
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
 
 				if (token->type == RIGHT_ROUND_BRACKET) {
 					return ERR_OK;
