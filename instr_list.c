@@ -24,6 +24,37 @@ void listFree(tListOfInstr *L) {
     }
 }
 
+void listInsertPostActive(tListOfInstr *L, tInstr *I) {
+    if (L->active == NULL) {
+        // Chyba - nevie, kde pridať
+        return ;
+    }
+
+    tListItem *newItem;
+    newItem = malloc(sizeof (tListItem));
+
+    newItem->Instruction = tInstr_create(I->instType, I->addr1, I->addr2, I->addr3);
+    if (newItem->Instruction == NULL) {
+        // Chyba
+        return ;
+    }
+
+    if (L->active == L->last) {
+        // Vložiť za poslednú
+        L->last->nextItem=newItem;
+        L->last = newItem;
+        L->active = L->last; // presuň aktivitu automaticky ďalej
+    }
+    else {
+        // Vložiť niekde do stredu zoznamu
+        newItem->nextItem = L->active->nextItem;
+        L->active->nextItem = newItem;
+        L->active = L->active->nextItem; // Presuň aktivitu automaticky ďalej
+    }
+
+
+}
+
 void listInsertLast(tListOfInstr *L, tInstr *I) {
     tListItem *newItem;
     newItem = malloc(sizeof (tListItem));
@@ -65,6 +96,24 @@ tInstr *listGetData(tListOfInstr *L) {
         return NULL;
     }
     else return (L->active->Instruction);
+}
+
+tInstr *tInstr_init() {
+    // Alokovanie miesta
+    tInstr *i = (tInstr *) malloc(sizeof(tInstr));
+    if (i == NULL) {
+        return NULL;
+    }
+
+    // Nastavenie typu
+    i->instType = I_UNDEFINED;
+
+    // Nastavenie počiatočných adries na NULL
+    i->addr1 = NULL;
+    i->addr2 = NULL;
+    i->addr3 = NULL;
+
+    return i;
 }
 
 tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *addr3) {
@@ -328,6 +377,83 @@ void tInst_free_instruction(tInstr *I) {
         free(I->addr3);
         free(I);
     }
+}
+
+int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, char *addr2, char *addr3) {
+    if (instr == NULL) {
+        return -1; // TODO vhodný chybový kód dať
+    }
+
+    // Nastavenie nového typu
+    instr->instType = type;
+
+    // Nastavenie addr1
+    if (addr1 != NULL) {
+        // Pozrieť či predtým niečo bolo na addr1
+        if (instr->addr1 != NULL) {
+            // uvoľniť a znovu alokovať
+            // TODO - lepšie použiť realloc?
+            free(instr->addr1);
+        }
+        instr->addr1 = malloc(sizeof(char) * strlen(addr1));
+        if (instr->addr1 == NULL) {
+            // Chyba - nepodarilo sa alokovať
+            return -1; // TODO vhodný chybový kód dať
+        }
+        strcpy(instr->addr1, addr1);
+    }
+    else {
+        if (instr->addr1 != NULL) {
+            free(instr->addr1);
+        }
+        instr->addr1 = NULL;
+    }
+
+    // Nastavenie addr2
+    if (addr2 != NULL) {
+        // Pozrieť či predtým niečo bolo na addr2
+        if (instr->addr2 != NULL) {
+            // uvoľniť a znovu alokovať
+            // TODO - lepšie použiť realloc?
+            free(instr->addr2);
+        }
+        instr->addr2 = malloc(sizeof(char) * strlen(addr2));
+        if (instr->addr2 == NULL) {
+            // Chyba - nepodarilo sa alokovať
+            return -1; // TODO vhodný chybový kód dať
+        }
+        strcpy(instr->addr2, addr2);
+    }
+    else {
+        if (instr->addr2 != NULL) {
+            free(instr->addr1);
+        }
+        instr->addr2 = NULL;
+    }
+
+    // Nastavenie addr3
+    if (addr3 != NULL) {
+        // Pozrieť či predtým niečo bolo na addr3
+        if (instr->addr3 != NULL) {
+            // uvoľniť a znovu alokovať
+            // TODO - lepšie použiť realloc?
+            free(instr->addr3);
+        }
+        instr->addr3 = malloc(sizeof(char) * strlen(addr3));
+        if (instr->addr3 == NULL) {
+            // Chyba - nepodarilo sa alokovať
+            return -1; // TODO vhodný chybový kód dať
+        }
+        strcpy(instr->addr3, addr3);
+    }
+    else {
+        if (instr->addr3 != NULL) {
+            free(instr->addr3);
+        }
+        instr->addr3 = NULL;
+    }
+
+    return ERR_OK;
 }
 
 /*
