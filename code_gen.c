@@ -9,7 +9,6 @@ int code_gen_start() {
     curr_instr = tInstr_init();
 
     // Vložiť prvú inštrukciu - obyčajný komentár
-
     return ERR_OK;
 }
 
@@ -24,6 +23,19 @@ int code_gen_end() {
     return ERR_OK;
 }
 
+char *get_string_with_prefix(char *str, char *prefix) {
+    char *str_complete = malloc(sizeof(char) * (strlen(str) + strlen(prefix)));
+    if (str_complete == NULL) {
+        // Chyba
+        return NULL;
+    }
+
+    strcpy(str_complete, prefix);
+    strcat(str_complete, str);
+
+    return str_complete;
+}
+
 int gen_add_int(char *var_name, char *symbol1, char *symbol2, bool global) {
     if (var_name == NULL || symbol1 == NULL || symbol2 == NULL) {
         // Chyba
@@ -31,31 +43,13 @@ int gen_add_int(char *var_name, char *symbol1, char *symbol2, bool global) {
     }
 
     // Pred var a pred symboly dať predponu
-    // alokovať miesto pre reťazce aj s predponami
-    char *var_complete = malloc(sizeof(char) * (strlen(var_name) + VAR_PREFIX_LEN));
-    char *symbol1_complete = malloc(sizeof(char) * (strlen(symbol1) + INT_PREFIX_LEN));
-    char *symbol2_complete = malloc(sizeof(char) * (strlen(symbol2) + INT_PREFIX_LEN));
+    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@" : "LF@") );
+    char *symbol1_complete = get_string_with_prefix(symbol1, "int@" );
+    char *symbol2_complete = get_string_with_prefix(symbol2, "int@" );
     if (var_complete == NULL || symbol1_complete == NULL || symbol2_complete == NULL) {
         // Chyba pri alokácii
         return -1;
     }
-    // Pridanie predpôn
-    // VAR NAME
-    if (global) {
-        // Global Frame - GF
-        strcpy(var_complete, "GF@");
-    }
-    else {
-        // Local Frame - LF
-        strcpy(var_complete, "LF@");
-    }
-    strcat(var_complete, var_name);
-    // SYMBOL 1
-    strcpy(symbol1_complete, "int@");
-    strcat(symbol1_complete, symbol1);
-    // SYMBOL 2
-    strcpy(symbol2_complete, "int@");
-    strcat(symbol2_complete, symbol2);
 
     // Nastaviť správne aktuálnu inštrukciu
     tInstr_set_instruction(curr_instr, I_ADD, var_complete, symbol1_complete, symbol2_complete);
@@ -81,9 +75,9 @@ int main() {
     listInsertLast(&instr_list, first_instr);
     listFirst(&instr_list);
 
-    gen_add_int("a", "10", "42", true);
+    //gen_add_int("a", "10", "42", true);
 
-    tInstr_print_single_instruction(curr_instr);
+    //tInstr_print_single_instruction(curr_instr);
 
     list_print_instructions(&instr_list);
 

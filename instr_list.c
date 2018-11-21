@@ -25,10 +25,12 @@ void listFree(tListOfInstr *L) {
 }
 
 void listInsertPostActive(tListOfInstr *L, tInstr *I) {
+    /*
     if (L->active == NULL) {
         // Chyba - nevie, kde pridať
         return ;
     }
+    */
 
     tListItem *newItem;
     newItem = malloc(sizeof (tListItem));
@@ -39,17 +41,27 @@ void listInsertPostActive(tListOfInstr *L, tInstr *I) {
         return ;
     }
 
-    if (L->active == L->last) {
+    if (L->first == NULL) {
+        // Prázdny zoznam ešte, tak nech pridá na začiatok
+        L->first = newItem;
+        newItem->nextItem = NULL;
+        L->first = L->last;
+        //L->active = newItem; // aktivita na prvý prvok
+        listFirst(L);
+    }
+    else if (L->active == L->last) {
         // Vložiť za poslednú
         L->last->nextItem=newItem;
         L->last = newItem;
-        L->active = L->last; // presuň aktivitu automaticky ďalej
+        //L->active = L->last; // presuň aktivitu automaticky ďalej
+        listNext(L);
     }
     else {
         // Vložiť niekde do stredu zoznamu
         newItem->nextItem = L->active->nextItem;
         L->active->nextItem = newItem;
-        L->active = L->active->nextItem; // Presuň aktivitu automaticky ďalej
+        //L->active = L->active->nextItem; // Presuň aktivitu automaticky ďalej
+        listNext(L);
     }
 
 
