@@ -630,6 +630,54 @@ bool MainSyntaxCheck(tDLList *ExprList) {
     }
 }
 
+bool CallExpressionParser(Token *token) {
+
+    printf("EXPRS PARSER TEST\n");
+//    freopen("input.txt","r",stdin);
+
+//    // inicializuj scanner najprv cez scanner_initialize()
+//    if ( scanner_initialize() != 0 ) {
+//        // chyba pri inicializácii
+//        printf("Chyba pri inicializácii scannera");
+//        return -1; // TODO return actual error code
+//    }
+
+
+//    Token *token =  token_initialize();
+//    expressionPtr Expr = InitExpression();
+    tDLList *ExprArray = malloc(sizeof(tDLList));
+
+    int ret = 0;
+    //TODO ak vrati error scanner potom vratit ten error
+//    while ( ( ret = get_next_token((token = token_initialize()))) != EOF) {
+    
+     while ( (token->type) != EOF) {
+         
+//                print_token(token);
+
+
+        LoadToBuffer(token, ExprArray);
+        //        token_free(token);
+    }
+    bool MainSyntaxStatus = false;
+    MainSyntaxStatus = MainSyntaxCheck(ExprArray);
+
+    //        printf("RET: %d\n", ret);
+//        print_token(token);
+//        if (token->type == INTEGER) {
+//            printf("integer\n");
+//        }
+//        token_free(token);
+//        first_negative_number = false; //Po vypisani vzdy nasleduje druhy znak, navzdy false
+//    }
+
+//    token_free(token);
+
+    // po skončení práce uvoľni miesto po read_string
+//    tstring_free_struct(read_string);
+
+    return MainSyntaxStatus;
+}
 
 
 
