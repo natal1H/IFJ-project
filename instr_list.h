@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 typedef enum {
     // Práca s rámcami, volanie funkcií
     I_MOVE,
@@ -17,7 +20,7 @@ typedef enum {
     I_LT, I_GT, I_EQ,
     I_LTS, I_GTS, I_EQS,
     I_AND, I_OR, I_NOT,
-    I_ANDS, I_ORS, I_NOTS
+    I_ANDS, I_ORS, I_NOTS,
     I_INT2FLOAT, I_FLOAT2INT, I_INT2CHAR, I_STRI2INT,
     I_INT2FLOATS, I_FLOAT2INTS, I_INT2CHARS, I_STRI2INTS,
     // Vstupno-výstupné inštrukcie
@@ -42,13 +45,13 @@ typedef enum {
 
 typedef struct {
     tInstruction_type instType;  // typ instrukce
-    void *addr1; // adresa 1
-    void *addr2; // adresa 2
-    void *addr3; // adresa 3
+    char *addr1; // adresa 1
+    char *addr2; // adresa 2
+    char *addr3; // adresa 3
 } tInstr;
 
 typedef struct listItem {
-    tInstr Instruction;
+    tInstr *Instruction;
     struct listItem *nextItem;
 } tListItem;
 
@@ -60,9 +63,13 @@ typedef struct {
 
 void listInit(tListOfInstr *L);
 void listFree(tListOfInstr *L);
-void listInsertLast(tListOfInstr *L, tInstr I);
+void listInsertLast(tListOfInstr *L, tInstr *I);
 void listFirst(tListOfInstr *L);
 void listNext(tListOfInstr *L);
 void listGoto(tListOfInstr *L, void *gotoInstr);
 void *listGetPointerLast(tListOfInstr *L);
 tInstr *listGetData(tListOfInstr *L);
+tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *addr3);
+void tInstr_print_single_instruction(tInstr *I);
+void list_print_instructions(tListOfInstr *L);
+void tInst_free_instruction(tInstr *I);
