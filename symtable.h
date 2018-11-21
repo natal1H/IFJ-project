@@ -21,6 +21,7 @@ typedef struct {
     bool defined;
     struct tBSTNode *function_table;
     int params;
+    TString *value;
 } tDataNode;
 
 typedef struct tBSTNode{
@@ -44,6 +45,8 @@ int symbol_table_define_variable_or_function(tBSTNodePtr table, char *id);
 tBSTNodePtr symbol_table_get_function_table(tBSTNodePtr global_table, char *id);
 void symbol_table_set_variable_type(tBSTNodePtr function_table, char *id, tDataType type);
 tBSTNodePtr symbol_table_create_local_table(tBSTNodePtr *function_node);
+char *symbol_table_get_variable_value(tBSTNodePtr local_table, char *id);
+int symbol_table_set_variable_value(tBSTNodePtr *rootPtr, char *id, char *value);
 
 void Print_tree(tBSTNodePtr TempTree);
 void Print_tree2(tBSTNodePtr TempTree, char* sufix, char fromdir);

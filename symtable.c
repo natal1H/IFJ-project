@@ -32,6 +32,14 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
             newPtr->data->defined = data->defined;
             newPtr->data->function_table = data->function_table;
 
+            // Alokovať a uložiť value
+            newPtr->data->value = tstring_struct_initialize();
+            if (newPtr->data->value == NULL) {
+                // Chyba
+                return ERR_INTERNAL;
+            }
+            tstring_add_line(newPtr->data->value, data->value->string);
+
             // Parametre
             // Inicializovať dynamický string TString
 
@@ -57,6 +65,10 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
             (*rootPtr)->data->type = data->type;
             (*rootPtr)->data->function_table = data->function_table;
             (*rootPtr)->data->params = data->params;
+
+            // Prepísanie value
+            tstring_clear_string((*rootPtr)->data->value);
+            tstring_add_line((*rootPtr)->data->value, data->value->string);
         }
     }
 
@@ -105,6 +117,8 @@ void ReplaceByRightmost (tBSTNodePtr ptrReplaced, tBSTNodePtr *rootPtr) {
         tBSTNodePtr temp = (*rootPtr);
         (*rootPtr) = (*rootPtr)->lPtr;
 
+        tstring_free_struct(temp->data->value);
+        free(temp->data);
         free(temp);
     }
     else {
@@ -137,6 +151,7 @@ void BSTDelete (tBSTNodePtr *rootPtr, char *id) {
             (*rootPtr) = (*rootPtr)->lPtr;
 
             // Vymazanie uzlu
+            tstring_free_struct(temp->data->value);
 
             free(temp->data);
             free(temp->id);
@@ -148,6 +163,8 @@ void BSTDelete (tBSTNodePtr *rootPtr, char *id) {
             (*rootPtr) = (*rootPtr)->rPtr;
 
             // Vymazanie uzlu
+            tstring_free_struct(temp->data->value);
+
             free(temp->data);
             free(temp->id);
             free(temp);
@@ -164,6 +181,8 @@ void BSTDispose(tBSTNodePtr *rootPtr) {
         BSTDispose( &(*rootPtr)->lPtr );
         BSTDispose( &(*rootPtr)->rPtr );
 
+        // Uvoľni value
+        tstring_free_struct((*rootPtr)->data->value);
 
         // Uvoľni dáta
         free((*rootPtr)->data);
@@ -312,6 +331,36 @@ tBSTNodePtr symbol_table_create_local_table(tBSTNodePtr *function_node) {
     return local_table;
 }
 
+char *symbol_table_get_variable_value(tBSTNodePtr local_table, char *id) {
+    tDataNode *data;
+    bool found = BSTSearch(local_table, id, &data);
+    if (!found) {
+        // Nenájdená premená
+        return NULL;
+    }
+    else {
+        // nájdená premenná - vráť hodnotu
+        return data->value->string;
+    }
+}
+
+int symbol_table_set_variable_value(tBSTNodePtr *rootPtr, char *id, char *value) {
+    tDataNode *data;
+    bool found = BSTSearch((*rootPtr), id, &data);
+    if (!found) {
+        // Nenájdená premenná
+        return -1;
+    }
+    else {
+        // Nájdená premenná - nastav hodnotu
+        tstring_clear_string(data->value);
+        tstring_add_line(data->value, value);
+        return ERR_OK;
+
+    }
+}
+
+/*
 int main() {
 
     tBSTNodePtr myTree;
@@ -321,6 +370,9 @@ int main() {
     data.function_table = NULL;
     data.type = 42;
     data.defined = true;
+    TString *str = tstring_struct_initialize();
+    tstring_add_line(str, "text");
+    data.value = str;
 
 
     data.params = 2;
@@ -340,7 +392,13 @@ int main() {
     par = symbol_table_get_params(myTree, "hello");
     printf("%d\n", par);
 
+    char *text = symbol_table_get_variable_value(myTree, "hello");
+    printf("%s\n", text);
+
     BSTDispose(&myTree);
+
+    tstring_free_struct(str);
 
     return 0;
 }
+ */
