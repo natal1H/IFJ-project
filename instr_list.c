@@ -41,30 +41,26 @@ void listInsertPostActive(tListOfInstr *L, tInstr *I) {
         return ;
     }
 
-    if (L->first == NULL) {
+    if (L->active == NULL) {
+        printf("TU SOM!\n");
         // Prázdny zoznam ešte, tak nech pridá na začiatok
         L->first = newItem;
-        newItem->nextItem = NULL;
-        L->first = L->last;
-        //L->active = newItem; // aktivita na prvý prvok
+        L->first->nextItem = NULL;
+        L->last = L->first;
         listFirst(L);
     }
     else if (L->active == L->last) {
         // Vložiť za poslednú
         L->last->nextItem=newItem;
         L->last = newItem;
-        //L->active = L->last; // presuň aktivitu automaticky ďalej
         listNext(L);
     }
     else {
         // Vložiť niekde do stredu zoznamu
         newItem->nextItem = L->active->nextItem;
         L->active->nextItem = newItem;
-        //L->active = L->active->nextItem; // Presuň aktivitu automaticky ďalej
         listNext(L);
     }
-
-
 }
 
 void listInsertLast(tListOfInstr *L, tInstr *I) {
@@ -219,7 +215,7 @@ void tInstr_print_single_instruction(tInstr *I) {
             printf("%s", "ADD");
             break;
         case I_SUB:
-            printf("%s", "SUBS");
+            printf("%s", "SUB");
             break;
         case I_MUL:
             printf("%s", "MUL");
