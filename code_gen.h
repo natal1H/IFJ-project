@@ -36,6 +36,12 @@
     int gen_float2int(char *var_name, char *symbol, bool global);
     int gen_int2char(char *var_name, char *symbol, bool global);
     int gen_stri2int(char *var_name, char *symbol1, char *symbol2, bool global);
+    // Vstupno výstupné inštrukcie
+    // TODO - doplniť
+    // Práca s reťazcami
+    int gen_concat(char *var_name, char *symbol1, char *symbol2, bool global);
+    int gen_strlen(char *var_name, char *symbol, bool global);
+    int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global);
 
     // Ďalšie pomocné funkcie
     char *get_string_with_prefix(char *str, char *prefix);

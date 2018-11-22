@@ -140,6 +140,18 @@ int gen_stri2int(char *var_name, char *symbol1, char *symbol2, bool global) {
     return add_instruction_with_2_symbols(I_STRI2INT, var_name, symbol1, symbol2, "string@", "int@", global);
 }
 
+int gen_concat(char *var_name, char *symbol1, char *symbol2, bool global) {
+    return add_instruction_with_2_symbols(I_CONCAT, var_name, symbol1, symbol2, "string@", "string@", global);
+}
+
+int gen_strlen(char *var_name, char *symbol, bool global) {
+    return add_instruction_with_1_symbol(I_STRLEN, var_name, symbol, "string@", global);
+}
+
+int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global) {
+    return add_instruction_with_2_symbols(I_SETCHAR, var_name, symbol1, symbol2, "string@", "int@", global);
+}
+
 // test
 /*
 int main() {
@@ -171,4 +183,4 @@ int main() {
 
     return 0;
 }
- */
+*/
