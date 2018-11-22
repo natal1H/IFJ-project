@@ -34,6 +34,7 @@
         COMMA,               //19
         EOL,                 //20
         TYPE_EOF,            //21
+        LEX_ERROR,           //22
     } Token_Type;
 
     typedef enum keyword {
@@ -46,7 +47,7 @@
         KEYWORD_NOT,    //5
         KEYWORD_NIL,    //6
         KEYWORD_THEN,   //7
-        KEYWORD_WHILE   //8
+        KEYWORD_WHILE,  //8
     } Keyword;
 
     typedef struct token {
@@ -99,7 +100,9 @@
         Q_FLOAT_2, // xe / xE
         Q_FLOAT_3, // xe+ / xE+ / xe- / xE-
 
-        Q_STRING
+        Q_STRING,
+
+        F_LEX_ERROR // Lexikálna chyba
     } TState;
 
     // Reťazec, do ktorého sa bude načítavať
