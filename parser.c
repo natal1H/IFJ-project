@@ -1,77 +1,24 @@
 #include "parser.h"
+#include "scanner.h"
+#include <stdio.h>
+#include <stdbool.h>
 
 /*	
 	TODO:	Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
 			<arg> pre print nesedi s gramatikou (v printe musia byt arumenty, nemoze byt epsilon)
 			pridat pravidlo <stat_list> -> epsilon
+
+			- Pri volani funkcie nemusia byt okolo argumentov zatvorky
+			- Doriesit priradovanie funkcie do premennej:
+				(ci sa bude identifikator vzdy posielat do expression p. 
+			 	 alebo sa bude pozerat do tab. symbolov)
+
 */
 
-/* ---------------------------------------
- * Funkcie pre zásobník hodnôt typu tData.
- * ---------------------------------------
- * Zásobník slúži na počítanie nedokončených zložených príkazov, zisťuje sa tak,
- * či program očakáva kľúčové slová END (alebo ELSE v prípade príkazu IF-ELSE).
- * Dodatočne, sa pomocou zásobníku kontroluje či sa môže vykonať definícia funkcie,
- * ktorá môže byť vykonaná iba mimo zložených príkazov (t.j. z8sobník musí byť prázdny).
- */
 
-void StackInit (tStack *stack) {
-	stack->topPtr = NULL;
-}
-
-void StackPush (tStack *stack, tData data) {
-	tSElem *newElemPtr = (tSElem *) malloc(sizeof(tSElem));
-
-	if (newElemPtr != NULL) {
-		newElemPtr->data = data;
-		newElemPtr->nextPtr = stack->topPtr;
-		stack->topPtr = newElemPtr;
-	}
-	else {
-		fprintf (stderr, "Chyba pri alokácii pamäte.");
-		exit (ERR_INTERNAL);
-	}
-}
-
-void StackPop (tStack *stack) {
-	tSElem *elemPtr;
-
-	if (stack->topPtr != NULL) {
-		elemPtr = stack->topPtr;
-		stack->topPtr = stack->topPtr->nextPtr;
-		free (elemPtr);
-	}
-	else {
-		fprintf (stderr, "Chyba: Podtečenie zásobníku.");
-		exit (ERR_INTERNAL);
-	}
-}
-
-tData StackTop (tStack *stack) {
-	if (stack->topPtr != NULL) {
-		return (stack->topPtr->data);
-	}
-	else {
-		fprintf (stderr, "Chyba: Získavanie hodnoty prvku z prázndeho zásobíku");
-		exit (ERR_INTERNAL);
-	}
-}
-
-bool StackEmpty (tStack *stack) {
-	return (stack->topPtr == NULL);
-}
-
-void StackDispose (tStack *stack) {
-	tSElem *elemPtr;
-
-	while (stack->topPtr != NULL) {
-		elemPtr = stack->topPtr;
-		stack->topPtr = stack->topPtr->nextPtr;
-		free (elemPtr);
-	}
-}
-
-/* -------------------------------------------------------------------------------- */
+int depth_index = 0;
+bool in_if_or_while = false;
+bool in_def = false;
 
 /*
 	Funkcia pre stav <prog>.
@@ -82,22 +29,19 @@ void StackDispose (tStack *stack) {
 	V prípade, že prijatý token je EOF, preklad sa končí s návratovou hodnotou ERR_OK.
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
 */
-int prog (Token *token, tStack *endElseStack) {
+int prog (Token *token) {
 
 	// Pravidlo 1: <prog> -> <stat_list> EOF
 
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0) {
-			return stat_list(token, endElseStack);
+			return stat_list(token);
 		}
 		else if (strcmp(token->attribute, "if") == 0) {
-			return stat_list(token, endElseStack);
+			return stat_list(token);
 		}
 		else if (strcmp(token->attribute, "while") == 0) {
-			return stat_list(token, endElseStack);
-		}
-		else if (strcmp(token->attribute, "print") == 0) {
-			return stat_list(token, endElseStack);
+			return stat_list(token);
 		}
 		else {
 			return ERR_SYNTAX;
@@ -105,9 +49,9 @@ int prog (Token *token, tStack *endElseStack) {
 
 	}
 	else if (token->type == IDENTIFIER) {
-		return stat_list(token, endElseStack);
+		return stat_list(token);
 	}
-	else if (token->type == EOF) {
+	else if (token->type == TYPE_EOF) {
 		return ERR_OK;
 	}
 	else return ERR_SYNTAX;
@@ -121,28 +65,27 @@ int prog (Token *token, tStack *endElseStack) {
 	prechádza sa do stavu <stat>.
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
 */
-int stat_list (Token *token, tStack *endElseStack) {
+int stat_list (Token *token) {
 
 	// Pravidlo 2: <stat_list> -> <stat> EOL <stat_list>
 
 	if (token->type == KEYWORD) {
-		if (strcmp(token->attribute, "def") == 0  &&  StackEmpty (endElseStack)) {	//Definícia funkcie sa nemôže nachádzať v zložených príkazoch ani v tele inej funkcie
-			if (stat(token, endElseStack) == ERR_OK) {
+		if (strcmp(token->attribute, "def") == 0  && !in_if_or_while && !in_def) {	//Definícia funkcie sa nemôže nachádzať v zložených príkazoch ani v tele inej funkcie
+			if (stat(token) == ERR_OK) {
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
 				}
-
 				if (token->type == EOL) {
 					if (get_next_token(token) == ERR_SCANNER) {
 						return ERR_SCANNER;
 					}
 
-					return stat_list(token, endElseStack);
+					return stat_list(token);
 				}
 			}
 		}
 		else if (strcmp(token->attribute, "if") == 0) {
-			if (stat(token, endElseStack) == ERR_OK) {
+			if (stat(token) == ERR_OK) {
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
 				}
@@ -152,12 +95,12 @@ int stat_list (Token *token, tStack *endElseStack) {
 						return ERR_SCANNER;
 					}
 
-					return stat_list(token, endElseStack);
+					return stat_list(token);
 				}
 			}
 		}
 		else if (strcmp(token->attribute, "while") == 0) {
-			if (stat(token, endElseStack) == ERR_OK) {
+			if (stat(token) == ERR_OK) {
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
 				}
@@ -167,40 +110,23 @@ int stat_list (Token *token, tStack *endElseStack) {
 						return ERR_SCANNER;
 					}
 
-					return stat_list(token, endElseStack);
+					return stat_list(token);
 				}
 			}
 		}
-		else if (strcmp(token->attribute, "print") == 0) {
-			if (stat(token, endElseStack) == ERR_OK) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
-
-				if (token->type == EOL) {
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
-
-					return stat_list(token, endElseStack);
-				}
+		else if (strcmp(token->attribute, "end") == 0) {
+			if (in_if_or_while || in_def) {
+				return ERR_OK;
 			}
 		}
-		else if (strcmp(token->attribute, "end") == 0  &&  StackTop (endElseStack) == END) {
-			StackPop (endElseStack);
-
-			return ERR_OK;
+		else if (strcmp(token->attribute, "else") == 0) {
+			if (in_if_or_while) {
+				return ERR_OK;
+			}
 		}
-		else if (strcmp(token->attribute, "else") == 0  &&  StackTop (endElseStack) == ELSE) {
-			StackPop (endElseStack);
-
-			return ERR_OK;
-		}
-		else return ERR_SYNTAX;
-
 	}
 	else if (token->type == IDENTIFIER) {
-		if (stat(token, endElseStack) == ERR_OK) {
+		if (stat(token) == ERR_OK) {
 			if (get_next_token(token) == ERR_SCANNER) {
 				return ERR_SCANNER;
 			}
@@ -210,17 +136,18 @@ int stat_list (Token *token, tStack *endElseStack) {
 					return ERR_SCANNER;
 				}
 
-				return stat_list(token, endElseStack);
+				return stat_list(token);
 			}
 		}
 	}
-	else if (token->type == EOF) {
-		if (StackEmpty(endElseStack)) {
+	else if (token->type == TYPE_EOF) {
+		if (depth_index == 0) {
+
 			return ERR_OK;
 		}
-		else return ERR_SYNTAX;
 	}
-	else return ERR_SYNTAX;
+	
+	return ERR_SYNTAX;
 }
 
 
@@ -229,7 +156,7 @@ int stat_list (Token *token, tStack *endElseStack) {
 	
 	Statement musí začínať kľúčovým slovom alebo identifikátorom.
 */
-int stat (Token *token, tStack *endElseStack) {
+int stat (Token *token) {
 
 	// Pravidlo 3: <stat> -> DEF ID ( <params> ) EOL <stat_list> END 
 	if (token->type == KEYWORD) {
@@ -261,21 +188,28 @@ int stat (Token *token, tStack *endElseStack) {
 								return ERR_SCANNER;
 							}
 						}
-						else return ERR_SYNTAX;
 					}
 
 					if (token->type == EOL) {
 						if (get_next_token(token) == ERR_SCANNER) {
 							return ERR_SCANNER;
 						}
-						StackPush (endElseStack, END);
 
-						return stat_list(token, endElseStack);
+						depth_index++;
+						in_def = true;
+
+						if (stat_list(token) == ERR_OK) {
+							if (token->type == KEYWORD && strcmp(token->attribute, "end") == 0){
+								depth_index--;
+								in_def = false;
+
+								return ERR_OK;
+							}
+						}
 					}
 				}
 			}
 		}	
-	
 
 		// Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END
 
@@ -284,7 +218,7 @@ int stat (Token *token, tStack *endElseStack) {
 				return ERR_SCANNER;
 			}
 
-			if (expr(token) == ERR_OK) {
+			if (1 /*CallExpressionParser(token) == ERR_OK*/) {
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
 				}
@@ -298,21 +232,36 @@ int stat (Token *token, tStack *endElseStack) {
 						if (get_next_token(token) == ERR_SCANNER) {
 							return ERR_SCANNER;
 						}
-						StackPush (endElseStack, ELSE);
+						
+						depth_index++;
+						in_if_or_while = true;
 
-						if (stat_list(token, endElseStack) == ERR_OK) {	//ELSE a END sa kontrolujú vo funkcii stat_list.
-							if (get_next_token(token) == ERR_SCANNER) {
-								return ERR_SCANNER;
-							}
-							StackPush (endElseStack, END);
+						if (stat_list(token) == ERR_OK) {
+							if (strcmp(token->attribute, "else") == 0) {
+								if (get_next_token(token) == ERR_SCANNER) {
+									return ERR_SCANNER;
+								}
 
-							return stat_list(token, endElseStack);		
+								if (token->type == EOL) {
+									if (get_next_token(token) == ERR_SCANNER) {
+										return ERR_SCANNER;
+									}
+
+									if (stat_list(token) == ERR_OK) {
+										if (strcmp(token->attribute, "end") == 0) {
+											depth_index--;
+											if (depth_index == 0 || (in_def && depth_index == 1)) in_if_or_while = false;
+
+											return ERR_OK;
+										}
+									}
+								}
+							}	
 						}
 					}
 				}
 			}
 		}
-
 
 		// Pravidlo 5: WHILE <expr> DO EOL <stat_list> END
 
@@ -321,10 +270,11 @@ int stat (Token *token, tStack *endElseStack) {
 				return ERR_SCANNER;
 			}
 
-			if (expr(token) == ERR_OK) {
+			if (1 /*CallExpressionParser(token) == ERR_OK*/) {
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
 				}
+				
 
 				if (strcmp(token->attribute, "do") == 0) {
 					if (get_next_token(token) == ERR_SCANNER) {
@@ -335,27 +285,19 @@ int stat (Token *token, tStack *endElseStack) {
 						if (get_next_token(token) == ERR_SCANNER) {
 							return ERR_SCANNER;
 						}
-						StackPush (endElseStack, END);
+						depth_index++;
+						in_if_or_while = true;
 
-						return stat_list(token, endElseStack);
+						if (stat_list(token) == ERR_OK) {
+							if (strcmp(token->attribute, "end") == 0) {
+								depth_index--;
+								if (depth_index == 0 || (in_def && depth_index == 1)) in_if_or_while = false;
+
+								return ERR_OK;
+							}
+						}
 					}
 				}
-			}
-		}
-	
-		// Pravidlo 6: PRINT ( <arg> ) ;   Pravá zátvorka je kontrolovaná vo funkcii arg_next
-
-		else if (strcmp(token->attribute, "print") == 0) {
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-
-			if (token->type == LEFT_ROUND_BRACKET) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
-
-				return arg(token);
 			}
 		}
 	}
@@ -363,13 +305,15 @@ int stat (Token *token, tStack *endElseStack) {
 	// Pravidlo 7: ID <after_id>
 
 	else if (token->type == IDENTIFIER) {
+
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}
 
 		return after_id(token);
 	}
-	else return ERR_SYNTAX;
+
+	return ERR_SYNTAX;
 }
 
 
@@ -384,7 +328,8 @@ int params (Token *token) {
 
 		return params_next(token);
 	}
-	else return ERR_SYNTAX;
+	
+	return ERR_SYNTAX;
 }
 
 
@@ -404,7 +349,6 @@ int params_next (Token *token) {
 
 			return params_next(token);
 		}
-		else return ERR_SYNTAX;
 	}
 
 	// Pravidlo 11: <params_next> -> epsilon
@@ -412,7 +356,8 @@ int params_next (Token *token) {
 	else if (token->type == RIGHT_ROUND_BRACKET) {
 		return ERR_OK;
 	}
-	else return ERR_SYNTAX;
+
+	return ERR_SYNTAX;
 }
 
 
@@ -420,9 +365,8 @@ int arg (Token *token) {
 
 	// Pravidlo 12: <arg> -> <value> <arg_next>
 
-	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
-			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
-		return (value(token) && arg_next(token));
+	if (value(token) == ERR_OK && arg_next(token) == ERR_OK) {
+		return ERR_OK;
 	}
 	else return ERR_SYNTAX;
 }
@@ -432,21 +376,14 @@ int arg_next (Token *token) {
 
 	// Pravidlo 14: <arg_next> -> , <value> <arg_next>
 
-	if (get_next_token(token) == ERR_SCANNER) {
-		return ERR_SCANNER;
-	}
-
 	if (token->type == COMMA) {
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}
-
-		if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
-				(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
-
+		
+		if (value(token) == ERR_OK) {
 			return arg_next(token);
 		}
-		else return ERR_SYNTAX;
 	}
 
 	// Pravidlo 15: <arg_next> -> epsilon
@@ -454,7 +391,8 @@ int arg_next (Token *token) {
 	else if (token->type == RIGHT_ROUND_BRACKET) {
 		return ERR_OK;
 	}
-	else return ERR_SYNTAX;
+
+	return ERR_SYNTAX;
 }
 
 
@@ -473,34 +411,31 @@ int after_id (Token *token) {
 			return ERR_OK;
 
 		}
-		else {
-			if (arg(token) == ERR_OK) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
-
-				return ERR_OK;
-			}
-			else return ERR_SYNTAX;
+		else if (arg(token) == ERR_OK) {
+			return ERR_OK;
 		}
 	}
 
 	// Pravidlo 17: <after_id> = <def_value>
 
 	else if (token->type == ASSIGN) {
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
+
 		return def_value(token);
 	}
-	else return ERR_SYNTAX;
+	
+	return ERR_SYNTAX;
 }
 
 
 int def_value (Token *token) {
 
 	// Pravidlo 18: <def_value> -> <value>
-
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
-			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 ) || token->type == IDENTIFIER) {
-		return value(token);
+			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
+		return ERR_OK;
 	}
 
 	// Pravidlo 19: <def_value> -> <expr>
@@ -525,9 +460,10 @@ int def_value (Token *token) {
 		}
 	}
 	else if (token->type == LEFT_ROUND_BRACKET) {
-		return expr(token);
+		return CallExpressionParser(token);
 	}
-	else return ERR_SYNTAX;
+	
+	return ERR_SYNTAX;
 }
 
 
@@ -536,19 +472,31 @@ int value (Token *token) {
 	//Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID
 
 	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
 		return ERR_OK;
 	}
 
 	switch (token->type) {
 		case INTEGER:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 			return ERR_OK;
 			break;
 		
 		case FLOAT:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 			return ERR_OK;
 			break;
 
 		case STRING:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
 			return ERR_OK;
 			break;
 
@@ -567,15 +515,10 @@ int value (Token *token) {
 				}
 				else return arg(token);
 			}
-				return ERR_OK;
-				break;
+			else return ERR_OK;
+			break;
 
 		default:
 			return ERR_SYNTAX;
 	}
-}
-
-// TODO odstrániť keď bude analýza výrazov
-int expr (Token *token) {
-	return ERR_OK;
 }

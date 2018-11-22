@@ -14,14 +14,11 @@ int main() {
         return ERR_INTERNAL;
     }
 
-
     Token *token =  token_initialize();
     int ret = get_next_token(token);
-    tStack *endElseStack;
-    StackInit(endElseStack);
 
-    if (ret != EOF && ret != ERR_SCANNER) {
-        int ret = prog(token, endElseStack);
+    if (ret != ERR_SCANNER) {
+        int ret = prog(token);
         printf("%d\n", ret);
     }
 

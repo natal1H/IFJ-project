@@ -1,5 +1,9 @@
+#ifndef _PARSER_H
+#define _PARSER_H
+
 #include "scanner.h"
 #include "error.h"
+#include "expression_parser.h"
 
 #include <string.h>
 
@@ -10,36 +14,11 @@
 			Zmenit osetrovanie END a ELSE (asi na stack)
 */
 
-typedef enum tdata {
-	ELSE, END
-} tData;
+int prog (Token *token);
 
-typedef struct tselem {
-	tData data;
-	struct tselem *nextPtr;
-} tSElem;
+int stat_list (Token *token);
 
-typedef struct tstack {
-	tSElem *topPtr;
-} tStack;
-
-void StackInit (tStack *stack);
-
-void StackPush (tStack *stack, tData data);
-
-void StackPop (tStack *stack);
-
-tData StackTop (tStack *stack);
-
-bool StackEmpty (tStack *stack);
-
-void StackDispose (tStack *stack);
-
-int prog (Token *token, tStack *endElseStack);
-
-int stat_list (Token *token, tStack *endElseStack);
-
-int stat (Token *token, tStack *endElseStack);
+int stat (Token *token);
 
 int params (Token *token);
 
@@ -55,5 +34,4 @@ int def_value (Token *token);
 
 int value (Token *token);
 
-// TODO odstrániť keď bude analýza výrazov
-int expr (Token *token);
+#endif
