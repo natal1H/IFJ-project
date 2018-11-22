@@ -12,7 +12,6 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
         tBSTNodePtr newPtr = (tBSTNodePtr) malloc(sizeof(struct tBSTNode));
         if (newPtr != NULL) {
             // Podarilo sa alokovať miesto
-
             // ID
             newPtr->id = (char *) malloc(sizeof(char) * strlen(id));
             if (newPtr == NULL) {
@@ -27,6 +26,7 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
                 // Chyba
                 return ERR_INTERNAL;
             }
+
             // Uložiť obsah data
             newPtr->data->type = data->type;
             newPtr->data->defined = data->defined;
@@ -38,7 +38,9 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
                 // Chyba
                 return ERR_INTERNAL;
             }
-            tstring_add_line(newPtr->data->value, data->value->string);
+            if (data->value != NULL) {
+                tstring_add_line(newPtr->data->value, data->value->string);
+            }
 
             // Parametre
             // Inicializovať dynamický string TString
@@ -277,6 +279,7 @@ int symbol_table_define_variable_or_function(tBSTNodePtr table, char *id) {
             data->type = T_UNDEFINED;
             data->function_table = NULL;
             data->params = -1;
+            data->value = NULL;
 
             if (BSTInsert(&table, id, data) == ERR_INTERNAL) {
                 // Chyba
@@ -360,6 +363,26 @@ int symbol_table_set_variable_value(tBSTNodePtr *rootPtr, char *id, char *value)
     }
 }
 
+tBSTNodePtr symbol_table_get_variable_node(tBSTNodePtr rootPtr, char *id) {
+
+    if (rootPtr == NULL) {
+        return NULL;
+    }
+    else {
+        if (strcmp(rootPtr->id,id) == 0) {
+            return rootPtr;
+        }
+        else {
+            if (strcmp(rootPtr->id, id) > 0) {
+                return (symbol_table_get_variable_node( rootPtr->lPtr, id));
+            }
+            else {
+                return (symbol_table_get_variable_node( rootPtr->rPtr, id));
+            }
+        }
+    }
+}
+
 /*
 int main() {
 
@@ -383,8 +406,15 @@ int main() {
     bool found = BSTSearch(myTree, "hello", &myData);
     printf("%d\n", found);
 
+    symbol_table_define_variable_or_function(myTree, "var");
 
     Print_tree(myTree);
+
+    symbol_table_set_variable_value(&myTree, "var", "MY_VALUE");
+    tBSTNodePtr myPtr = symbol_table_get_variable_node(myTree, "var");
+    if (myPtr->data->value != NULL) {
+        printf("My val: %s\n", myPtr->data->value->string);
+    }
 
     int par = symbol_table_get_params(myTree, "hello");
     printf("%d\n", par);
@@ -401,4 +431,4 @@ int main() {
 
     return 0;
 }
- */
+*/
