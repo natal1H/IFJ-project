@@ -4,14 +4,17 @@
 #include <stdbool.h>
 
 /*	
-	TODO:	Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
-			<arg> pre print nesedi s gramatikou (v printe musia byt arumenty, nemoze byt epsilon)
-			pridat pravidlo <stat_list> -> epsilon
+	TODO:	Gramatika: - Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
+			   - <arg> pre print nesedi s gramatikou (v printe musia byt arumenty, nemoze byt epsilon)
+			   - pridat pravidlo <stat_list> -> epsilon
+			   - vymazat stav <value> (nahradeny <expr>)
 
-			- Pri volani funkcie nemusia byt okolo argumentov zatvorky
-			- Doriesit priradovanie funkcie do premennej:
-				(ci sa bude identifikator vzdy posielat do expression p. 
-			 	 alebo sa bude pozerat do tab. symbolov)
+		Kod: - Pri volani funkcie nemusia byt okolo argumentov zatvorky
+		     - Doriesit priradovanie do premennej:
+			(semanticka anlyza pozrie ci je identifikator 
+			 v lokalnej tabulke symbolov(premenna) alebo
+			 v globalnej tabulke symbolov(funkcia).
+			 Ak je v lokalnej, vola sa expression parser.)
 
 */
 
@@ -127,10 +130,6 @@ int stat_list (Token *token) {
 	}
 	else if (token->type == IDENTIFIER) {
 		if (stat(token) == ERR_OK) {
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-
 			if (token->type == EOL) {
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
@@ -218,11 +217,7 @@ int stat (Token *token) {
 				return ERR_SCANNER;
 			}
 
-			if (1 /*CallExpressionParser(token) == ERR_OK*/) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
-
+			if (CallExpressionParser(token) == ERR_OK {
 				if (strcmp(token->attribute, "then") == 0) {
 					if (get_next_token(token) == ERR_SCANNER) {
 						return ERR_SCANNER;
@@ -270,12 +265,7 @@ int stat (Token *token) {
 				return ERR_SCANNER;
 			}
 
-			if (1 /*CallExpressionParser(token) == ERR_OK*/) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
-				
-
+			if (CallExpressionParser(token) == ERR_OK) {
 				if (strcmp(token->attribute, "do") == 0) {
 					if (get_next_token(token) == ERR_SCANNER) {
 						return ERR_SCANNER;
@@ -431,15 +421,13 @@ int after_id (Token *token) {
 
 
 int def_value (Token *token) {
+	//TODO: vid zaciatok suboru
+	// Pravidlo 19: <def_value> -> <expr>
 
-	// Pravidlo 18: <def_value> -> <value>
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
-		return ERR_OK;
+		return CallExpressionParser(token);
 	}
-
-	// Pravidlo 19: <def_value> -> <expr>
-	//	VYRAZY NIE SU OSETRENE, mozno spolu s <value>: return expr(token)
 
 	// Pravidlo 20: <def_value> -> ID ( <arg> )
 
@@ -464,61 +452,4 @@ int def_value (Token *token) {
 	}
 	
 	return ERR_SYNTAX;
-}
-
-
-int value (Token *token) {
-
-	//Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID
-
-	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
-		return ERR_OK;
-	}
-
-	switch (token->type) {
-		case INTEGER:
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-			return ERR_OK;
-			break;
-		
-		case FLOAT:
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-			return ERR_OK;
-			break;
-
-		case STRING:
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-			return ERR_OK;
-			break;
-
-		case IDENTIFIER:
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-			
-			if (token->type == LEFT_ROUND_BRACKET) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
-
-				if (token->type == RIGHT_ROUND_BRACKET) {
-					return ERR_OK;
-				}
-				else return arg(token);
-			}
-			else return ERR_OK;
-			break;
-
-		default:
-			return ERR_SYNTAX;
-	}
 }
