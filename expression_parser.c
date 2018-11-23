@@ -623,43 +623,47 @@ int CallExpressionParser(Token *token) {
 
 
 
-////Parameter vysledneho bude get_next_token
-//int main(int argc, char *argv[]) {
-//
-////    printf("EXPRS PARSER TEST\n");
-//    freopen("input.txt","r",stdin);
-//
-//    // inicializuj scanner najprv cez scanner_initialize()
-//    int ScannerErrorCheck = 0;
-//    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
-//        return ScannerErrorCheck;
-//    }
-//
-//    Token *token;
-//    tDLList *ExprArray = malloc(sizeof(tDLList));
-//
-//    while ( !((ScannerErrorCheck = get_next_token((token = token_initialize()))) == EOL ||
-//             ((token->type) == KEYWORD && strcmp(token->attribute, "do") == 0) ||
-//             ((token->type) == KEYWORD && strcmp(token->attribute, "then") == 0))) {
-//
-//        if(ScannerErrorCheck != 0){
-//            return ScannerErrorCheck;
-//        }
-//        LoadToBuffer(token, ExprArray);
-//    }
-//
-//    bool MainSyntaxStatus = false;
-//    MainSyntaxStatus = MainSyntaxCheck(ExprArray);
-//
-//    FreeBuffer(ExprArray);
-//    tstring_free_struct(read_string);
-//
-//    //true = error
-//    if(MainSyntaxStatus == true){
-//        printf ("\nMainSyntaxStatus %d \n", ERR_SYNTAX);
-//        return ERR_SYNTAX;
-//    } else{
-//        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
-//        return ERR_OK;
-//    }
-//}
+//Parameter vysledneho bude get_next_token
+int main(int argc, char *argv[]) {
+
+//    printf("EXPRS PARSER TEST\n");
+    freopen("input.txt","r",stdin);
+
+    // inicializuj scanner najprv cez scanner_initialize()
+    int ScannerErrorCheck = 0;
+    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+        return ScannerErrorCheck;
+    }
+
+    Token *token;
+    tDLList *ExprArray = malloc(sizeof(tDLList));
+
+
+    ScannerErrorCheck = get_next_token((token = token_initialize()));
+    while   (token->type != EOL &&
+            (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
+             token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
+
+        if(ScannerErrorCheck != 0){
+            return ScannerErrorCheck;
+        }
+        LoadToBuffer(token, ExprArray);
+        ScannerErrorCheck =  get_next_token(token = token_initialize());
+    }
+
+    bool MainSyntaxStatus = false;
+    MainSyntaxStatus = MainSyntaxCheck(ExprArray);
+
+    FreeBuffer(ExprArray);
+    tstring_free_struct(read_string);
+
+    //true = error
+    if(MainSyntaxStatus == true){
+        printf ("\nMainSyntaxStatus %d \n", ERR_SYNTAX);
+        return ERR_SYNTAX;
+    } else{
+        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
+        return ERR_OK;
+    }
+    return ERR_OK;
+}
