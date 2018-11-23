@@ -600,6 +600,10 @@ int CallExpressionParser(Token *token) {
 
 
     ScannerErrorCheck = get_next_token((token = token_initialize()));
+    if(ScannerErrorCheck != 0){
+        return ScannerErrorCheck;
+    }
+
     while   (token->type != EOL &&
              (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
               token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
@@ -642,6 +646,10 @@ int CallExpressionParser(Token *token) {
 //
 //
 //    ScannerErrorCheck = get_next_token((token = token_initialize()));
+//    if(ScannerErrorCheck != 0){
+//        return ScannerErrorCheck;
+//    }
+//
 //    while   (token->type != EOL &&
 //            (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
 //             token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
@@ -667,5 +675,4 @@ int CallExpressionParser(Token *token) {
 //        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
 //        return ERR_OK;
 //    }
-//    return ERR_OK;
 //}
