@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "scanner.h"
+#include "expression_parser.h"
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -217,7 +218,7 @@ int stat (Token *token) {
 				return ERR_SCANNER;
 			}
 
-			if (CallExpressionParser(token) == ERR_OK {
+			if (CallExpressionParser(token) == ERR_OK) {
 				if (strcmp(token->attribute, "then") == 0) {
 					if (get_next_token(token) == ERR_SCANNER) {
 						return ERR_SCANNER;
@@ -452,4 +453,54 @@ int def_value (Token *token) {
 	}
 	
 	return ERR_SYNTAX;
+}
+
+
+int value (Token *token) {
+ 	//Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID
+ 	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
+		return ERR_OK;
+	}
+ 	switch (token->type) {
+		case INTEGER:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
+			return ERR_OK;
+			break;
+		
+		case FLOAT:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
+			return ERR_OK;
+			break;
+ 		case STRING:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
+			return ERR_OK;
+			break;
+ 		case IDENTIFIER:
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
+			}
+			
+			if (token->type == LEFT_ROUND_BRACKET) {
+				if (get_next_token(token) == ERR_SCANNER) {
+					return ERR_SCANNER;
+				}
+ 				if (token->type == RIGHT_ROUND_BRACKET) {
+					return ERR_OK;
+				}
+				else return arg(token);
+			}
+			else return ERR_OK;
+			break;
+ 		default:
+			return ERR_SYNTAX;
+	}
 }
