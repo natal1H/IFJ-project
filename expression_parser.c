@@ -606,11 +606,13 @@ int CallExpressionParser(Token *token) {
              (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
               token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
 
+        LoadToBuffer(token, ExprArray);
+
+        ScannerErrorCheck =  get_next_token(token);
+
         if(ScannerErrorCheck != 0){
             return ScannerErrorCheck;
         }
-        LoadToBuffer(token, ExprArray);
-        ScannerErrorCheck =  get_next_token(token);
     }
 
 
