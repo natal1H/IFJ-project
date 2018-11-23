@@ -30,11 +30,11 @@
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------------------
  *          |            |            |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  ?  |  ?  |  ?  |  ?  |  1  |  1  |  STRING 4
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------------
- *          |            |            |  ?P |  1P |  0  |  0  |  0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  <      11
+ *          |            |            |  ?P |  1 |  0  |  0  |   0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  <      11
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------------
  *          |            |            |  ?  |  1P |  0  |  0  |  0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  <=     12
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------+-----+------------
- *          |            |            |  ?  |  1P  |  0  |  0 |  0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  >      13
+ *          |            |            |  ?  |  1P |  0  |  0  |  0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  >      13
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------------
  *          |            |            |  ?  |  1P |  0  |  0  |  0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  >=     14
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------------
@@ -43,8 +43,10 @@
  *          |            |            |  ?  |  1P |  0  |  0  |  0  |  1P |  1  |  1  |  0  |  0  |  0  |  0  |  0  |  0  |  0  |  !=     16
  *          +------------+------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+------------
  *
- *
- *
+ *  Legenda:
+ *  1  =>  Pravda
+ *  1P =>  Pravda s podmienkou
+ *  0  =>  Nepravda
  */
 
 #define SUCCESSFUL_END 23
@@ -52,35 +54,35 @@
 
 
 long long syntax_table[22][24]= {
-        //    0      1    2      3      4      5      6      7     8     9    10    11    12    13    14    15    16    17    18    19    20      21   22  23
-        // NO_TYPE   ID   INT  FLOAT  STRING KWORD  ASSIGN   +     *     -     /     <    =<     >    >=    ==    !=     (     )   COMMA  EOL     EOF   P   S | Nazov tokenu         ID_cislo
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //NO_TYPE,             //0
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    1  , 0 , 1}, //IDENTIFIER,          //1
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1}, //INTEGER,             //2
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1}, //FLOAT,               //3
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1}, //STRING,              //4
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //KEYWORD,             //5
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //ASSIGN,              //6
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //ADDITION,            //7
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //MULTIPLICATION,      //8
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //SUBTRACTION,         //9
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //DIVISION,            //10
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //LESS,                //11
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //LESS_OR_EQUALS,      //12
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //GREATER,             //13
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //GREATER_OR_EQUALS,   //14
-        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //EQUALS,              //15
-        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //NOT_EQUALS,          //16
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //LEFT_ROUND_BRACKET,  //17
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1}, //RIGHT_ROUND_BRACKET, //18
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0 ,   0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0}, //COMMA,               //19
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    1  , 0 , 1}, //EOL,                 //20
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 1}, //TYPE_EOF,            //21
-        //  ^   ^
-        //  |   |
-        //  |   +Moze skoncit vyraz?
-        //  |
-        // + Pocet(napr pocitanie zatvoriek)
+        //    0      1    2      3      4      5      6      7     8     9    10    11    12    13    14    15    16    17    18    19    20      21   22  23   |
+        // NO_TYPE  ID   INT  FLOAT  STRING  KWORD  ASSIGN  +     *     -     /     <    =<     >    >=    ==    !=     (     )   COMMA  EOL     EOF   P   S    | Nazov vstupneho tokenu   ID_cislo
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //NO_TYPE,             //0
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    1  , 0 , 1,   }, //IDENTIFIER,          //1
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,   }, //INTEGER,             //2
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,   }, //FLOAT,               //3
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,   }, //STRING,              //4
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //KEYWORD,             //5
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //ASSIGN,              //6
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //ADDITION,            //7
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //MULTIPLICATION,      //8
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //SUBTRACTION,         //9
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //DIVISION,            //10
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //LESS,                //11
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //LESS_OR_EQUALS,      //12
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //GREATER,             //13
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //GREATER_OR_EQUALS,   //14
+        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //EQUALS,              //15
+        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //NOT_EQUALS,          //16
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //LEFT_ROUND_BRACKET,  //17
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,   }, //RIGHT_ROUND_BRACKET, //18
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0 ,   0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //COMMA,               //19
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    1  , 0 , 1,   }, //EOL,                 //20
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 1,   }, //TYPE_EOF,            //21
+                                                                                                                                                   //  ^   ^
+                                                                                                                                                   //  |   |
+                                                                                                                                                   //  |   +Moze skoncit vyraz?
+                                                                                                                                                   //  |
+                                                                                                                                                   //  + Pocet prijatych(napr pocitanie zatvoriek)
 };
 
 const char precedenceTable[table_size][table_size]= {
@@ -147,48 +149,46 @@ void InitStack (tStackP *S)
 {
     S->top = 0;
 }
-
-//void PushStack (tStackP *S, char ptr)
-void PushStack (tStackP *S, struct token ptr)
-/*   ------
-** Vloží hodnotu na vrchol zásobníku.
-**/
-{
-    /* Při implementaci v poli může dojít k přetečení zásobníku. */
-    if (S->top==MAXSTACK)
-        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
-    else {
-        S->top++;
-        S->stack[S->top]=ptr;
-    }
-}
-
-//char PopStack (tStackP *S)
-struct token PopStack (tStackP *S)
-/*         --------
-** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
-**/
-{
-    /* Operace nad prázdným zásobníkem způsobí chybu. */
-    if (S->top==0)  {
-        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
-//        return(-1);
-    }
-    else {
-        return (S->stack[S->top--]);
-    }
-}
-
-bool IsStackEmpty (tStackP *S)
-/*   -------
-** Je-li zásobník prázdný, vrátí hodnotu true.
-**/
-{
-    return(S->top==0);
-}
-
-/* -------------------------------------------------------------------------- */
-
+//
+//void PushStack (tStackP *S, struct token ptr)
+///*   ------
+//** Vloží hodnotu na vrchol zásobníku.
+//**/
+//{
+//    /* Při implementaci v poli může dojít k přetečení zásobníku. */
+//    if (S->top==MAXSTACK)
+//        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+//    else {
+//        S->top++;
+//        S->stack[S->top]=ptr;
+//    }
+//}
+//
+//struct token PopStack (tStackP *S)
+///*         --------
+//** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
+//**/
+//{
+//    /* Operace nad prázdným zásobníkem způsobí chybu. */
+//    if (S->top==0)  {
+//        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+////        return(-1);
+//    }
+//    else {
+//        return (S->stack[S->top--]);
+//    }
+//}
+//
+//bool IsStackEmpty (tStackP *S)
+///*   -------
+//** Je-li zásobník prázdný, vrátí hodnotu true.
+//**/
+//{
+//    return(S->top==0);
+//}
+//
+///* -------------------------------------------------------------------------- */
+//
 void InitStackINT (tStackINT *S)
 /*   ------
 ** Inicializace zásobníku.
@@ -196,45 +196,45 @@ void InitStackINT (tStackINT *S)
 {
     S->top = 0;
 }
-
-//void PushStack (tStackP *S, char ptr)
-void PushStackINT (tStackINT *S, long ptr)
-/*   ------
-** Vloží hodnotu na vrchol zásobníku.
-**/
-{
-    /* Při implementaci v poli může dojít k přetečení zásobníku. */
-    if (S->top==MAXSTACK)
-        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
-    else {
-        S->top++;
-        S->stack[S->top]=ptr;
-    }
-}
-
-//char PopStack (tStackP *S)
-long PopStackINT (tStackINT *S)
-/*         --------
-** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
-**/
-{
-    /* Operace nad prázdným zásobníkem způsobí chybu. */
-    if (S->top==0)  {
-        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
-//        return(-1);
-    }
-    else {
-        return (S->stack[S->top--]);
-    }
-}
-
-bool IsStackEmptyINT (tStackINT *S)
-/*   -------
-** Je-li zásobník prázdný, vrátí hodnotu true.
-**/
-{
-    return(S->top==0);
-}
+//
+////void PushStack (tStackP *S, char ptr)
+//void PushStackINT (tStackINT *S, long ptr)
+///*   ------
+//** Vloží hodnotu na vrchol zásobníku.
+//**/
+//{
+//    /* Při implementaci v poli může dojít k přetečení zásobníku. */
+//    if (S->top==MAXSTACK)
+//        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+//    else {
+//        S->top++;
+//        S->stack[S->top]=ptr;
+//    }
+//}
+//
+////char PopStack (tStackP *S)
+//long PopStackINT (tStackINT *S)
+///*         --------
+//** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
+//**/
+//{
+//    /* Operace nad prázdným zásobníkem způsobí chybu. */
+//    if (S->top==0)  {
+//        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+////        return(-1);
+//    }
+//    else {
+//        return (S->stack[S->top--]);
+//    }
+//}
+//
+//bool IsStackEmptyINT (tStackINT *S)
+///*   -------
+//** Je-li zásobník prázdný, vrátí hodnotu true.
+//**/
+//{
+//    return(S->top==0);
+//}
 
 /* -------------------------------------------------------------------------- */
 
@@ -393,18 +393,22 @@ void LoadToBuffer(Token *Token, tDLList *ExprList) {
 //}
 
 
-bool FindRule(tDLList *ExprList, bool *SyntaxError, int *NumberOfLeftBracket, int *NumberOfRightBracket, int *NumberOfID, int *NumberOfOperator, bool FirstToken) {
+bool FindRule(tDLList *ExprList, bool *SyntaxError) {
 
 
 // TODO kontrola syntaxe
         bool CouldBeTokenTheLastOne = true;
+//        ExprList->Act = ExprList->Act->next;
         do{
 
 //   while ( (token->type) != EOL || (token->type) != KEYWORD && (strcmp(token->attribute, "do") != 0 || strcmp(token->attribute, "then") != 0)) {
             //syntax_table[actual token][next token]
-            if(ExprList->Act->next == NULL || syntax_table[ExprList->Act->Token.type][ExprList->Act->next->Token.type] == false){
-                *SyntaxError = true;
+            if(ExprList->Act->next != NULL) {
+                if (syntax_table[ExprList->Act->Token.type][ExprList->Act->next->Token.type] == false) {
+                    *SyntaxError = true;
+                }
             }
+
 
             //Kontrola zatvoriek
             if(ExprList->Act->Token.type == LEFT_ROUND_BRACKET){
@@ -429,6 +433,7 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError, int *NumberOfLeftBracket, in
             ExprList->Act = ExprList->Act->next;
         } while (!((ExprList->Act == NULL) || ExprList->Act->Token.type == EOL || ExprList->Act->Token.type == EOF ));
 
+        //Ak sa nerovna pocet zatvoriek alebo posledny token nemoze byt posledny vo vyraze(napriklad nemoze vyraz koncit s "+")
         if( syntax_table[LEFT_ROUND_BRACKET][COUNTER_OF_TOKEN] != syntax_table[RIGHT_ROUND_BRACKET][COUNTER_OF_TOKEN] ||
             CouldBeTokenTheLastOne == false ||
 
@@ -456,88 +461,56 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError, int *NumberOfLeftBracket, in
             //Sucet operatov musi byt parny ak neexistuje porovnavanie
             !(
 
-                     //Ak nie je pritomne porovnanie
-                    (((syntax_table[LESS][COUNTER_OF_TOKEN] + syntax_table[LESS_OR_EQUALS][COUNTER_OF_TOKEN] +
+                    //Ak nie je pritomne porovnanie
+                   (((syntax_table[LESS][COUNTER_OF_TOKEN] + syntax_table[LESS_OR_EQUALS][COUNTER_OF_TOKEN] +
                       syntax_table[GREATER][COUNTER_OF_TOKEN] + syntax_table[GREATER_OR_EQUALS][COUNTER_OF_TOKEN] +
                       syntax_table[EQUALS][COUNTER_OF_TOKEN] + syntax_table[NOT_EQUALS][COUNTER_OF_TOKEN]) == 0)
 
                             && //musi byt
 
                                       //Potom je pocet operacii neparny
-                                     ((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
-                                     syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1)&&
-                                     ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0))
+                                     (
+                                      //Priklad 1+2+3
+                                     (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
+                                        syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0)&&
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
+
+                                     || //alebo
+
+                                      //Priklad 1+2+3+4
+                                     (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
+                                        syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1)&&
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0))
+                                     )
+                   )
 
                      || //alebo
 
                     //Ak je pritomne porovnanie
                    ((((syntax_table[LESS][COUNTER_OF_TOKEN] + syntax_table[LESS_OR_EQUALS][COUNTER_OF_TOKEN] +
-                   syntax_table[GREATER][COUNTER_OF_TOKEN] + syntax_table[GREATER_OR_EQUALS][COUNTER_OF_TOKEN] +
-                   syntax_table[EQUALS][COUNTER_OF_TOKEN] + syntax_table[NOT_EQUALS][COUNTER_OF_TOKEN]) == 1))
+                       syntax_table[GREATER][COUNTER_OF_TOKEN] + syntax_table[GREATER_OR_EQUALS][COUNTER_OF_TOKEN] +
+                       syntax_table[EQUALS][COUNTER_OF_TOKEN] + syntax_table[NOT_EQUALS][COUNTER_OF_TOKEN]) == 1))
 
                             && //musi byt
 
-                                   //Sucet operacii je neparny a sucet operandov je neparny
-                                   ((((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                 syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1) &&
-                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
+                                    //Sucet operacii je neparny a sucet operandov je neparny
+                                   ((((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                             syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1) &&
+                                    ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
 
                                    || //alebo
 
                                     //Sucet operacii je parny a sucet operandov je parny
-                                   (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                  syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0) &&
-                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0))))
+                                   (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                             syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0) &&
+                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0)))
+                   )
             )
 
 
         ){
             *SyntaxError = true;
         }
-
-////    fprintf(stderr,"Syntakticka chyba, nenajdene pravidlo");
-//    *SyntaxError = true;
     return *SyntaxError;
 }
-
-
-bool Rules(tDLList *ExprList) {
-
-    if(ExprList == NULL || ExprList->First == NULL){
-        fprintf(stderr,"Chyba");
-    }
-    else {
-        if (ExprList->First->next == NULL) { //Len jedina const/ID
-            //TODO
-
-        } else {                             //Vacsi vyraz
-
-            //Inicializacia temporary
-            bool SyntaxError = false;
-            bool *SyntaxErroPtr = &SyntaxError;
-
-            bool FirstToken = true;
-            bool *FirstTokenPtr = &FirstToken;
-
-            int NumberOfLeftBrackets = 0;
-            int *NumberOfLeftBracketsPtr = &NumberOfLeftBrackets;
-
-            int NumberOfRightBrackets = 0;
-            int *NumberOfRightBracketsPtr = &NumberOfRightBrackets;
-
-            int NumberOfID = 0;
-            int *NumberOfIDPtr = &NumberOfID;
-
-            int NumberOfOperator = 0;
-            int *NumberOfOperatorPtr = &NumberOfOperator;
-
-            //Kontrolujeme syntax od zaciatku zoznamu
-            ExprList->Act = ExprList->First;
-
-            //Kontroluje syntakticke pravidla
-            return FindRule(ExprList, SyntaxErroPtr, NumberOfLeftBracketsPtr, NumberOfRightBracketsPtr, NumberOfIDPtr, NumberOfOperatorPtr, FirstTokenPtr);
-        }
-    }
-}
-
 
 bool MainSyntaxCheck(tDLList *ExprList) {
     if (ExprList == NULL) {
@@ -547,223 +520,107 @@ bool MainSyntaxCheck(tDLList *ExprList) {
         //Kontrola syntaxe vyrazu
         bool syntaxStatus = false;
 
-        tDLList *tmp;
-        tmp = ExprList;
-        tmp->Act = tmp->First;
+//        tDLList *tmp;
+//        tmp = ExprList;
+//        tmp->Act = tmp->First;
 
 
+        //Inicializacia temporary
+        bool SyntaxError = false;
+        bool *SyntaxErroPtr = &SyntaxError;
 
-        //TODO semanticka priprava
-        //Skontroluje ci sa nachadza vo vyraze iba jeden symbol
-        //Symbol moze byt == != > >= < <=
-        //Jeho miesto sa ulozi do strukturu -> rozdelenie do dvoch vyrazov
-
-        // symbol = 0 -> Ziadny symbol
-        // symbol = 1 -> Najdene '=='
-        // symbol = 2 -> Najdene '!='
-        // symbol = 3 -> Najdene '<'
-        // symbol = 4 -> Najdene '<='
-        // symbol = 5 -> Najdene '>'
-        // symbol = 6 -> Najdene '>='
-//        int symbol = 0;
-        //Pri spravnom vyraze musi byt vzdy maximalne 1!
-//        int symbolCounter = 0;
-
-//        tmp->SyntaxChecker = tmp->First;
-//        while ( !((tmp->SyntaxChecker == NULL) || tmp->SyntaxChecker->Token.type == EOL))
-//        {
-//            switch (tmp->SyntaxChecker->Token.type){
-//                case(EQUALS) : {
-////                    symbol = 1;
-//                    symbolCounter++;
-//                    tmp->Symbol = tmp->SyntaxChecker;
-//                    break;
-//                }
-//                case(NOT_EQUALS) : {
-////                    symbol = 2;
-//                    symbolCounter++;
-//                    tmp->Symbol = tmp->SyntaxChecker;
-//                    break;
-//                }
-//                case(LESS) : {
-////                    symbol = 3;
-//                    symbolCounter++;
-//                    tmp->Symbol = tmp->SyntaxChecker;
-//                    break;
-//                }
-//                case(LESS_OR_EQUALS) : {
-////                    symbol = 4;
-//                    symbolCounter++;
-//                    tmp->Symbol = tmp->SyntaxChecker;
-//                    break;
-//                }
-//                case(GREATER) : {
-////                    symbol = 5;
-//                    symbolCounter++;
-//                    tmp->Symbol = tmp->SyntaxChecker;
-//                    break;
-//                }
-//                case(GREATER_OR_EQUALS) : {
-////                    symbol = 6;
-//                    symbolCounter++;
-//                    tmp->Symbol = tmp->SyntaxChecker;
-//                    break;
-//                }
-//                default: {
-//                }
-//            }//End switch
-//            tmp->SyntaxChecker = tmp->SyntaxChecker->next;
-//        }
-
-//        if(symbolCounter > 1){
-//            fprintf(stderr, "Error");
-//            return false; //syntaxStatus
-//        }
-
-
-
-        syntaxStatus =  Rules(ExprList);
-//        printf("%d", syntaxStatus);
-
-
-
-        int static last_operation = no_operation_pTable; //TODO Nepouzivane
-
-        //Alokacia zasobnika
-        tStackP *stack = malloc(sizeof(tStackP));
-        tStackP *stackOutput = malloc(sizeof(tStackP));
-        tStackINT *stackOutputINT = malloc(sizeof(tStackINT));
-
-        //Inicializacia zasobnika
-        InitStack(stack);
-        InitStack(stackOutput);
-        InitStackINT(stackOutputINT);
-
-
-        //Rozlozenie vyrazu do postfixovej notacie
+        //Kontrolujeme syntax od zaciatku zoznamu
         ExprList->Act = ExprList->First;
-//        *stack = ParseToPostfix(ExprList, stack, stackOutput, last_operation);
-        //Re-Inicializacia(Vycistenie) zasobnika
-        InitStack(stackOutput);
 
-        //Vysledok daneho vyrazu TODO Zmenit
-//        long vysledok = 0;
-//        vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT , last_operation);
-//        printf("%ld", vysledok);
+        //Kontroluje syntakticke pravidla
+        syntaxStatus =  FindRule(ExprList, SyntaxErroPtr);
 
 
-//        *stack = UseLanguageRules(ExprList, stack, last_operation);
         return syntaxStatus;
+
+////        int static last_operation = no_operation_pTable; //TODO Nepouzivane
+//
+//        //Alokacia zasobnika
+//        tStackP *stack = malloc(sizeof(tStackP));
+//        tStackP *stackOutput = malloc(sizeof(tStackP));
+//        tStackINT *stackOutputINT = malloc(sizeof(tStackINT));
+//
+//        //Inicializacia zasobnika
+//        InitStack(stack);
+//        InitStack(stackOutput);
+//        InitStackINT(stackOutputINT);
+//
+//
+//        //Rozlozenie vyrazu do postfixovej notacie
+//        ExprList->Act = ExprList->First;
+////        *stack = ParseToPostfix(ExprList, stack, stackOutput, last_operation);
+//        //Re-Inicializacia(Vycistenie) zasobnika
+//        InitStack(stackOutput);
+//
+//        //Vysledok daneho vyrazu TODO Zmenit
+////        long vysledok = 0;
+////        vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT , last_operation);
+////        printf("%ld", vysledok);
+//
+//        free(stack);
+//        free(stackOutput);
+//        free(stackOutputINT);
+    }
+}
+
+
+/**
+ * Uvolni pamat v ktorom je nacitany vyraz
+ * @param ExprList Zoznam s vyrazom
+ */
+void FreeBuffer(tDLList *ExprList){
+    if(ExprList != NULL){
+        if(ExprList->First != NULL){
+            do {
+                ExprList->Act = ExprList->First->next;
+                free(ExprList->First);
+                ExprList->First = ExprList->Act;
+            }while(ExprList->Act != NULL);
+            free(ExprList);
+        }
     }
 }
 
 
 
+int CallExpressionParser(Token *token) {
 
+    // inicializuj scanner najprv cez scanner_initialize()
+    int ScannerErrorCheck = 0;
+    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+        return ScannerErrorCheck;
+    }
 
-//bool CallExpressionParser(Token *token) {
-//
-//    printf("EXPRS PARSER TEST\n");
-////    freopen("input.txt","r",stdin);
-//
-////    // inicializuj scanner najprv cez scanner_initialize()
-////    if ( scanner_initialize() != 0 ) {
-////        // chyba pri inicializácii
-////        printf("Chyba pri inicializácii scannera");
-////        return -1; // TODO return actual error code
-////    }
-//
-//
-////    Token *token =  token_initialize();
-////    expressionPtr Expr = InitExpression();
-//    tDLList *ExprArray = malloc(sizeof(tDLList));
-//
-//    int ret = 0;
-//    //TODO ak vrati error scanner potom vratit ten error
-////    while ( ( ret = get_next_token((token = token_initialize()))) != EOF) {
-//
-//     while ( (token->type) != EOF) {
-//
-////                print_token(token);
-//
-//
-//        LoadToBuffer(token, ExprArray);
-//        //        token_free(token);
-//    }
-//    bool MainSyntaxStatus = false;
-//    MainSyntaxStatus = MainSyntaxCheck(ExprArray);
-//
-//    //        printf("RET: %d\n", ret);
-////        print_token(token);
-////        if (token->type == INTEGER) {
-////            printf("integer\n");
-////        }
-////        token_free(token);
-////        first_negative_number = false; //Po vypisani vzdy nasleduje druhy znak, navzdy false
-////    }
-//
-////    token_free(token);
-//
-//    // po skončení práce uvoľni miesto po read_string
-////    tstring_free_struct(read_string);
-//
-//    return MainSyntaxStatus;
-//}
-
-bool CallExpressionParser(Token *token) {
-
-    printf("EXPRS PARSER TEST\n");
-//    freopen("input.txt","r",stdin);
-
-//    // inicializuj scanner najprv cez scanner_initialize()
-//    if ( scanner_initialize() != 0 ) {
-//        // chyba pri inicializácii
-//        printf("Chyba pri inicializácii scannera");
-//        return -1; // TODO return actual error code
-//    }
-
-
-//    Token *token =  token_initialize();
-//    expressionPtr Expr = InitExpression();
     tDLList *ExprArray = malloc(sizeof(tDLList));
 
-    int ret = 0;
-    //TODO ak vrati error scanner potom vratit ten error
-//    while ( ( ret = get_next_token((token = token_initialize()))) != EOF) {
 
-    while ( (token->type) != EOL || (token->type) != KEYWORD && (strcmp(token->attribute, "do") != 0 || strcmp(token->attribute, "then") != 0)) {
+    while (!((ScannerErrorCheck = get_next_token((token = token_initialize()))) == EOL ||
+             ((token->type) == KEYWORD && strcmp(token->attribute, "do") == 0) ||
+             ((token->type) == KEYWORD && strcmp(token->attribute, "then") == 0))) {
 
-//                print_token(token);
-
-
+        if(ScannerErrorCheck == ERR_INTERNAL){
+            return ERR_INTERNAL;
+        }
         LoadToBuffer(token, ExprArray);
-        //        token_free(token);
     }
+
     bool MainSyntaxStatus = false;
     MainSyntaxStatus = MainSyntaxCheck(ExprArray);
 
-    if(MainSyntaxStatus == 1){
-//        printf ("\nMainSyntaxStatus %d \n", ERR_SYNTAX);
+    //true = error
+    if (MainSyntaxStatus == true) {
         return ERR_SYNTAX;
-    } else{
-//        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
+    } else {
         return ERR_OK;
     }
-    
-    //        printf("RET: %d\n", ret);
-//        print_token(token);
-//        if (token->type == INTEGER) {
-//            printf("integer\n");
-//        }
-//        token_free(token);
-//        first_negative_number = false; //Po vypisani vzdy nasleduje druhy znak, navzdy false
-//    }
-
-//    token_free(token);
-
-    // po skončení práce uvoľni miesto po read_string
-//    tstring_free_struct(read_string);
 }
+
+
 
 
 ////Parameter vysledneho bude get_next_token
@@ -773,47 +630,36 @@ bool CallExpressionParser(Token *token) {
 //    freopen("input.txt","r",stdin);
 //
 //    // inicializuj scanner najprv cez scanner_initialize()
-//    if ( scanner_initialize() != 0 ) {
-//        // chyba pri inicializácii
-//        printf("Chyba pri inicializácii scannera");
-//        return -1; // TODO return actual error code
+//    int ScannerErrorCheck = 0;
+//    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+//        return ScannerErrorCheck;
 //    }
 //
-//
-//    Token *token =  token_initialize();
-////    expressionPtr Expr = InitExpression();
+//    Token *token;
 //    tDLList *ExprArray = malloc(sizeof(tDLList));
 //
-//    int ret = 0;
-//    //TODO ak vrati error scanner potom vratit ten error
-//    while ( ( ret = get_next_token((token = token_initialize()))) != EOF) {
-////                print_token(token);
-//        LoadToBuffer(token, ExprArray);
-//        //        token_free(token);
-//    }
-//    bool MainSyntaxStatus = false;
+//    while ( !((ScannerErrorCheck = get_next_token((token = token_initialize()))) == EOL ||
+//             ((token->type) == KEYWORD && strcmp(token->attribute, "do") == 0) ||
+//             ((token->type) == KEYWORD && strcmp(token->attribute, "then") == 0))) {
 //
+//        if(ScannerErrorCheck != 0){
+//            return ScannerErrorCheck;
+//        }
+//        LoadToBuffer(token, ExprArray);
+//    }
+//
+//    bool MainSyntaxStatus = false;
 //    MainSyntaxStatus = MainSyntaxCheck(ExprArray);
 //
-//    if(MainSyntaxStatus == 1){
-////        printf ("\nMainSyntaxStatus %d \n", ERR_SYNTAX);
+//    FreeBuffer(ExprArray);
+//    tstring_free_struct(read_string);
+//
+//    //true = error
+//    if(MainSyntaxStatus == true){
+//        printf ("\nMainSyntaxStatus %d \n", ERR_SYNTAX);
 //        return ERR_SYNTAX;
 //    } else{
-////        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
+//        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
 //        return ERR_OK;
 //    }
-//
-//    //        printf("RET: %d\n", ret);
-////        print_token(token);
-////        if (token->type == INTEGER) {
-////            printf("integer\n");
-////        }
-////        token_free(token);
-////        first_negative_number = false; //Po vypisani vzdy nasleduje druhy znak, navzdy false
-////    }
-//
-////    token_free(token);
-//
-//    // po skončení práce uvoľni miesto po read_string
-////    tstring_free_struct(read_string);
 //}
