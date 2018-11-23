@@ -590,6 +590,9 @@ void FreeBuffer(tDLList *ExprList){
 
 int CallExpressionParser(Token *token) {
 
+    //Ulozenie adresy ktoru dostanem pre zapis posledneho tokenu
+    Token *SaveMyToken = token;
+
     // inicializuj scanner najprv cez scanner_initialize()
     int ScannerErrorCheck = 0;
     if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
@@ -598,13 +601,8 @@ int CallExpressionParser(Token *token) {
 
     tDLList *ExprArray = malloc(sizeof(tDLList));
 
-
-    ScannerErrorCheck = get_next_token((token = token_initialize()));
-    if(ScannerErrorCheck != 0){
-        return ScannerErrorCheck;
-    }
-
     while   (token->type != EOL &&
+             token->type != TYPE_EOF &&
              (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
               token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
 
@@ -612,16 +610,25 @@ int CallExpressionParser(Token *token) {
             return ScannerErrorCheck;
         }
         LoadToBuffer(token, ExprArray);
-        ScannerErrorCheck =  get_next_token(token = token_initialize());
+        ScannerErrorCheck =  get_next_token(token);
     }
+
 
     bool MainSyntaxStatus = false;
     MainSyntaxStatus = MainSyntaxCheck(ExprArray);
 
+    //Zachovanie povodneho tokena
+    SaveMyToken->type = (*ExprArray->Last).Token.type;
+    SaveMyToken->attribute = (*ExprArray->Last).Token.attribute;
+
+    FreeBuffer(ExprArray);
+
     //true = error
     if (MainSyntaxStatus == true) {
+//        printf("%d", ERR_SYNTAX);
         return ERR_SYNTAX;
     } else {
+//        printf("%d", ERR_OK);
         return ERR_OK;
     }
 }
@@ -629,50 +636,23 @@ int CallExpressionParser(Token *token) {
 
 
 
-////Parameter vysledneho bude get_next_token
 //int main(int argc, char *argv[]) {
 //
-////    printf("EXPRS PARSER TEST\n");
 //    freopen("input.txt","r",stdin);
-//
-//    // inicializuj scanner najprv cez scanner_initialize()
 //    int ScannerErrorCheck = 0;
 //    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
 //        return ScannerErrorCheck;
 //    }
 //
 //    Token *token;
-//    tDLList *ExprArray = malloc(sizeof(tDLList));
+//    token = token_initialize();
 //
-//
-//    ScannerErrorCheck = get_next_token((token = token_initialize()));
+//    ScannerErrorCheck = get_next_token(token);
 //    if(ScannerErrorCheck != 0){
 //        return ScannerErrorCheck;
 //    }
 //
-//    while   (token->type != EOL &&
-//            (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
-//             token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
+//    CallExpressionParser(token);
 //
-//        if(ScannerErrorCheck != 0){
-//            return ScannerErrorCheck;
-//        }
-//        LoadToBuffer(token, ExprArray);
-//        ScannerErrorCheck =  get_next_token(token = token_initialize());
-//    }
 //
-//    bool MainSyntaxStatus = false;
-//    MainSyntaxStatus = MainSyntaxCheck(ExprArray);
-//
-//    FreeBuffer(ExprArray);
-//    tstring_free_struct(read_string);
-//
-//    //true = error
-//    if(MainSyntaxStatus == true){
-//        printf ("\nMainSyntaxStatus %d \n", ERR_SYNTAX);
-//        return ERR_SYNTAX;
-//    } else{
-//        printf ("\nMainSyntaxStatus %d \n", ERR_OK);
-//        return ERR_OK;
-//    }
 //}
