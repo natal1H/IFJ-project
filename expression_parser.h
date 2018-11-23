@@ -7,21 +7,6 @@
 #define MAXSTACK 50                      /* maximální počet prvků v zásobníku */
 
 
-
-
-//typedef struct expression{
-//    Token token;
-//    struct expression *prev;
-//    struct expression *next;
-//} *expressionPtr;
-//
-//typedef struct expressionArray{
-//    struct expression First;
-//    struct expression Last;
-//    struct expression Act;
-//}expressionArrayPtr;
-
-
 typedef struct tDLElem {                 /* prvek dvousměrně vázaného seznamu */
     struct token Token;                                            /* užitečná data */
     struct tDLElem *prev;          /* ukazatel na předchozí prvek seznamu */
@@ -46,10 +31,6 @@ typedef struct	{                          /* zásobník hodnot typu tBTNodePtr *
     int top;
 } tStackINT;
 
-//typedef struct	{                          /* zásobník hodnot typu tBTNodePtr */
-//    char stack[MAXSTACK];
-//    int top;
-//} tStackP;
 
 //------PRECEDENCE_TABLE_ENUM--------
 
@@ -82,111 +63,113 @@ typedef enum precedence_table {
     no_operation_pTable         //25
 } pTable;
 
-//int TransformTable[22] = {
-//             no_operation_pTable,       //0
-//             id_pTable,                 //1
-//             id_pTable,                 //2
-//             id_pTable,                 //3
-//             no_operation_pTable,       //4
-//             no_operation_pTable,       //5
-//             no_operation_pTable,       //6
-//             addition_pTable,           //7
-//             multiplication_pTable,     //8
-//             substraction_pTable,       //9
-//             division_pTable,           //10
-//             less_pTable,               //11
-//             less_or_equals_pTable,     //12
-//             greater_pTable,            //13
-//             grater_or_equals_pTable,   //14
-//             equals_pTable,             //15
-//             not_equals_pTable,         //16
-//             left_round_bracket_pTable, //17
-//             right_round_bracket_pTable,//18
-//             comma_pTable,              //19
-//             dollar_pTable,             //20
-//             no_operation_pTable        //21
-//};
+/**
+ * Inicializacia tokenoveho zasobnika
+ * @param S Zasobnik
+ */
+void InitStack (tStackP *S);
 
+/**
+ * Pridanie tokenu do zasobnika
+ * @param S Zasobnik
+ * @param ptr Token
+ */
+void PushStack (tStackP *S, struct token ptr);
 
+/**
+ * Ziskanie tokenu a uvolnenie tokenu zo zasobnika
+ * @param S Zasobnik
+ * @return Token zo zasobnika
+ */
+struct token PopStack (tStackP *S);
+
+/**
+ * Zisti ci je tokenovy zasobnik prazdny
+ * @param S Zasobnik
+ * @return Ak je zasobnik prazdny vrati true inak false
+ */
+bool IsStackEmpty (tStackP *S);
 
 
 /**
- * @name Precendecna tabulka priorit
- * @return "<" => nižšia priorita
- *         ">" => vyššia priorita
- *         "#" => bez priority
+ * Inicializacia integeroveho zasobnika
+ * @param S Zasobnik
  */
+void InitStackINT (tStackINT *S);
 
-
-
+/**
+ * Zistenie ci je integerovy zasobnik prazdny
+ * @param S Zasobnik
+ * @return Ak je zasobnik prazdny vrati true inak false
+ */
+bool IsStackEmptyINT (tStackINT *S);
 
 
 /**
- * Vyuziva precedence_table enum
- * enum token_type -> TransformTable[] -> precedence_table (vysledna hodnota)
+ * @param Token Vystup z scannera
+ * @param L Buffer/Obojsmerny zoznam
+ * @note Ulozi cely kontrolovany vyraz do bufferu
  */
-//const char precedence_table[table_size][table_size]= {
-//      //    0      1    2     3     4     5     6     7     8    9     10    11     12   13    14    15    16    17    18    19    20      21       22    23    24
-//      //  unary-  not   *     /    div   mod   and    +     -    or    xor    =     <>    <    <=     >    >=    in     (    )     ID   function  array   ,      $
-//        { '<'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '#' , '>' }, //unary  0
-//        { '<'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // not   1
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // *     2
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // /     3
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // div   4
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // mod   5
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // and   6
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // +     7
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // -     8
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // or    9
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // xor   10
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // =     11
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <>    12
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <     13
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <=    14
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // >     15
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // >=    16
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // in    17
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' ,   '<'   ,  '<' , '=' , '#' }, // (     18
-//        { '#'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '#' , '>' , '#' ,   '#'   ,  '#' , '>' , '>' }, // )     19
-//        { '#'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '#' , '>' , '#' ,   '#'   ,  '#' , '>' , '>' }, // ID    20
-//        { '#'  , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '=' , '#' , '#' ,   '#'   ,  '#' , '#' , '#' }, // func  21
-//        { '#'  , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '=' , '#' , '#' ,   '#'   ,  '#' , '#' , '#' }, // array 22
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' ,   '<'   ,  '<' , '=' , '#' }, // ,     23
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '#' , '<' ,   '<'   ,  '<' , '#' , '#' }, // $     24
-//};
-//
+void LoadToBuffer(Token *Token, tDLList *ExprList);
 
+/**
+ * Vykona operaciu pri vypocitavani postfixovej notacie
+ * @param token_ID1 Prvy operand
+ * @param token_OP Operacia
+ * @param token_ID2 Druhy operand
+ * @return Vrati vysledok danej operacie
+ */
+long EvaluateNow(long token_ID1, Token token_OP, long token_ID2 );
 
+/**
+ * Vypocita vyraz v postfixovej notacii
+ * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture - TODO momentalne nepotebne
+ * @param stackPostfix Zasobnik s ulozenou postfixou notaciou
+ * @param stackTemp Pomocny zasobnik pre pretocenie poradia v postfixovom zasobniku
+ * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia
+ * @param last_operation Posledna operacia - momentalne nepotrebne
+ * @return Vracia vysledok v datovom type long
+ */
+long EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackTemp, tStackINT *stackOutputINT , int last_operation);
 
+/**
+ * Spracuje infixovy vyraz do postfixovej notacie pomocou precedencnej tabulky
+ * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture
+ * @param stack Pomocny zasobnik kde sa vyhodnocuje priorita operatorov
+ * @param stackOutput Vystupny zasobnik s postfixovou notaciou
+ * @param last_operation Posledna vykonana operacia - TODO nepotrebne momentane
+ * @return Vracia zasobnik s postfixou notaciou
+ */
+tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, int last_operation);
 
-//
-//const char precedence_table[table_size][table_size]= {
-//     //  unary-  not    *     /    div   mod   and    +     -    or    xor    =     <>     <    <=     >    >=    in     (    )   ID     function  array   ,     $
-//        { '<'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '#' , '>' }, //unary -
-//        { '<'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // not
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // *
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // /
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // div
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // mod
-//        { '<'  , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // and
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // +
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // -
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // or
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // xor
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // =
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <>
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // <=
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // >
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // >=
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '<' , '>' , '<' ,   '<'   ,  '<' , '>' , '>' }, // in
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' ,   '<'   ,  '<' , '=' , '#' }, // (
-//        { '#'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '#' , '>' , '#' ,   '#'   ,  '#' , '>' , '>' }, // )
-//        { '#'  , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '>' , '#' , '>' , '#' ,   '#'   ,  '#' , '>' , '>' }, // ID
-//        { '#'  , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '=' , '#' , '#' ,   '#'   ,  '#' , '#' , '#' }, // func
-//        { '#'  , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '#' , '=' , '#' , '#' ,   '#'   ,  '#' , '#' , '#' }, // array
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '=' , '<' ,   '<'   ,  '<' , '=' , '#' }, // ,
-//        { '<'  , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '<' , '#' , '<' ,   '<'   ,  '<' , '#' , '#' }, // $
-//};
+/**
+ * Vykonava syntakticku kontrolu vyrazu
+ * @param ExprList Zoznam s vyrazom
+ * @param SyntaxError Premenna pre status ci nastal/nenastal error
+ * @return Vrati true ak je vyraz syntakticky spravne inak false
+ */
+bool FindRule(tDLList *ExprList, bool *SyntaxError);
+
+/**
+ * Zastresuje syntakticku kontrolu
+ * @param ExprList
+ * @return Vrati true ak je vyraz syntakticky spravne inak false
+ * @note TODO Spojenie s Rules
+ */
+bool MainSyntaxCheck(tDLList *ExprList);
+
+/**
+ * Zastresuje vsetky funkcie vyrazoveho parseru
+ * @param token Novy token zo scannera
+ * @return Vrati true ak je vyraz syntakticky spravne inak false
+ */
+int CallExpressionParser(Token *token);
+
+/**
+ * Uvolnenie zoznamu v ktorom je nacitany vyraz
+ * @param ExprList Zoznam s vyrazom
+ */
+void FreeBuffer(tDLList *ExprList);
+
 
 #endif //EXPRESSION_PARSER_EXPRESSION_PARSER_H
