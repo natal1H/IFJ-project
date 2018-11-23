@@ -499,7 +499,12 @@ int get_next_token(Token *token) {
         switch (state) {
 
             case F_ID:
-                token_set_type_attribute(token, IDENTIFIER, read_string->string);
+                if (is_keyword(read_string->string)) {
+                    token_set_type_attribute(token, KEYWORD, read_string->string);
+                }
+                else {
+                    token_set_type_attribute(token, IDENTIFIER, read_string->string);
+                }
                 return ERR_OK;
 
             case F_INT:
