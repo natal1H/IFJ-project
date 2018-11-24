@@ -634,23 +634,23 @@ int CallExpressionParser(Token *token) {
 
 
 
-int main(int argc, char *argv[]) {
-
-    freopen("input.txt","r",stdin);
-    int ScannerErrorCheck = 0;
-    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
-        return ScannerErrorCheck;
-    }
-
-    Token *token;
-    token = token_initialize();
-
-    ScannerErrorCheck = get_next_token(token);
-    if(ScannerErrorCheck != 0){
-        return ScannerErrorCheck;
-    }
-
-    CallExpressionParser(token);
-
-
-}
+//int main(int argc, char *argv[]) {
+//
+//    freopen("input.txt","r",stdin);
+//    int ScannerErrorCheck = 0;
+//    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+//        return ScannerErrorCheck;
+//    }
+//
+//    Token *token;
+//    token = token_initialize();
+//
+//    ScannerErrorCheck = get_next_token(token);
+//    if(ScannerErrorCheck != 0){
+//        return ScannerErrorCheck;
+//    }
+//
+//    CallExpressionParser(token);
+//
+//
+//}
