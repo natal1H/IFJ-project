@@ -552,7 +552,7 @@ bool MainSyntaxCheck(tDLList *ExprList) {
             //Vysledok daneho vyrazu TODO Zmenit
             long vysledok = 0;
             vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, last_operation);
-            printf("Vysledok: %ld", vysledok);
+//            printf("Vysledok: %ld", vysledok);
 
             free(stack);
             free(stackOutput);
@@ -610,14 +610,14 @@ int CallExpressionParser(Token *token) {
         if(ScannerErrorCheck != 0){
             return ScannerErrorCheck;
         }
+
+        //Zachovanie posledneho tokena
+        SaveMyToken->type = token->type;
+        SaveMyToken->attribute = token->attribute;
     }
 
     bool MainSyntaxStatus = false;
     MainSyntaxStatus = MainSyntaxCheck(ExprArray);
-
-    //Zachovanie povodneho tokena
-    SaveMyToken->type = (*ExprArray->Last).Token.type;
-    SaveMyToken->attribute = (*ExprArray->Last).Token.attribute;
 
     FreeBuffer(ExprArray);
 
@@ -651,6 +651,8 @@ int CallExpressionParser(Token *token) {
 //    }
 //
 //    CallExpressionParser(token);
+//
+////    print_token(token);
 //
 //
 //}
