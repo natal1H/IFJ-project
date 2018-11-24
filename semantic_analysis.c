@@ -49,13 +49,64 @@ void set_variable_type(tBSTNodePtr *current_function_root, char *variable_id, tD
 
 // Parser výrazov funkcie
 bool is_int(char *str) {
-    // TODO
+    // Predpokladá neprázdny reťazec
 
+    if (strlen(str) > 1 && str[0] == '0') {
+        // Nepovolený tvar int (začiatočné nuly)
+        return false;
+    }
+
+    for (int i = 0; i < strlen(str); i++) {
+        if ( !(str[i] >= '0' && str[i] <= '9') )
+            return false;
+    }
+
+    return true;
 }
 
 bool is_float(char *str) {
-    // TODO
+    // Predpokladá neprázdny reťazec
+    int N = strlen(str);
+    int i = 0; // Index
 
+    // Celočíselná časť
+    while (i < N) {
+        // Hľadanie desatinnej časti
+        if (str[i] == '.') {
+            break;
+        }
+        else if (str[i] == 'e' || str[i] == 'E') {
+            break;
+        }
+        else if ( !(str[i] >= '0' && str[i] <= '9') ) {
+            // Nepovolený znak
+            return false;
+        }
+        i++;
+    }
+    if (i == 0 || i == N - 1) {
+        // Nie je desatinná čast, je to INT, nie float
+        return false;
+    }
+
+    // kontrola, či je niečo za '.' alebo 'e'/'E'
+    if (str[i] == '.') {
+        for (i = i + 1; i < N; i++) {
+            if ( !(str[i] >= '0' && str[i] <= '9') ) return false;
+        }
+    }
+    else if (str[i] == 'e' || str[i] == 'E') {
+        i++;
+        if (str[i] == '+' || str[i] == '-')  {
+            i++;
+            if (i == N) return false;
+        }
+        for (i = i + 1; i < N; i++) {
+            if ( !(str[i] >= '0' && str[i] <= '9') ) return false;
+        }
+    }
+
+    return true;
 }
 
 bool is_nil(char *str) {
@@ -68,12 +119,5 @@ bool is_nil(char *str) {
 }
 
 bool is_variable(tBSTNodePtr current_function_root, char *str) {
-    // TODO
+    return symbol_table_get_variable_node(current_function_root, str) != NULL;
 }
-/*
-int check_type_compatibility_aritmetic(tBSTNodePtr *current_function_root, char *symbol1, char *symbol2) {
-    // Predpokladá, že ak je nejaké id, tak už bolo definované
-    // Zisti, či je symbol1 INT, FLOAT alebo STRING
-
-    return -1;
-}*/

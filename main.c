@@ -8,7 +8,6 @@ int main() {
     // inicializuj scanner najprv cez scanner_initialize()
     if ( scanner_initialize() != 0 ) {
         // chyba pri inicializácii
-        printf("Chyba pri inicializácii scannera");
         return ERR_INTERNAL;
     }
 
@@ -28,6 +27,8 @@ int main() {
         printf("\nVýsledok: %d\n", ret);
     }
 
+    // Upratanie po programe
+
     token_free(token);
 
     // po skončení práce uvoľni miesto po read_string
@@ -38,7 +39,7 @@ int main() {
     // Uvoľnenie GTS
     BSTDispose(&global_table);
 
-    return 0;
+    return ret;
 }
 
 /*
@@ -75,6 +76,14 @@ int main() {
     function_increase_number_param(global_table, "new_function");
     ret = symbol_table_get_params(global_table, "new_function");
     printf("param: %d\n", ret);
+
+    printf("TEST: %d\n", is_int("12"));
+    printf("TEST: %d\n", is_int("1s2"));
+    printf("TEST: %d\n", is_float("12"));
+    printf("TEST: %d\n", is_float("1.2"));
+    printf("TEST: %d\n", is_float("1,2"));
+    printf("TEST: %d\n", is_float("1e+"));
+
 
     // Postupné uvoľnenie všetkých lokálnych tabuliek symbolov
 
