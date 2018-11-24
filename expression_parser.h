@@ -31,6 +31,11 @@ typedef struct	{                          /* zásobník hodnot typu tBTNodePtr *
     int top;
 } tStackINT;
 
+typedef struct	{                          /* zásobník hodnot typu tBTNodePtr */
+    char* stack[MAXSTACK];
+    int top;
+} tStackCHAR;
+
 
 //------PRECEDENCE_TABLE_ENUM--------
 
@@ -63,32 +68,35 @@ typedef enum precedence_table {
     no_operation_pTable         //25
 } pTable;
 
+
+
 /**
  * Inicializacia tokenoveho zasobnika
  * @param S Zasobnik
  */
-void InitStack (tStackP *S);
+void InitStackTOKEN (tStackP *S);
 
 /**
  * Pridanie tokenu do zasobnika
  * @param S Zasobnik
  * @param ptr Token
  */
-void PushStack (tStackP *S, struct token ptr);
+void PushStackTOKEN (tStackP *S, struct token ptr);
 
 /**
- * Ziskanie tokenu a uvolnenie tokenu zo zasobnika
+ * Ziskanie tokenu a uvolnenie tokenu z vrchu zasobnika
  * @param S Zasobnik
  * @return Token zo zasobnika
  */
-struct token PopStack (tStackP *S);
+struct token PopStackTOKEN (tStackP *S);
 
 /**
  * Zisti ci je tokenovy zasobnik prazdny
  * @param S Zasobnik
  * @return Ak je zasobnik prazdny vrati true inak false
  */
-bool IsStackEmpty (tStackP *S);
+bool IsStackEmptyTOKEN (tStackP *S);
+
 
 
 /**
@@ -98,11 +106,56 @@ bool IsStackEmpty (tStackP *S);
 void InitStackINT (tStackINT *S);
 
 /**
+ * Prida integerovu hodnotu do zasobnika
+ * @param S integerovy zasobnik
+ * @param ptr integer
+ */
+void PushStackINT (tStackINT *S, long ptr);
+
+
+/**
+ * Odstrani integer na vrchu zasobnika a vrati integerovu hodnotu zo zasobnika
+ * @param S Integerovi zasobnik
+ * @return integer
+ */
+long PopStackINT (tStackINT *S);
+
+
+/**
  * Zistenie ci je integerovy zasobnik prazdny
  * @param S Zasobnik
  * @return Ak je zasobnik prazdny vrati true inak false
  */
 bool IsStackEmptyINT (tStackINT *S);
+
+
+/**
+ * Inicializuje stringovi zasobnik
+ * @param S String zasobnik
+ */
+void InitStackSTRING (tStackCHAR *S);
+
+/**
+ * Prida string do zasobnika
+ * @param S Stringovy zasobnik
+ * @param ptr String
+ */
+void PushStackSTRING (tStackCHAR *S, char* ptr);
+
+/**
+ * Odstrani string z vrchu zasobnika a vrati ho na vystup funkcie
+ * @param S
+ * @return
+ */
+char* PopStackSTRING (tStackCHAR *S);
+
+/**
+ * Zisti ci je zasobnik prazdny
+ * @param S Zasobnik
+ * @return True ak prazdny False ak nie je prazdny
+ */
+bool IsStackEmptySTRING (tStackINT *S);
+
 
 
 /**
@@ -119,18 +172,19 @@ void LoadToBuffer(Token *Token, tDLList *ExprList);
  * @param token_ID2 Druhy operand
  * @return Vrati vysledok danej operacie
  */
-long EvaluateNow(long token_ID1, Token token_OP, long token_ID2 );
+//long EvaluateNow(long token_ID1, Token token_OP, long token_ID2 );
 
 /**
  * Vypocita vyraz v postfixovej notacii
  * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture - TODO momentalne nepotebne
  * @param stackPostfix Zasobnik s ulozenou postfixou notaciou
  * @param stackTemp Pomocny zasobnik pre pretocenie poradia v postfixovom zasobniku
- * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia
+ * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia - TODO nepouzivane
+ * @param stackOutputCHAR Vystupny zasobnik v ktorom je pocitana postfixova notacia v type char!
  * @param last_operation Posledna operacia - momentalne nepotrebne
  * @return Vracia vysledok v datovom type long
  */
-long EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackTemp, tStackINT *stackOutputINT , int last_operation);
+char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackCHAR, tStackINT *stackOutputINT , tStackCHAR *stackOutputCHAR, int last_operation);
 
 /**
  * Spracuje infixovy vyraz do postfixovej notacie pomocou precedencnej tabulky
@@ -170,6 +224,20 @@ int CallExpressionParser(Token *token);
  * @param ExprList Zoznam s vyrazom
  */
 void FreeBuffer(tDLList *ExprList);
+
+/**
+ *  Pretypuje string na integer
+ * @param x String na pretypovanie
+ * @return Identicka hodnota ako integer
+ */
+int string_to_integer(char* x);
+
+/**
+* Pretypuje integer na string
+* @param x Integerova hodnota na pretypovanie
+* @return Identicka hodnota v stringu
+*/
+char* integer_to_string(int x);
 
 
 #endif //EXPRESSION_PARSER_EXPRESSION_PARSER_H
