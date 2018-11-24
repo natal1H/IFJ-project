@@ -607,7 +607,7 @@ int CallExpressionParser(Token *token) {
 
         ScannerErrorCheck =  get_next_token(token);
 
-        if(ScannerErrorCheck != 0 && token->type != TYPE_EOF){
+        if(ScannerErrorCheck == ERR_SCANNER && token->type != TYPE_EOF){
             return ScannerErrorCheck;
         }
 
@@ -652,6 +652,6 @@ int CallExpressionParser(Token *token) {
 //
 //    CallExpressionParser(token);
 //
-////    print_token(token);
+//    print_token(token);
 //
 //}
