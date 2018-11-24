@@ -149,46 +149,46 @@ void InitStack (tStackP *S)
 {
     S->top = 0;
 }
-//
-//void PushStack (tStackP *S, struct token ptr)
-///*   ------
-//** Vloží hodnotu na vrchol zásobníku.
-//**/
-//{
-//    /* Při implementaci v poli může dojít k přetečení zásobníku. */
-//    if (S->top==MAXSTACK)
-//        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
-//    else {
-//        S->top++;
-//        S->stack[S->top]=ptr;
-//    }
-//}
-//
-//struct token PopStack (tStackP *S)
-///*         --------
-//** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
-//**/
-//{
-//    /* Operace nad prázdným zásobníkem způsobí chybu. */
-//    if (S->top==0)  {
-//        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
-////        return(-1);
-//    }
-//    else {
-//        return (S->stack[S->top--]);
-//    }
-//}
-//
-//bool IsStackEmpty (tStackP *S)
-///*   -------
-//** Je-li zásobník prázdný, vrátí hodnotu true.
-//**/
-//{
-//    return(S->top==0);
-//}
-//
-///* -------------------------------------------------------------------------- */
-//
+
+void PushStack (tStackP *S, struct token ptr)
+/*   ------
+** Vloží hodnotu na vrchol zásobníku.
+**/
+{
+    /* Při implementaci v poli může dojít k přetečení zásobníku. */
+    if (S->top==MAXSTACK)
+        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+    else {
+        S->top++;
+        S->stack[S->top]=ptr;
+    }
+}
+
+struct token PopStack (tStackP *S)
+/*         --------
+** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
+**/
+{
+    /* Operace nad prázdným zásobníkem způsobí chybu. */
+    if (S->top==0)  {
+        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+//        return(-1);
+    }
+    else {
+        return (S->stack[S->top--]);
+    }
+}
+
+bool IsStackEmpty (tStackP *S)
+/*   -------
+** Je-li zásobník prázdný, vrátí hodnotu true.
+**/
+{
+    return(S->top==0);
+}
+
+/* -------------------------------------------------------------------------- */
+
 void InitStackINT (tStackINT *S)
 /*   ------
 ** Inicializace zásobníku.
@@ -196,45 +196,45 @@ void InitStackINT (tStackINT *S)
 {
     S->top = 0;
 }
-//
-////void PushStack (tStackP *S, char ptr)
-//void PushStackINT (tStackINT *S, long ptr)
-///*   ------
-//** Vloží hodnotu na vrchol zásobníku.
-//**/
-//{
-//    /* Při implementaci v poli může dojít k přetečení zásobníku. */
-//    if (S->top==MAXSTACK)
-//        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
-//    else {
-//        S->top++;
-//        S->stack[S->top]=ptr;
-//    }
-//}
-//
-////char PopStack (tStackP *S)
-//long PopStackINT (tStackINT *S)
-///*         --------
-//** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
-//**/
-//{
-//    /* Operace nad prázdným zásobníkem způsobí chybu. */
-//    if (S->top==0)  {
-//        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
-////        return(-1);
-//    }
-//    else {
-//        return (S->stack[S->top--]);
-//    }
-//}
-//
-//bool IsStackEmptyINT (tStackINT *S)
-///*   -------
-//** Je-li zásobník prázdný, vrátí hodnotu true.
-//**/
-//{
-//    return(S->top==0);
-//}
+
+//void PushStack (tStackP *S, char ptr)
+void PushStackINT (tStackINT *S, long ptr)
+/*   ------
+** Vloží hodnotu na vrchol zásobníku.
+**/
+{
+    /* Při implementaci v poli může dojít k přetečení zásobníku. */
+    if (S->top==MAXSTACK)
+        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+    else {
+        S->top++;
+        S->stack[S->top]=ptr;
+    }
+}
+
+//char PopStack (tStackP *S)
+long PopStackINT (tStackINT *S)
+/*         --------
+** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
+**/
+{
+    /* Operace nad prázdným zásobníkem způsobí chybu. */
+    if (S->top==0)  {
+        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+//        return(-1);
+    }
+    else {
+        return (S->stack[S->top--]);
+    }
+}
+
+bool IsStackEmptyINT (tStackINT *S)
+/*   -------
+** Je-li zásobník prázdný, vrátí hodnotu true.
+**/
+{
+    return(S->top==0);
+}
 
 /* -------------------------------------------------------------------------- */
 
@@ -274,21 +274,21 @@ void LoadToBuffer(Token *Token, tDLList *ExprList) {
  * @param token_ID2 Druhy operand
  * @return Vrati vysledok danej operacie
  */
-//long EvaluateNow(long token_ID1, Token token_OP, long token_ID2 ){
-//
-//    switch(token_OP.type){
-//
-//        case (ADDITION) : {
-//            return token_ID1+token_ID2;
-//        }
-//
-//        case (MULTIPLICATION) : {
-//            return token_ID1*token_ID2;
-//        }
-//
-//        default:{}
-//    }
-//}
+long EvaluateNow(long token_ID1, Token token_OP, long token_ID2 ){
+
+    switch(token_OP.type){
+
+        case (ADDITION) : {
+            return token_ID1+token_ID2;
+        }
+
+        case (MULTIPLICATION) : {
+            return token_ID1*token_ID2;
+        }
+
+        default:{}
+    }
+}
 
 /**
  * Vypocita vyraz v postfixovej notacii
@@ -299,28 +299,27 @@ void LoadToBuffer(Token *Token, tDLList *ExprList) {
  * @param last_operation Posledna operacia - momentalne nepotrebne
  * @return Vracia vysledok v datovom type long
  */
-//long EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackTemp, tStackINT *stackOutputINT , int last_operation) {
-//    printf("tu");
-//
-//    //Obratenie zasobnika, najskor POPnut potrebujeme operandy ktore su na spodku zasobnika
-//    while(stackPostfix->top > 0){
-//        PushStack(stackTemp, PopStack(stackPostfix));
-//    }
-//    stackPostfix = stackTemp;
-//
-//    while(stackPostfix->top > 0){
-//        Token tmp;                    //Pomocny token
-//        tmp = PopStack(stackPostfix); //Zisti hodnotu na vrchole zasobni
-//
-//            if(TransformTable[tmp.type] == id_pTable) { //Ak ide o ID
-//                char *ptr;  //Buffer k pretypovaniu
-//                PushStackINT(stackOutputINT, strtol(tmp.attribute, &ptr, 10));
-//            } else {
-//                PushStackINT(stackOutputINT, EvaluateNow(PopStackINT(stackOutputINT), tmp, PopStackINT(stackOutputINT)));
-//            }
-//    }
-//    return PopStackINT(stackOutputINT);
-//}
+long EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackTemp, tStackINT *stackOutputINT , int last_operation) {
+
+    //Obratenie zasobnika, najskor POPnut potrebujeme operandy ktore su na spodku zasobnika
+    while(stackPostfix->top > 0){
+        PushStack(stackTemp, PopStack(stackPostfix));
+    }
+    stackPostfix = stackTemp;
+
+    while(stackPostfix->top > 0){
+        Token tmp;                    //Pomocny token
+        tmp = PopStack(stackPostfix); //Zisti hodnotu na vrchole zasobni
+
+            if(TransformTable[tmp.type] == id_pTable) { //Ak ide o ID
+                char *ptr;  //Buffer k pretypovaniu
+                PushStackINT(stackOutputINT, strtol(tmp.attribute, &ptr, 10));
+            } else {
+                PushStackINT(stackOutputINT, EvaluateNow(PopStackINT(stackOutputINT), tmp, PopStackINT(stackOutputINT)));
+            }
+    }
+    return PopStackINT(stackOutputINT);
+}
 
 /**
  * Spracuje infixovy vyraz do postfixovej notacie pomocou precedencnej tabulky
@@ -330,67 +329,67 @@ void LoadToBuffer(Token *Token, tDLList *ExprList) {
  * @param last_operation Posledna vykonana operacia - TODO nepotrebne momentane
  * @return Vracia zasobnik s postfixou notaciou
  */
-//tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, int last_operation) {
-//
-//    bool UvolnovanieZasobnika = false;
-//    Token tmp;              //Pomocny token
-//    tmp.type = EOL;         //Koniec zasobnika ako EOL
-//    PushStack(stack, tmp);  //Informuje o konci zasobnika
-//
-////    ExprList->Act = ExprList->First;
-//
-//    while (ExprList->Act != NULL && ExprList->Act->Token.type != EOL) { //Pokym nie je koniec vyrazu(zoznamu) TODO Token.Next == NULL
-//
-//                tmp = PopStack(stack); //Zisti hodnotu na vrchole zasobnika
-//                PushStack(stack, tmp); //Ale hodnotu ponechaj ulozenu na zasobniku
-//
-//                if(TransformTable[ExprList->Act->Token.type] == id_pTable){ //Ak je to operand
-//                    PushStack(stackOutput, ExprList->Act->Token);           //Potom push do vysledneho zasobnika
-//                } else {
-//
-//                    //Pokym je vacsia priorita
-//                    while (precedence_table[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '>') {
-//
-//                        //Ak sa token na zasobniku nerovna '(' alebo ')'
-//                        //Zatvorky nepushujeme do vysledneho vyrazu!
-//                        if(TransformTable[tmp.type] != left_round_bracket_pTable && TransformTable[tmp.type] != right_round_bracket_pTable) {
-//                            PushStack(stackOutput, PopStack(stack)); //Prehod token do vysledneho zasobnika
-//                        } else {
-//                            PopStack(stack);    //Len odober token zo zasobnika, len zatvorky!
-//                        }
-//
-//                        tmp = PopStack(stack); //Zisti hodnotu na vrchole zasobnika
-//                        PushStack(stack, tmp); //Ale hodnotu ponechaj ulozenu na zasobniku
-//                        UvolnovanieZasobnika = true;
-//
-////                      if(precedence_table[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '<') {
-////                          PushStack(stack, ExprList->Act->Token);
-////                      }
-//                    }
-//                    if(precedence_table[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '=' ){
-//                        PopStack(stack);
-////                    } else if (1) {
-//                    } else {
-//                        PushStack(stack, ExprList->Act->Token);
-//                    }
-//                }
-//                UvolnovanieZasobnika = false;
-//                ExprList->Act = ExprList->Act->next; //Dalsi Token
+tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, int last_operation) {
+
+    bool UvolnovanieZasobnika = false;
+    Token tmp;              //Pomocny token
+    tmp.type = EOL;         //Koniec zasobnika ako EOL
+    PushStack(stack, tmp);  //Informuje o konci zasobnika
+
+//    ExprList->Act = ExprList->First;
+
+    while (ExprList->Act != NULL && ExprList->Act->Token.type != EOL) { //Pokym nie je koniec vyrazu(zoznamu) TODO Token.Next == NULL
+
+                tmp = PopStack(stack); //Zisti hodnotu na vrchole zasobnika
+                PushStack(stack, tmp); //Ale hodnotu ponechaj ulozenu na zasobniku
+
+                if(TransformTable[ExprList->Act->Token.type] == id_pTable){ //Ak je to operand
+                    PushStack(stackOutput, ExprList->Act->Token);           //Potom push do vysledneho zasobnika
+                } else {
+
+                    //Pokym je vacsia priorita
+                    while (precedenceTable[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '>') {
+
+                        //Ak sa token na zasobniku nerovna '(' alebo ')'
+                        //Zatvorky nepushujeme do vysledneho vyrazu!
+                        if(TransformTable[tmp.type] != left_round_bracket_pTable && TransformTable[tmp.type] != right_round_bracket_pTable) {
+                            PushStack(stackOutput, PopStack(stack)); //Prehod token do vysledneho zasobnika
+                        } else {
+                            PopStack(stack);    //Len odober token zo zasobnika, len zatvorky!
+                        }
+
+                        tmp = PopStack(stack); //Zisti hodnotu na vrchole zasobnika
+                        PushStack(stack, tmp); //Ale hodnotu ponechaj ulozenu na zasobniku
+                        UvolnovanieZasobnika = true;
+
+//                      if(precedenceTable[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '<') {
+//                          PushStack(stack, ExprList->Act->Token);
+//                      }
+                    }
+                    if(precedenceTable[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '=' ){
+                        PopStack(stack);
+//                    } else if (1) {
+                    } else {
+                        PushStack(stack, ExprList->Act->Token);
+                    }
+                }
+                UvolnovanieZasobnika = false;
+                ExprList->Act = ExprList->Act->next; //Dalsi Token
+    }
+
+
+    while(stack->top > 1){
+//        tmp = PopStack(stack);
+//        if (tmp.type != LEFT_ROUND_BRACKET && tmp.type != RIGHT_ROUND_BRACKET) {
+            PushStack(stackOutput, PopStack(stack));
+//        }
+    }
+//    for(int i = 1; i<=stackOutput->top; i++) {
+//        print_token(&(stackOutput)->stack[i]);
 //    }
-//
-//
-//    while(stack->top > 1){
-////        tmp = PopStack(stack);
-////        if (tmp.type != LEFT_ROUND_BRACKET && tmp.type != RIGHT_ROUND_BRACKET) {
-//            PushStack(stackOutput, PopStack(stack));
-////        }
-//    }
-////    for(int i = 1; i<=stackOutput->top; i++) {
-////        print_token(&(stackOutput)->stack[i]);
-////    }
-//
-//    return *stackOutput;
-//}
+
+    return *stackOutput;
+}
 
 
 bool FindRule(tDLList *ExprList, bool *SyntaxError) {
@@ -401,8 +400,6 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError) {
 //        ExprList->Act = ExprList->Act->next;
         do{
 
-//   while ( (token->type) != EOL || (token->type) != KEYWORD && (strcmp(token->attribute, "do") != 0 || strcmp(token->attribute, "then") != 0)) {
-            //syntax_table[actual token][next token]
             if(ExprList->Act->next != NULL) {
                 if (syntax_table[ExprList->Act->Token.type][ExprList->Act->next->Token.type] == false) {
                     *SyntaxError = true;
@@ -520,11 +517,6 @@ bool MainSyntaxCheck(tDLList *ExprList) {
         //Kontrola syntaxe vyrazu
         bool syntaxStatus = false;
 
-//        tDLList *tmp;
-//        tmp = ExprList;
-//        tmp->Act = tmp->First;
-
-
         //Inicializacia temporary
         bool SyntaxError = false;
         bool *SyntaxErroPtr = &SyntaxError;
@@ -536,35 +528,35 @@ bool MainSyntaxCheck(tDLList *ExprList) {
         syntaxStatus =  FindRule(ExprList, SyntaxErroPtr);
 
 
-        return syntaxStatus;
+        int static last_operation = no_operation_pTable; //TODO Nepouzivane
 
-////        int static last_operation = no_operation_pTable; //TODO Nepouzivane
-//
-//        //Alokacia zasobnika
-//        tStackP *stack = malloc(sizeof(tStackP));
-//        tStackP *stackOutput = malloc(sizeof(tStackP));
-//        tStackINT *stackOutputINT = malloc(sizeof(tStackINT));
-//
-//        //Inicializacia zasobnika
-//        InitStack(stack);
-//        InitStack(stackOutput);
-//        InitStackINT(stackOutputINT);
-//
-//
-//        //Rozlozenie vyrazu do postfixovej notacie
-//        ExprList->Act = ExprList->First;
-////        *stack = ParseToPostfix(ExprList, stack, stackOutput, last_operation);
-//        //Re-Inicializacia(Vycistenie) zasobnika
-//        InitStack(stackOutput);
-//
-//        //Vysledok daneho vyrazu TODO Zmenit
-////        long vysledok = 0;
-////        vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT , last_operation);
-////        printf("%ld", vysledok);
-//
-//        free(stack);
-//        free(stackOutput);
-//        free(stackOutputINT);
+        //Alokacia zasobnika
+        tStackP *stack = malloc(sizeof(tStackP));
+        tStackP *stackOutput = malloc(sizeof(tStackP));
+        tStackINT *stackOutputINT = malloc(sizeof(tStackINT));
+
+        //Inicializacia zasobnika
+        InitStack(stack);
+        InitStack(stackOutput);
+        InitStackINT(stackOutputINT);
+
+
+        //Rozlozenie vyrazu do postfixovej notacie
+        ExprList->Act = ExprList->First;
+        *stack = ParseToPostfix(ExprList, stack, stackOutput, last_operation);
+        //Re-Inicializacia(Vycistenie) zasobnika
+        InitStack(stackOutput);
+
+        //Vysledok daneho vyrazu TODO Zmenit
+        long vysledok = 0;
+        vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT , last_operation);
+        printf("Vysledok: %ld", vysledok);
+
+        free(stack);
+        free(stackOutput);
+        free(stackOutputINT);
+
+        return syntaxStatus;
     }
 }
 
@@ -615,7 +607,6 @@ int CallExpressionParser(Token *token) {
         }
     }
 
-
     bool MainSyntaxStatus = false;
     MainSyntaxStatus = MainSyntaxCheck(ExprArray);
 
@@ -638,23 +629,23 @@ int CallExpressionParser(Token *token) {
 
 
 
-//int main(int argc, char *argv[]) {
-//
-//    freopen("input.txt","r",stdin);
-//    int ScannerErrorCheck = 0;
-//    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
-//        return ScannerErrorCheck;
-//    }
-//
-//    Token *token;
-//    token = token_initialize();
-//
-//    ScannerErrorCheck = get_next_token(token);
-//    if(ScannerErrorCheck != 0){
-//        return ScannerErrorCheck;
-//    }
-//
-//    CallExpressionParser(token);
-//
-//
-//}
+int main(int argc, char *argv[]) {
+
+    freopen("input.txt","r",stdin);
+    int ScannerErrorCheck = 0;
+    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+        return ScannerErrorCheck;
+    }
+
+    Token *token;
+    token = token_initialize();
+
+    ScannerErrorCheck = get_next_token(token);
+    if(ScannerErrorCheck != 0){
+        return ScannerErrorCheck;
+    }
+
+    CallExpressionParser(token);
+
+
+}
