@@ -1,8 +1,4 @@
 #include "parser.h"
-#include "scanner.h"
-#include "expression_parser.h"
-#include <stdio.h>
-#include <stdbool.h>
 
 /*	
 	TODO:	Gramatika: - Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
@@ -176,6 +172,14 @@ printf("def ");
 
 			if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
+
+				// Sémantická kontrola - nebola už definovaná funkcia s takýmto názvom?
+				if (function_definition(&global_table, token->attribute) != ERR_OK) {
+					// Funkcia bola predtým definovaná - došlo k redefinícii - sémantická chyba
+					return ERR_SEM_ELSE; // TODO - správny chybový kód?
+				}
+				// Koniec sémantickej kontroly
+
 				if (get_next_token(token) == ERR_SCANNER) {
 					return ERR_SCANNER;
 				}

@@ -1,10 +1,13 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
+#include "main.h" // Kvôli global_table
 #include "scanner.h"
 #include "error.h"
 #include "expression_parser.h"
-
+#include "semantic_analysis.h"
+#include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 
 
