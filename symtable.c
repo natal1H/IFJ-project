@@ -259,6 +259,18 @@ int symbol_table_add_param(tBSTNodePtr rootPtr, char *function_id) {
     }
 }
 
+int symbol_table_set_param(tBSTNodePtr rootPtr, char *function_id, int number) {
+    tDataNode *data;
+    bool found = BSTSearch(rootPtr, function_id, &data);
+    if (!found) {
+        // Chyba - neexistuje tá funkcia
+        return -1;
+    }
+    else {
+        data->params = number;
+    }
+}
+
 int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id) {
     tDataNode *data;
     if ((*rootPtr) == NULL) {

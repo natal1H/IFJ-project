@@ -2,6 +2,8 @@
 #include "scanner.h"
 #include "parser.h"
 #include "symtable.h"
+#include "semantic_analysis.h"
+#include "stringlib.h"
 
 #define MAIN "main@function"
 
