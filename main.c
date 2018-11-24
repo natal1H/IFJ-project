@@ -1,7 +1,4 @@
-#include <stdio.h>
-
-#include "scanner.h" // treba?
-#include "parser.h"
+#include "main.h"
 
 int main() {
     printf("MAIN.c\n");
@@ -17,9 +14,17 @@ int main() {
     Token *token =  token_initialize();
     int ret = get_next_token(token);
 
+    // Inicializácia globálnej tabuľky symbolov (GTS)
+    BSTInit(&global_table);
+    // Vytvorenie tabuľky pre main
+    symbol_table_define_variable_or_function(&global_table, MAIN);
+    tBSTNodePtr main_global_node = symbol_table_get_variable_node(global_table, MAIN);
+    symbol_table_create_local_table(&main_global_node);
+
     if (ret != ERR_SCANNER) {
+
         int ret = prog(token);
-        printf("%d\n", ret);
+        printf("\nVýsledok: %d\n", ret);
     }
 
     token_free(token);
@@ -27,6 +32,10 @@ int main() {
     // po skončení práce uvoľni miesto po read_string
     tstring_free_struct(read_string);
 
+    // Postupné uvoľnenie všetkých lokálnych tabuliek symbolov
+
+    // Uvoľnenie GTS
+    BSTDispose(&global_table);
 
     return 0;
 }

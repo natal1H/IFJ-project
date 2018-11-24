@@ -41,7 +41,7 @@ void BSTDispose (tBSTNodePtr *rootPtr);
 
 int symbol_table_get_params(tBSTNodePtr rootPtr, char *function_id);
 int symbol_table_add_param(tBSTNodePtr rootPtr, char *function_id);
-int symbol_table_define_variable_or_function(tBSTNodePtr table, char *id);
+int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id);
 tBSTNodePtr symbol_table_get_function_table(tBSTNodePtr global_table, char *id);
 void symbol_table_set_variable_type(tBSTNodePtr function_table, char *id, tDataType type);
 tBSTNodePtr symbol_table_create_local_table(tBSTNodePtr *function_node);
