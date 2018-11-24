@@ -32,3 +32,48 @@ int function_definition(tBSTNodePtr *global_table_root, char *function_id) {
         return ERR_OK;
     }
 }
+
+int function_increase_number_param(tBSTNodePtr global_table, char *function_id) {
+    // Predpokladá, že funkcia je definovaná (kedže sa bude volať tesne za function_definition, ktorá ju definuje)
+    // Vlastne iba volá funkciu z symtable.c, ale takto je to peknejšie zaobalené
+    return symbol_table_add_param(global_table, function_id);
+}
+
+int define_variable(tBSTNodePtr *current_function_root, char *variable_id) {
+    return symbol_table_define_variable_or_function(current_function_root, variable_id);
+}
+
+void set_variable_type(tBSTNodePtr *current_function_root, char *variable_id, tDataType type) {
+    symbol_table_set_variable_type(*current_function_root, variable_id, type);
+}
+
+// Parser výrazov funkcie
+bool is_int(char *str) {
+    // TODO
+
+}
+
+bool is_float(char *str) {
+    // TODO
+
+}
+
+bool is_nil(char *str) {
+    if (strlen(str) != 3) {
+        return false;
+    }
+    else {
+        return (str[0] == 'n' && str[1] == 'i' && str[2] == 'l');
+    }
+}
+
+bool is_variable(tBSTNodePtr current_function_root, char *str) {
+    // TODO
+}
+/*
+int check_type_compatibility_aritmetic(tBSTNodePtr *current_function_root, char *symbol1, char *symbol2) {
+    // Predpokladá, že ak je nejaké id, tak už bolo definované
+    // Zisti, či je symbol1 INT, FLOAT alebo STRING
+
+    return -1;
+}*/

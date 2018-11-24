@@ -1,6 +1,6 @@
 #include "main.h"
 
-/*
+
 int main() {
     printf("MAIN.c\n");
 
@@ -40,8 +40,8 @@ int main() {
 
     return 0;
 }
- */
 
+/*
 // TEST MAIN
 int main() {
     printf("TEST MAIN.c\n");
@@ -70,6 +70,12 @@ int main() {
     printf("ret: %d\n", ret);
     Print_tree(global_table);
 
+    ret = symbol_table_get_params(global_table, "new_function");
+    printf("param: %d\n", ret);
+    function_increase_number_param(global_table, "new_function");
+    ret = symbol_table_get_params(global_table, "new_function");
+    printf("param: %d\n", ret);
+
     // Postupné uvoľnenie všetkých lokálnych tabuliek symbolov
 
     // Uvoľnenie GTS
@@ -77,3 +83,4 @@ int main() {
 
     return 0;
 }
+ */
