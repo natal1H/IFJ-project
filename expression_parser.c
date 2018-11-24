@@ -530,33 +530,38 @@ bool MainSyntaxCheck(tDLList *ExprList) {
 
         int static last_operation = no_operation_pTable; //TODO Nepouzivane
 
-        //Alokacia zasobnika
-        tStackP *stack = malloc(sizeof(tStackP));
-        tStackP *stackOutput = malloc(sizeof(tStackP));
-        tStackINT *stackOutputINT = malloc(sizeof(tStackINT));
+        if(syntaxStatus == ERR_OK) { //Ak je error semanticku cast preskoc
 
-        //Inicializacia zasobnika
-        InitStack(stack);
-        InitStack(stackOutput);
-        InitStackINT(stackOutputINT);
+            //Alokacia zasobnika
+            tStackP *stack = malloc(sizeof(tStackP));
+            tStackP *stackOutput = malloc(sizeof(tStackP));
+            tStackINT *stackOutputINT = malloc(sizeof(tStackINT));
+
+            //Inicializacia zasobnika
+            InitStack(stack);
+            InitStack(stackOutput);
+            InitStackINT(stackOutputINT);
 
 
-        //Rozlozenie vyrazu do postfixovej notacie
-        ExprList->Act = ExprList->First;
-        *stack = ParseToPostfix(ExprList, stack, stackOutput, last_operation);
-        //Re-Inicializacia(Vycistenie) zasobnika
-        InitStack(stackOutput);
+            //Rozlozenie vyrazu do postfixovej notacie
+            ExprList->Act = ExprList->First;
+            *stack = ParseToPostfix(ExprList, stack, stackOutput, last_operation);
+            //Re-Inicializacia(Vycistenie) zasobnika
+            InitStack(stackOutput);
 
-        //Vysledok daneho vyrazu TODO Zmenit
-        long vysledok = 0;
-        vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT , last_operation);
-        printf("Vysledok: %ld", vysledok);
+            //Vysledok daneho vyrazu TODO Zmenit
+            long vysledok = 0;
+            vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, last_operation);
+            printf("Vysledok: %ld", vysledok);
 
-        free(stack);
-        free(stackOutput);
-        free(stackOutputINT);
+            free(stack);
+            free(stackOutput);
+            free(stackOutputINT);
+        } else {
+            return syntaxStatus; //ERR_SYNTAX return
+        }
 
-        return syntaxStatus;
+        return syntaxStatus; //ERR_OK return
     }
 }
 
