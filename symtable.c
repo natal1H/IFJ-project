@@ -259,13 +259,45 @@ int symbol_table_add_param(tBSTNodePtr rootPtr, char *function_id) {
     }
 }
 
-int symbol_table_define_variable_or_function(tBSTNodePtr table, char *id) {
-    if (table == NULL) {
+int symbol_table_set_param(tBSTNodePtr rootPtr, char *function_id, int number) {
+    tDataNode *data;
+    bool found = BSTSearch(rootPtr, function_id, &data);
+    if (!found) {
+        // Chyba - neexistuje tá funkcia
         return -1;
     }
     else {
-        tDataNode *data;
-        bool found = BSTSearch(table, id, &data);
+        data->params = number;
+    }
+}
+
+int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id) {
+    tDataNode *data;
+    if ((*rootPtr) == NULL) {
+        // úplne prázdny
+
+        // Vytvor nový uzol v tabulke vlastne
+        data = (tDataNode *) malloc(sizeof(tDataNode));
+        if (data == NULL) {
+            // chyba
+            return ERR_INTERNAL;
+        }
+        data->defined = true;
+        data->type = T_UNDEFINED;
+        data->function_table = NULL;
+        data->params = -1;
+        data->value = NULL;
+
+        if (BSTInsert(&(*rootPtr), id, data) == ERR_INTERNAL) {
+            // Chyba
+            return ERR_INTERNAL;
+        }
+        else {
+            printf("tento if\n");
+        }
+    }
+    else {
+        bool found = BSTSearch((*rootPtr), id, &data);
         if (!found) {
             // Premenná neexistuje zatiaľ
 
@@ -281,7 +313,7 @@ int symbol_table_define_variable_or_function(tBSTNodePtr table, char *id) {
             data->params = -1;
             data->value = NULL;
 
-            if (BSTInsert(&table, id, data) == ERR_INTERNAL) {
+            if (BSTInsert(&(*rootPtr), id, data) == ERR_INTERNAL) {
                 // Chyba
                 return ERR_INTERNAL;
             }
