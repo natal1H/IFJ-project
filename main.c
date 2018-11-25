@@ -19,7 +19,8 @@ int main() {
     // Vytvorenie tabuľky pre main
     symbol_table_define_variable_or_function(&global_table, MAIN);
     tBSTNodePtr main_global_node = symbol_table_get_variable_node(global_table, MAIN);
-    actual_function_table = symbol_table_create_local_table(&main_global_node); // Nastavenie ukazovateľa na aktuálnu tabuľku na main
+    symbol_table_create_new_local_table(&main_global_node, &actual_function_table);
+
 
     if (ret != ERR_SCANNER) {
 

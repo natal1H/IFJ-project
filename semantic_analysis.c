@@ -27,7 +27,8 @@ int function_definition(tBSTNodePtr *global_table_root, char *function_id) {
         symbol_table_define_variable_or_function(&(*global_table_root), function_id); // vytvorenie položky v global_table
         symbol_table_set_param(*global_table_root, function_id, 0); // Nastavenie param na 0
         tBSTNodePtr function_global_node = symbol_table_get_variable_node(*global_table_root, function_id); // Získanie uzla novej funkcie v GTS
-        symbol_table_create_local_table(&function_global_node); // Vytvorenie lokálne TS
+        tBSTNodePtr new_function_table;
+        symbol_table_create_new_local_table(&function_global_node, &new_function_table);
 
         return ERR_OK;
     }

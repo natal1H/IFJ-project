@@ -22,9 +22,8 @@
     typedef struct {
         tDataType type;
         bool defined;
-        struct tBSTNode *function_table;
+        struct tBSTNode **function_table;
         int params;
-        TString *value;
     } tDataNode;
 
     typedef struct tBSTNode{
@@ -46,12 +45,13 @@
     int symbol_table_add_param(tBSTNodePtr rootPtr, char *function_id);
     int symbol_table_set_param(tBSTNodePtr rootPtr, char *function_id, int number);
     int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id);
-    tBSTNodePtr symbol_table_get_function_table(tBSTNodePtr global_table, char *id);
     void symbol_table_set_variable_type(tBSTNodePtr function_table, char *id, tDataType type);
-    tBSTNodePtr symbol_table_create_local_table(tBSTNodePtr *function_node);
-    char *symbol_table_get_variable_value(tBSTNodePtr local_table, char *id);
-    int symbol_table_set_variable_value(tBSTNodePtr *rootPtr, char *id, char *value);
     tBSTNodePtr symbol_table_get_variable_node(tBSTNodePtr rootPtr, char *id);
+
+
+    tBSTNodePtr symbol_table_get_function_table(tBSTNodePtr global_table, char *id);
+    void symbol_table_create_new_local_table(tBSTNodePtr *function_node, tBSTNodePtr *new_local_table);
+    void symbol_table_set_function_table(tBSTNodePtr *nodePtr, tBSTNodePtr *function_table); // funguje
 
     // Pomocné funkcie pre debug
     void Print_tree(tBSTNodePtr TempTree);

@@ -31,21 +31,6 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
             newPtr->data->type = data->type;
             newPtr->data->defined = data->defined;
             newPtr->data->function_table = data->function_table;
-
-            // Alokovať a uložiť value
-            newPtr->data->value = tstring_struct_initialize();
-            if (newPtr->data->value == NULL) {
-                // Chyba
-                return ERR_INTERNAL;
-            }
-            if (data->value != NULL) {
-                tstring_add_line(newPtr->data->value, data->value->string);
-            }
-
-            // Parametre
-            // Inicializovať dynamický string TString
-
-            // Nakopírovať obsah
             newPtr->data->params = data->params;
 
             (*rootPtr) = newPtr;
@@ -67,10 +52,6 @@ int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data) {
             (*rootPtr)->data->type = data->type;
             (*rootPtr)->data->function_table = data->function_table;
             (*rootPtr)->data->params = data->params;
-
-            // Prepísanie value
-            tstring_clear_string((*rootPtr)->data->value);
-            tstring_add_line((*rootPtr)->data->value, data->value->string);
         }
     }
 
@@ -119,7 +100,6 @@ void ReplaceByRightmost (tBSTNodePtr ptrReplaced, tBSTNodePtr *rootPtr) {
         tBSTNodePtr temp = (*rootPtr);
         (*rootPtr) = (*rootPtr)->lPtr;
 
-        tstring_free_struct(temp->data->value);
         free(temp->data);
         free(temp);
     }
@@ -153,8 +133,6 @@ void BSTDelete (tBSTNodePtr *rootPtr, char *id) {
             (*rootPtr) = (*rootPtr)->lPtr;
 
             // Vymazanie uzlu
-            tstring_free_struct(temp->data->value);
-
             free(temp->data);
             free(temp->id);
             free(temp);
@@ -165,8 +143,6 @@ void BSTDelete (tBSTNodePtr *rootPtr, char *id) {
             (*rootPtr) = (*rootPtr)->rPtr;
 
             // Vymazanie uzlu
-            tstring_free_struct(temp->data->value);
-
             free(temp->data);
             free(temp->id);
             free(temp);
@@ -182,9 +158,6 @@ void BSTDispose(tBSTNodePtr *rootPtr) {
     if ((*rootPtr) != NULL) {
         BSTDispose( &(*rootPtr)->lPtr );
         BSTDispose( &(*rootPtr)->rPtr );
-
-        // Uvoľni value
-        tstring_free_struct((*rootPtr)->data->value);
 
         // Uvoľni dáta
         free((*rootPtr)->data);
@@ -286,15 +259,12 @@ int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id) {
         data->type = T_UNDEFINED;
         data->function_table = NULL;
         data->params = -1;
-        data->value = NULL;
 
         if (BSTInsert(&(*rootPtr), id, data) == ERR_INTERNAL) {
             // Chyba
             return ERR_INTERNAL;
         }
-        else {
-            printf("tento if\n");
-        }
+
     }
     else {
         bool found = BSTSearch((*rootPtr), id, &data);
@@ -311,7 +281,6 @@ int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id) {
             data->type = T_UNDEFINED;
             data->function_table = NULL;
             data->params = -1;
-            data->value = NULL;
 
             if (BSTInsert(&(*rootPtr), id, data) == ERR_INTERNAL) {
                 // Chyba
@@ -338,7 +307,7 @@ tBSTNodePtr symbol_table_get_function_table(tBSTNodePtr global_table, char *id) 
     }
     else {
         // funkcia nájdená - vráť ukazovateĺ na ňu
-        return data->function_table;
+        return *(data->function_table);
     }
 }
 
@@ -352,46 +321,6 @@ void symbol_table_set_variable_type(tBSTNodePtr function_table, char *id, tDataT
     else {
         // funkcia nájdená - vráť ukazovateĺ na ňu
         data->type = type;
-    }
-}
-
-tBSTNodePtr symbol_table_create_local_table(tBSTNodePtr *function_node) {
-    if (function_node == NULL) {
-        return NULL;
-    }
-
-    tBSTNodePtr local_table;
-    BSTInit (&local_table);
-
-    return local_table;
-}
-
-char *symbol_table_get_variable_value(tBSTNodePtr local_table, char *id) {
-    tDataNode *data;
-    bool found = BSTSearch(local_table, id, &data);
-    if (!found) {
-        // Nenájdená premená
-        return NULL;
-    }
-    else {
-        // nájdená premenná - vráť hodnotu
-        return data->value->string;
-    }
-}
-
-int symbol_table_set_variable_value(tBSTNodePtr *rootPtr, char *id, char *value) {
-    tDataNode *data;
-    bool found = BSTSearch((*rootPtr), id, &data);
-    if (!found) {
-        // Nenájdená premenná
-        return -1;
-    }
-    else {
-        // Nájdená premenná - nastav hodnotu
-        tstring_clear_string(data->value);
-        tstring_add_line(data->value, value);
-        return ERR_OK;
-
     }
 }
 
@@ -415,6 +344,20 @@ tBSTNodePtr symbol_table_get_variable_node(tBSTNodePtr rootPtr, char *id) {
     }
 }
 
+void symbol_table_create_new_local_table(tBSTNodePtr *function_node, tBSTNodePtr *new_local_table) {
+    if (function_node == NULL) {
+        new_local_table = NULL;
+    }
+    else {
+        BSTInit(new_local_table);
+        (*function_node)->data->function_table = new_local_table;
+    }
+}
+
+void symbol_table_set_function_table(tBSTNodePtr *nodePtr, tBSTNodePtr *function_table) {
+    (*nodePtr)->data->function_table = function_table;
+}
+
 /*
 int main() {
 
@@ -425,28 +368,15 @@ int main() {
     data.function_table = NULL;
     data.type = 42;
     data.defined = true;
-    TString *str = tstring_struct_initialize();
-    tstring_add_line(str, "text");
-    data.value = str;
-
-
     data.params = 2;
 
     BSTInsert(&myTree, "hello", &data);
 
-    tDataNode *myData;
-    bool found = BSTSearch(myTree, "hello", &myData);
-    printf("%d\n", found);
-
-    symbol_table_define_variable_or_function(myTree, "var");
+    symbol_table_define_variable_or_function(&myTree, "var");
 
     Print_tree(myTree);
 
-    symbol_table_set_variable_value(&myTree, "var", "MY_VALUE");
     tBSTNodePtr myPtr = symbol_table_get_variable_node(myTree, "var");
-    if (myPtr->data->value != NULL) {
-        printf("My val: %s\n", myPtr->data->value->string);
-    }
 
     int par = symbol_table_get_params(myTree, "hello");
     printf("%d\n", par);
@@ -454,12 +384,27 @@ int main() {
     par = symbol_table_get_params(myTree, "hello");
     printf("%d\n", par);
 
-    char *text = symbol_table_get_variable_value(myTree, "hello");
-    printf("%s\n", text);
+    //tBSTNodePtr myTree2;
+    tBSTNodePtr myTree2;
+    //BSTInit(&myTree2);
+    //symbol_table_set_function_table(&myTree, &myTree2);
+    symbol_table_create_new_local_table(&myTree, &myTree2);
+
+    if (myTree->data->function_table == NULL) {
+        printf("NULL\n");
+    }
+    else {
+        printf("not NULL\n");
+        if (myTree->data->function_table == &myTree2) {
+            printf("Rovna sa\n");
+        }
+    }
+
+    symbol_table_define_variable_or_function(&myTree2, "text");
+    tBSTNodePtr var = symbol_table_get_function_table(myTree, "hello");
+    Print_tree(var);
 
     BSTDispose(&myTree);
-
-    tstring_free_struct(str);
 
     return 0;
 }
