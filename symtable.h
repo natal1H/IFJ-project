@@ -10,51 +10,78 @@
     #include "stringlib.h"
     #include "error.h"
 
+    // Datový typ premennej
     typedef enum {
         T_INT,
         T_FLOAT,
         T_STRING,
         T_BOOLEAN,
         T_NIL,
-        T_UNDEFINED
+        T_UNDEFINED,
+        T_PARAM
     } tDataType;
 
     typedef struct {
         tDataType type;
         bool defined;
-        struct tBSTNode **function_table;
-        int params;
-    } tDataNode;
+    } tDataNodeLocal;
 
-    typedef struct tBSTNode{
+    // Lokálna tabuľka symbolov
+    typedef struct tLocalTableNode {
         char *id; // Identifikátor
-        tDataNode *data;
+        tDataNodeLocal *data;
 
-        struct tBSTNode * lPtr;
-        struct tBSTNode * rPtr;
-    } *tBSTNodePtr;
+        struct tLocalTableNode * lPtr;
+        struct tLocalTableNode * rPtr;
+    } * tLocalTableNodePtr;
 
-    void BSTInit (tBSTNodePtr *rootPtr);
-    int BSTInsert (tBSTNodePtr *rootPtr, char *id, tDataNode *data);
-    bool BSTSearch (tBSTNodePtr rootPtr, char *id, tDataNode **data);
-    void ReplaceByRightmost (tBSTNodePtr ptrReplaced, tBSTNodePtr *rootPtr);
-    void BSTDelete (tBSTNodePtr *rootPtr, char *id);
-    void BSTDispose (tBSTNodePtr *rootPtr);
+    typedef struct {
+        bool defined; // Bola definovaná funkcia
+        int params; // Počet parametrov funkcie
+        tLocalTableNodePtr  *function_table; // Odkaz na lokálnu tabuľku symbolov funkcie
+    } tDataNodeGlobal;
 
-    int symbol_table_get_params(tBSTNodePtr rootPtr, char *function_id);
-    int symbol_table_add_param(tBSTNodePtr rootPtr, char *function_id);
-    int symbol_table_set_param(tBSTNodePtr rootPtr, char *function_id, int number);
-    int symbol_table_define_variable_or_function(tBSTNodePtr *rootPtr, char *id);
-    void symbol_table_set_variable_type(tBSTNodePtr function_table, char *id, tDataType type);
-    tBSTNodePtr symbol_table_get_variable_node(tBSTNodePtr rootPtr, char *id);
+    // Globálna tabuľka symbolov
+    typedef struct tGlobalTableNode {
+        char *id; // Identifikátor
+        tDataNodeGlobal *data;
 
+        struct tGlobalTableNode * lPtr;
+        struct tGlobalTableNode * rPtr;
+    } * tGlobalTableNodePtr;
 
-    tBSTNodePtr symbol_table_get_function_table(tBSTNodePtr global_table, char *id);
-    void symbol_table_create_new_local_table(tBSTNodePtr *function_node, tBSTNodePtr *new_local_table);
-    void symbol_table_set_function_table(tBSTNodePtr *nodePtr, tBSTNodePtr *function_table); // funguje
+    // Funkcie pre prácu s tabuľkami symbolov
+    // Globálna
+    // Všeobecné funkcie
+    void global_table_init(tGlobalTableNodePtr *rootPtr);
+    int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal *data);
+    bool global_table_search(tGlobalTableNodePtr rootPtr, char *id, tDataNodeGlobal **data);
+    void global_table_replace_by_rightmost(tGlobalTableNodePtr ptrReplaced, tGlobalTableNodePtr *rootPtr);
+    void global_table_delete(tGlobalTableNodePtr *rootPtr, char *id);
+    void global_table_dispose(tGlobalTableNodePtr *rootPtr);
+    void global_table_print_tmp(tGlobalTableNodePtr TempTree, char* sufix, char fromdir);
+    void global_table_print(tGlobalTableNodePtr TempTree);
+    // Špeciálne pre globálnu tabuľku
+    int function_get_number_params(tGlobalTableNodePtr rootPtr, char *function_id);
+    void function_increase_number_params(tGlobalTableNodePtr rootPtr, char *function_id);
+    void function_set_number_params(tGlobalTableNodePtr rootPtr, char *function_id, int number);
+    int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id);
+    tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id);
+    void set_function_table(tGlobalTableNodePtr *function_node_ptr, tLocalTableNodePtr *local_table_ptr);
 
-    // Pomocné funkcie pre debug
-    void Print_tree(tBSTNodePtr TempTree);
-    void Print_tree2(tBSTNodePtr TempTree, char* sufix, char fromdir);
+    // Lokálna
+    // Všeobecné funkcie
+    void local_table_init(tLocalTableNodePtr *rootPtr);
+    int local_table_insert(tLocalTableNodePtr *rootPtr, char *id, tDataNodeLocal *data);
+    bool local_table_search(tLocalTableNodePtr rootPtr, char *id, tDataNodeLocal **data);
+    void local_table_replace_by_rightmost(tLocalTableNodePtr ptrReplaced, tLocalTableNodePtr *rootPtr);
+    void local_table_delete(tLocalTableNodePtr *rootPtr, char *id);
+    void local_table_dispose(tLocalTableNodePtr *rootPtr);
+    void local_table_print_tmp(tLocalTableNodePtr TempTree, char* sufix, char fromdir);
+    void local_table_print(tLocalTableNodePtr TempTree);
+    // Špeciálne pre lokálnu tabuľku
+    int variable_set_defined(tLocalTableNodePtr *rootPtr, char *id);
+    void variable_set_type(tLocalTableNodePtr function_table, char *id, tDataType type);
+    tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id);
 
 #endif

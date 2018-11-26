@@ -7,5 +7,7 @@
 
 #define MAIN "main@function"
 
-tBSTNodePtr global_table;
-tBSTNodePtr actual_function_table;
+tGlobalTableNodePtr global_table; // Globálna tabuľka symbolov, kde sú v jednotlivých uzloch uložené užívateľom definované funkcie podľa ich ID
+tLocalTableNodePtr actual_function_table; // Tabuľka symbolov aktuálnej funkcie, v ktorej sa program nachádza (buď nejaká užívateľom definovaná funkcia alebo "main")
+tLocalTableNodePtr * actual_function_ptr; // Tabuľka symbolov aktuálnej funkcie, v ktorej sa program nachádza (buď nejaká užívateľom definovaná funkcia alebo "main")
+char *actual_function_name; // ID funkcie, v ktorej sa práve program nachádza

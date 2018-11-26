@@ -178,6 +178,19 @@ printf("%s ", token->attribute);
 					// Funkcia bola predtým definovaná - došlo k redefinícii - sémantická chyba
 					return ERR_SEM_ELSE; // TODO - správny chybový kód?
 				}
+				// Vytvoriť lokálnu tabuľku symbolov
+				tLocalTableNodePtr new_local_table;
+				local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
+				tGlobalTableNodePtr function_global_node = get_function_node(global_table, token->attribute); // Vráti ukazovvateľ na uzol s MAIN v GTS
+variable_set_defined(&new_local_table, token->attribute);
+				set_function_table(&function_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
+				// Bude nasledovať definícia funkcie - preto treba zmeniť ukazovateľ na aktuálnu lokálnu TS z MAIN na tabuľku novej funkcie
+				// Nastaviť actual_function_name (ID funkcie, v ktorej sa práve nachádza program) na token->attribute
+				actual_function_name = token->attribute;
+printf("Actual function name: %s\n", actual_function_name);
+				// Nastaviť actual_function_table
+				actual_function_ptr = &new_local_table; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
+local_table_print(*actual_function_ptr);
 				// Koniec sémantickej kontroly
 
 				if (get_next_token(token) == ERR_SCANNER) {
@@ -226,7 +239,7 @@ printf("eol\n");
 					}
 				}
 			}
-		}	
+		}
 
 		// Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END
 
