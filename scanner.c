@@ -122,6 +122,8 @@ void print_token(Token *token) {
 
 int get_next_token(Token *token) {
 
+    static bool eol_previously = false;
+
     tstring_clear_string(read_string); // str := '';
 
     TState state = START; // Nastavenie počiatočného stavu v DKA
@@ -138,6 +140,7 @@ int get_next_token(Token *token) {
                     state = F_ID;
 
                     tstring_append_char(read_string, c); // str := symbol
+                    eol_previously = false;
                 }
                 else if (scanner_is_number(c)) {
                     // START -> F_INT
@@ -145,76 +148,91 @@ int get_next_token(Token *token) {
                     state = F_INT;
 
                     tstring_append_char(read_string, c); // str := symbol
+                    eol_previously = false;
                 }
                 else if (c == (int) '"') {
                     // START -> Q_STRING
                     state = Q_STRING;
+                    eol_previously = false;
                 }
                 else if (c == (int) '=') {
                     // START -> F_ASSIGN
                     state = F_ASSIGN;
 
-                    // TODO ošetriť či prebehlo správne pridanie symbolu
                     tstring_append_char(read_string, c); // str := symbol
+                    eol_previously = false;
                 }
                 else if (c == (int) '+') {
                     // START -> F_ADDITION
                     token_set_type_attribute(token, ADDITION, "");
+                    eol_previously = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '*') {
                     // START -> F_MULTIPLICATION
                     token_set_type_attribute(token, MULTIPLICATION, "");
+                    eol_previously = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '-') {
                     // START -> F_SUBSTRACTION
                     state = F_SUBTRACTION;
                     tstring_append_char(read_string, c);
+                    eol_previously = false;
                 }
                 else if (c == (int) '/') {
                     // START -> F_DIVISION
                     //token = token_initialize();
                     token_set_type_attribute(token, DIVISION, "");
+                    eol_previously = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '<') {
                     // START -> F_LESS
                     state = F_LESS;
                     tstring_append_char(read_string, c); // str := symbol
+                    eol_previously = false;
                 }
                 else if (c == (int) '>') {
                     // START -> F_GREATER
                     state = F_GREATER;
                     tstring_append_char(read_string, c); // str := symbol
+                    eol_previously = false;
                 }
                 else if (c == (int) '#') {
                     // START -> Q_LINE_COMMENT
                     state = Q_LINE_COMMENT;
+                    eol_previously = false;
                 }
                 else if (c == (int) '!') {
                     // START -> Q_NOT_EQUALS
                     state = Q_NOT_EQUALS;
+                    eol_previously = false;
                 }
-
                 else if (c == (int) '(') {
-                    // START -> Q_NOT_EQUALS
+                    // START -> F_LEFT_ROUND_BRACKET
                     state = F_LEFT_ROUND_BRACKET;
+                    eol_previously = false;
                 }
-
                 else if (c == (int) ')') {
-                    // START -> Q_NOT_EQUALS
+                    // START -> F_RIGHT_ROUND_BRACKET
                     state = F_RIGHT_ROUND_BRACKET;
+                    eol_previously = false;
                 }
                 else if (c == (int) '\n') {
-                    // START -> F_EOL
-                    state = F_EOL;
+                    // Ak bol ihneď predtým EOL, tak nech ďalší ignoruje
+                    if (!eol_previously) {
+                        eol_previously = true;
+                        // START -> F_EOL
+                        state = F_EOL;
+                    }
+                    //else zostáva v stave START
                 }
                 else if (c == (int) ',') {
                     // START -> F_COMMA
                     state = F_COMMA;
+                    eol_previously = false;
                 }
-
                 else if (c == (int) ' ' || c == (int) '\t') {
                     // START -> START
                     //state = START;
@@ -223,11 +241,13 @@ int get_next_token(Token *token) {
                     // Koniec súboru
                     token->type = TYPE_EOF;
                     token->attribute = NULL;
+                    eol_previously = false;
                     return EOF;
                 }
                 else {
                     // START -> F_LEX_ERROR
                     state = F_LEX_ERROR;
+                    eol_previously = false;
                 }
                 break; //case START:
 
@@ -574,9 +594,8 @@ int get_next_token(Token *token) {
 
 }
 
-
-// MAIN - only for temp testing
 /*
+// MAIN - only for temp testing
 int main(int argc, char** argv) {
     printf("SCANNER TEST\n");
 
