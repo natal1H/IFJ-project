@@ -363,6 +363,18 @@ int params (Token *token) {
 
 	if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
+printf("\n##Prvý parameter %s\n", token->attribute);
+
+	// Sémantická akcia - nastaviť počet params funkcie na 1, vložiť param do lok. TS funkcie s typom T_PARAM
+	function_set_number_params(global_table, actual_function_name, 1); // params = 1
+printf("\nAktuálny počet parametrov funkcie: %d\n", function_get_number_params(global_table, actual_function_name));
+	variable_set_defined(actual_function_ptr, token->attribute); // Vloženie param do loc. TS funkcie
+printf("\n\n");
+local_table_print(*actual_function_ptr);
+printf("\n\n");
+	variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
+	// Koniec sémantickej akcie
+
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}
@@ -386,6 +398,18 @@ printf(", ");
 
 		if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
+printf("\n##Ďalší parameter %s\n", token->attribute);
+
+		// Sémantická akcia - inkrementovať počet params funkcie, vložiť param do lok. TS funkcie s typom T_PARAM
+		function_increase_number_params(global_table, actual_function_name); // Inc. počet params
+printf("\nAktuálny počet parametrov funkcie: %d\n", function_get_number_params(global_table, actual_function_name));
+		variable_set_defined(actual_function_ptr, token->attribute); // Vloženie param do loc. TS funkcie
+printf("\n\n");
+local_table_print(*actual_function_ptr);
+printf("\n\n");
+		variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
+		// Koniec sémantickej akcie
+
 			if (get_next_token(token) == ERR_SCANNER) {
 				return ERR_SCANNER;
 			}
