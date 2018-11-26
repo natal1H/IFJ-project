@@ -633,3 +633,14 @@ tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id) {
         }
     }
 }
+
+void symbol_table_dispose_all_local(tGlobalTableNodePtr *global_root) {
+    if ((*global_root) != NULL) {
+        symbol_table_dispose_all_local( &(*global_root)->lPtr );
+        symbol_table_dispose_all_local( &(*global_root)->rPtr );
+
+        tLocalTableNodePtr *local_temp = (*global_root)->data->function_table;
+        if (local_temp != NULL)
+            local_table_dispose(local_temp);
+    }
+}

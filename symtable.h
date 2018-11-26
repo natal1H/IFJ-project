@@ -85,4 +85,7 @@
     void variable_set_type(tLocalTableNodePtr function_table, char *id, tDataType type);
     tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id);
 
+    // Upratanie
+    void symbol_table_dispose_all_local(tGlobalTableNodePtr *global_root);
+
 #endif
