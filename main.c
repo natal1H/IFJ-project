@@ -49,6 +49,8 @@ actual_function_ptr = (main_global_node->data->function_table);
 printf("Actual TREE\n");
 local_table_print(*actual_function_ptr);
 
+    id_copy = NULL; // Netreba zatiaľ nijaké id zálohovať
+
     if (ret != ERR_SCANNER) {
 
         int ret = prog(token);
@@ -66,6 +68,9 @@ local_table_print(*actual_function_ptr);
 
     // Uvoľnenie GTS
     global_table_dispose(&global_table);
+
+    // uvoľnenie id_copy
+    free(id_copy);
 
     return ret;
 }

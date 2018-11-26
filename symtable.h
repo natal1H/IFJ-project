@@ -66,6 +66,7 @@
     void function_increase_number_params(tGlobalTableNodePtr rootPtr, char *function_id);
     void function_set_number_params(tGlobalTableNodePtr rootPtr, char *function_id, int number);
     int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id);
+    int function_set_undefined(tGlobalTableNodePtr *rootPtr, char *id);
     tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id);
     void set_function_table(tGlobalTableNodePtr *function_node_ptr, tLocalTableNodePtr *local_table_ptr);
 

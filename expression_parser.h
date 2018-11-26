@@ -2,6 +2,8 @@
 #define EXPRESSION_PARSER_EXPRESSION_PARSER_H
 
 #include "scanner.h"
+#include "semantic_analysis.h"
+#include "main.h"
 
 #define table_size 25
 #define MAXSTACK 50                      /* maximální počet prvků v zásobníku */

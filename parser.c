@@ -346,6 +346,12 @@ printf("eol\n");
 
 	else if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
+
+		// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
+		id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute));
+		strcpy(id_copy, token->attribute);
+printf("\n##ID COPY: %s\n", id_copy);
+
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}
@@ -468,10 +474,25 @@ printf(") ");
 
 int after_id (Token *token) {
 
+	// Uložiť niekde id (momentálne v token->attribute)
+
+
 	// Pravidlo 16: <after_id> -> ( <arg> )
 
 	if (token->type == LEFT_ROUND_BRACKET) {
 printf("( ");
+
+		// Sémantická akcia - určite pôjde o volanie funkcie - pozrieť, či bola definovaná, ak nie, pridať ju do GTS, ale defined = false;
+		bool was_defined = true;
+		// TODO - kde sa má kontrolovať počet volaných parametrov?
+		if (check_if_function_already_defined(global_table, id_copy) == false) {
+			// Funkcia ešte nebola definovaná, vytvoriť nový uzol (asi bez vlastnej lokálnej tabuľky symbolov), defined = false;
+			function_set_undefined(&global_table, id_copy);
+			was_defined = false;
+global_table_print(global_table);
+		}
+		// Koniec sémantickej akcie
+
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}

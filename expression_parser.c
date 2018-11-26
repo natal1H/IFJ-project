@@ -392,6 +392,25 @@ int string_to_integer(char* x){
  */
 char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
+    printf("\n --- EVALUATE NOW: %s %d %s\n", token_ID1, token_OP.type, token_ID2);
+
+    // Sémantická akcia - zistiť typy token_ID1, token_ID2
+    tSemType token1, token2;
+    // token_ID1:
+    if (is_int(token_ID1)) token1 = SEM_TYPE_INT;
+    else if (is_float(token_ID1)) token1 = SEM_TYPE_FLOAT;
+    else if (is_variable(*actual_function_ptr, token_ID1)) token1 = SEM_TYPE_VAR;
+    else token1 = SEM_TYPE_STRING;
+    // TODO: is_function?
+    // token_ID2:
+    if (is_int(token_ID2)) token2 = SEM_TYPE_INT;
+    else if (is_float(token_ID2)) token2 = SEM_TYPE_FLOAT;
+    else if (is_variable(*actual_function_ptr, token_ID2)) token2 = SEM_TYPE_VAR;
+    else token2 = SEM_TYPE_STRING;
+    // TODO is_function?
+
+    printf("\ntoken1: %d, token2: %d\n", token1, token2);
+
     switch(token_OP.type){
 
         case (ADDITION) : {
@@ -400,7 +419,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
             result = string_to_integer(token_ID1) + string_to_integer(token_ID2); //vypocet int + int
             char* tmp = integer_to_string(result); // pretypovanie int -> *char
-            return tmp;
+            return tmp; // <- toto sa vlastne hodí na zásobník (asi?)
 
         }
 
