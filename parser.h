@@ -17,6 +17,8 @@
 			Zmenit osetrovanie END a ELSE (asi na stack)
 */
 
+int expected_params;
+
 int prog (Token *token);
 
 int stat_list (Token *token);

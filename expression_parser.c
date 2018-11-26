@@ -717,7 +717,7 @@ bool MainSyntaxCheck(tDLList *ExprList) {
         } else {
             return syntaxStatus; //ERR_SYNTAX return
         }
-
+printf("Syntax status: %d\n", syntaxStatus);
         return syntaxStatus; //ERR_OK return
     }
 }

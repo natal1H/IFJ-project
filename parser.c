@@ -127,7 +127,7 @@ printf("eol\n");
 				actual_function_name = MAIN; // Nastaviť meno aktuálnej funkcie späť na MAIN
 				printf("Actual function name: %s\n", actual_function_name);
 				actual_function_ptr = (main_global_node->data->function_table); // Aktuálne lokálna tabuľka je nová lokálna tabuľka
-				local_table_print(*actual_function_ptr);
+				//local_table_print(*actual_function_ptr);
 				// Koniec sémantickej akcie
 			}
 			if (in_if_or_while || in_def) {
@@ -144,7 +144,6 @@ printf("else ");
 	}
 	else if (token->type == IDENTIFIER) {
 		if (stat(token) == ERR_OK) {
-printf("%s",  token->attribute);
 			if (token->type == EOL) {
 printf("eol\n");
 				if (get_next_token(token) == ERR_SCANNER) {
@@ -201,7 +200,7 @@ variable_set_defined(&new_local_table, token->attribute);
 printf("Actual function name: %s\n", actual_function_name);
 				// Nastaviť actual_function_table
 				actual_function_ptr = &new_local_table; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
-local_table_print(*actual_function_ptr);
+//local_table_print(*actual_function_ptr);
 				// Koniec sémantickej kontroly
 
 				if (get_next_token(token) == ERR_SCANNER) {
@@ -376,7 +375,7 @@ printf("\n##Prvý parameter %s\n", token->attribute);
 printf("\nAktuálny počet parametrov funkcie: %d\n", function_get_number_params(global_table, actual_function_name));
 	variable_set_defined(actual_function_ptr, token->attribute); // Vloženie param do loc. TS funkcie
 printf("\n\n");
-local_table_print(*actual_function_ptr);
+//local_table_print(*actual_function_ptr);
 printf("\n\n");
 	variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
 	// Koniec sémantickej akcie
@@ -411,7 +410,7 @@ printf("\n##Ďalší parameter %s\n", token->attribute);
 printf("\nAktuálny počet parametrov funkcie: %d\n", function_get_number_params(global_table, actual_function_name));
 		variable_set_defined(actual_function_ptr, token->attribute); // Vloženie param do loc. TS funkcie
 printf("\n\n");
-local_table_print(*actual_function_ptr);
+//local_table_print(*actual_function_ptr);
 printf("\n\n");
 		variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
 		// Koniec sémantickej akcie
@@ -440,9 +439,21 @@ int arg (Token *token) {
 	// Pravidlo 12: <arg> -> <value> <arg_next>
 
 	if (value(token) == ERR_OK && arg_next(token) == ERR_OK) {
+		expected_params--;
+printf("\n- decreasing exp param2s\n");
+
+		// Sémantická kontrola
+		printf("\n#Expected number of params: %d\n", expected_params);
+		// Kontrola počtu načítaných parametrov
+		if (expected_params != 0) {
+			fprintf(stderr, "Chyba! Nesprávny počet argumentov pri volaní funkcie.\n");
+			return ERR_SEM_PARAM; // TODO: Skontrolovať správnosť chybového kódu!!!
+		}
+		// Koniec sémantickej kontroly
+
 		return ERR_OK;
 	}
-	else return ERR_SYNTAX;
+	return ERR_SYNTAX;
 }
 
 
@@ -457,6 +468,8 @@ printf(", ");
 		}
 		
 		if (value(token) == ERR_OK) {
+			expected_params--;
+printf("\n- decreasing exp params\n");
 			return arg_next(token);
 		}
 	}
@@ -464,7 +477,8 @@ printf(", ");
 	// Pravidlo 15: <arg_next> -> epsilon
 
 	else if (token->type == RIGHT_ROUND_BRACKET) {
-printf(") ");
+printf(") TOTOTU");
+
 		return ERR_OK;
 	}
 
@@ -482,16 +496,15 @@ int after_id (Token *token) {
 	if (token->type == LEFT_ROUND_BRACKET) {
 printf("( ");
 
-		// Sémantická akcia - určite pôjde o volanie funkcie - pozrieť, či bola definovaná, ak nie, pridať ju do GTS, ale defined = false;
-		bool was_defined = true;
-		// TODO - kde sa má kontrolovať počet volaných parametrov?
-		if (check_if_function_already_defined(global_table, id_copy) == false) {
-			// Funkcia ešte nebola definovaná, vytvoriť nový uzol (asi bez vlastnej lokálnej tabuľky symbolov), defined = false;
-			function_set_undefined(&global_table, id_copy);
-			was_defined = false;
-global_table_print(global_table);
+		// Sémantická kontrola
+		if (!check_if_function_already_defined(global_table, id_copy)) {
+			// Funkcia ešte nebola definovaná - chyba
+			fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
+			return ERR_SEM_UNDEF;
 		}
-		// Koniec sémantickej akcie
+		expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
+printf("\nExpected number params: %d\n", expected_params);
+		// Koniec sémantickej kontroly
 
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
@@ -500,7 +513,13 @@ global_table_print(global_table);
 		// Pravidlo 13: <arg> -> epsilon
 
 		if (token->type == RIGHT_ROUND_BRACKET) {
-printf(") ");
+printf(") TUTOTO");
+
+			// Sémantická kontrola
+			// Porovnanie počtu parametrov
+			printf("\n##Výsledné expected params: %d\n", expected_params);
+			// Koniec sémantickej kontroly
+
 			if (get_next_token(token) == ERR_SCANNER) {
 				return ERR_SCANNER;
 			}
@@ -509,12 +528,13 @@ printf(") ");
 
 		}
 		else if (arg(token) == ERR_OK) {
-			if (get_next_token(token) == ERR_SYNTAX) {
-				return ERR_SYNTAX;
+			if (get_next_token(token) == ERR_SCANNER) {
+				return ERR_SCANNER;
 			}
 
 			return ERR_OK;
 		}
+
 	}
 
 	// Pravidlo 17: <after_id> = <def_value>
@@ -540,6 +560,7 @@ int def_value (Token *token) {
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
 		return CallExpressionParser(token);
+		print_token(token);
 	}
 
 	// Pravidlo 20: <def_value> -> ID ( <arg> )
@@ -606,6 +627,17 @@ printf("string ");
 			break;
  		case IDENTIFIER:
 printf("%s ", token->attribute);
+
+			// Sémantická kontrola
+			// Premenná musí byť už definovaná
+			tLocalTableNodePtr var_node = get_variable_node(*(actual_function_ptr) ,token->attribute);
+			if (var_node == NULL) {
+				// Neexistuje uzol s premennou -> nebola ešte definovaná - chyba
+				fprintf(stderr, "Chyba! Nedefinovaná premenná.\n");
+				return ERR_SEM_UNDEF;
+			}
+			// Koniec sémantickej kontroly
+
 			if (get_next_token(token) == ERR_SCANNER) {
 				return ERR_SCANNER;
 			}
