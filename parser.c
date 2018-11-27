@@ -569,7 +569,13 @@ int def_value (Token *token) {
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING ||
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
-		return CallExpressionParser(token);
+
+        int ret = CallExpressionParser(token);
+        printf("\n\t\tId copy: %s\n", id_copy);
+        // Sémantická akcia:
+        variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+        // Koniec sémantickej akcie
+        return ret;
 		print_token(token);
 	}
 
@@ -613,12 +619,22 @@ printf("%s ", token->attribute);
         }
         else {
             // Výraz začínajúci premennou -> zavolať parser výrazov
-            return CallExpressionParser(token);
+            int ret = CallExpressionParser(token);
+            printf("\n\t\tId copy: %s\n", id_copy);
+            // Sémantická akcia:
+            variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+            // Koniec sémantickej akcie
+            return ret;
         }
 	}
 	else if (token->type == LEFT_ROUND_BRACKET) {
 printf("expr ");
-		return CallExpressionParser(token);
+        int ret = CallExpressionParser(token);
+        printf("\n\t\tId copy: %s\n", id_copy);
+        // Sémantická akcia:
+        variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+        // Koniec sémantickej akcie
+        return ret;
 	}
 	
 	return ERR_SYNTAX;
