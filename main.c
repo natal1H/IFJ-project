@@ -51,6 +51,9 @@ local_table_print(*actual_function_ptr);
 
     id_copy = NULL; // Netreba zatiaľ nijaké id zálohovať
 
+    // Príprava generovania kódu
+    code_gen_start();
+
     if (ret != ERR_SCANNER) {
 
         int ret = prog(token);
@@ -71,6 +74,13 @@ local_table_print(*actual_function_ptr);
 
     // uvoľnenie id_copy
     free(id_copy);
+
+    // Výpis inštrukcií
+    printf("\n-- Výsledný kód: \n");
+    list_print_instructions(&instr_list);
+
+    // Upratanie po generovaní kódu
+    code_gen_end();
 
     return ret;
 }

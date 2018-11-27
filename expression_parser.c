@@ -361,6 +361,7 @@ int string_to_integer(char* x){
     //Resetovanie errno pred volanim
     errno = 0;
 
+    /*
     //Osetrenie moznych errov pri pretypovani
     if (x == ptr) {
         fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie  (no digits found, 0 returned)\n", return_value);
@@ -371,7 +372,7 @@ int string_to_integer(char* x){
     else if (errno == ERANGE && return_value == LONG_MAX) {
         fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (overflow occurred)\n", return_value);
     }
-    else if (errno == EINVAL) {  /* not in all c99 implementations - gcc OK */
+    else if (errno == EINVAL) {  /* not in all c99 implementations - gcc OK * /
         fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (base contains unsupported value)\n", return_value);
     }
     else if (errno != 0 && return_value == 0) {
@@ -382,6 +383,7 @@ int string_to_integer(char* x){
     }
     else if (errno == 0 && x && !*ptr){
     } //Ak je konverzia spravna
+    */
 
 
     return return_value;
@@ -434,8 +436,55 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
 
+                // TODO: generovanie DEFVAR!!!
+
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    printf("\n--Treba spraviť INT2FLOAT");
+                    if (token1 == T_INT) {
+                        // treba token1 prekonvertovať
+                        printf(" tokenu1\n");
+                        converted_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať konverzia
+                        printf("\nconverted name: %s\n", converted_name);
+
+                        // Vytvorenie premennej v loc. tabuľke symbolov
+                        variable_set_defined(actual_function_ptr, converted_name);
+                        variable_set_type(*actual_function_ptr, converted_name, T_FLOAT);
+
+                        // TODO: generovanie DEFVAR!!!
+
+                        // Pridať inštrukciu INT2FLOAT
+                        gen_int2float(converted_name, token_ID1, is_variable(*actual_function_ptr, token_ID1), false);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        // treba token2 prekonvertovať
+                        printf(" tokenu2\n");
+                        converted_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať konverzia
+                        printf("\nconverted name: %s\n", converted_name);
+
+                        // Vytvorenie premennej v loc. tabuľke symbolov
+                        variable_set_defined(actual_function_ptr, converted_name);
+                        variable_set_type(*actual_function_ptr, converted_name, T_FLOAT);
+
+                        // TODO: generovanie DEFVAR!!!
+
+                        // Pridať inštrukciu INT2FLOAT
+                        gen_int2float(converted_name, token_ID2, is_variable(*actual_function_ptr, token_ID2), false);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                // Generovanie samotnej inštrukcie ADD
+                gen_add(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
                 // Koniec generovania kódu
             }
             else {
