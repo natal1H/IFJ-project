@@ -193,7 +193,7 @@ int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
 }
 
 int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_ID, tDataType *type) {
-
+printf("\nGET TYPE\n");
     if (is_int(token_ID)) {
         *type = T_INT;
         return ERR_OK;
@@ -203,6 +203,7 @@ int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_I
         return ERR_OK;
     }
     else if (is_variable(*current_function_root, token_ID)) {
+        printf("\n\tGet type: premenná\n");
         // Pozrieť sa do tabuľky symbolov a vrátiť typ
         *type = variable_get_type(*current_function_root, token_ID);
         if (*type != T_UNDEFINED) return ERR_OK;
@@ -230,4 +231,32 @@ tDataType aritmetic_get_final_type(tDataType token1, tDataType token2) {
     else if ( (token1 == T_STRING && token2 == T_STRING)) return T_STRING;
     //else if ( (token1 == T_INT && token2 == T_NIL)) return T_NIL;
     else return T_UNDEFINED;
+}
+
+// TODO: skontrolovať či mám všetky správne kombinácie
+int comparison_check_compatibility(tDataType type1, tDataType type2) {
+    if (type1 == T_INT && type2 == T_INT) {
+        // Oba operandy INT - OK
+        return ERR_OK;
+    }
+    else if (type1 == T_FLOAT && type2 == T_FLOAT) {
+        // Oba operandy FLOAT - OK
+        return ERR_OK;
+    }
+    else if (type1 == T_STRING && type2 == T_STRING) {
+        // Oba operandy STRING - OK
+        return ERR_OK;
+    }
+    else if ( (type1 == T_INT && type2 == T_FLOAT) || (type1 == T_FLOAT && type2 == T_INT) ) {
+        // Jedno je INT, druhé FLOAT - OK, ale bude treba pretypovať
+        return ERR_OK;
+    }
+    else if (type1 == T_BOOLEAN && type2 == T_BOOLEAN) {
+        // Oba typ boolean
+        return ERR_OK;
+    }
+    else {
+        // Nepovolená kombinácia
+        return ERR_SEM_TYPE;
+    }
 }

@@ -5,15 +5,15 @@ int main() {
     printf("MAIN.c\n");
     
     
-/*
+
 //Odkomentovat ak sa projekt spusta v CLion
 //--------------CLion-------------------
 //Subor input.txt sa musi nachadzat v cmake-build-debug v danej zlozke projektu
 //Cize cesta input.txt bude ak je projekt ulozeny v default zlozke CLionProjects:
 //   ../CLionProjects/<Nazov projektu>/cmake-build-debug/input.txt
-freopen("input.txt","r",stdin);
+//freopen("input.txt","r",stdin);
 //--------------------------------------
-*/
+
     
 
     // inicializuj scanner najprv cez scanner_initialize()

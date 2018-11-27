@@ -110,11 +110,20 @@
     int arithmetic_check_compatibility(tDataType type1, tDataType type2);
 
     /**
-     * @brief Vráti výsledný typ operácie
-     * @param token1
-     * @param token2
-     * @return
+     * @brief Vráti výsledný typ aritmetickej operácie
+     * @param token1 Datový typ prvého operanda
+     * @param token2 Datový typ druhého operanda
+     * @return Výsledný typ
      */
     tDataType aritmetic_get_final_type(tDataType token1, tDataType token2);
+
+    /**
+     * @brief Skúma kompatibilitu typov pri operáciách porovnania
+     *
+     * @param type1 Datový typ prvého operandu
+     * @param type2 Datový typ druhého operandu
+     * @return Chybový kód
+     */
+    int comparison_check_compatibility(tDataType type1, tDataType type2);
 
 #endif

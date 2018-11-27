@@ -603,7 +603,8 @@ int def_value (Token *token) {
 printf("expr ");
 		int ret = CallExpressionParser(token);	
         	printf("\n\t\tId copy: %s\n", id_copy);	
-        	// Sémantická akcia:	
+        	// Sémantická akcia:
+        	printf("\n\tNASTAVENIE HODNOTY %s na %d\n", id_copy, typeFinal);
         	variable_set_type(*actual_function_ptr, id_copy, typeFinal);	
         	// Koniec sémantickej akcie	
         	return ret;
@@ -646,6 +647,7 @@ printf("%s ", token->attribute);
             int ret = CallExpressionParser(token);
             printf("\n\t\tId copy: %s\n", id_copy);
             // Sémantická akcia:
+            printf("Type final: %d\n", typeFinal);
             variable_set_type(*actual_function_ptr, id_copy, typeFinal);
             // Koniec sémantickej akcie
             return ret;
