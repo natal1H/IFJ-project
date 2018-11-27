@@ -849,7 +849,12 @@ void CleanSyntaxTable(){
 }
 
 int CallExpressionParser(Token *token) {
-
+    
+        
+    // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
+    typeFinal = T_UNDEFINED;
+        
+        
     //Ulozenie adresy ktoru dostanem pre zapis posledneho tokenu
     Token *SaveMyToken = token;
 
