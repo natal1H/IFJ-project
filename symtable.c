@@ -248,6 +248,8 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
             return ERR_INTERNAL;
         }
 
+        free(data);
+
     }
     else {
         bool found = global_table_search((*rootPtr), id, &data);
@@ -269,61 +271,11 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
                 return ERR_INTERNAL;
             }
 
+            free(data);
         }
         else {
             // Premmenná existuje - nastav defined
             data->defined = true;
-        }
-    }
-
-    return ERR_OK;
-}
-
-int function_set_undefined(tGlobalTableNodePtr *rootPtr, char *id) {
-    tDataNodeGlobal *data;
-    if ((*rootPtr) == NULL) {
-        // úplne prázdny
-
-        // Vytvor nový uzol v tabulke vlastne
-        data = (tDataNodeGlobal *) malloc(sizeof(tDataNodeGlobal));
-        if (data == NULL) {
-            // chyba
-            return ERR_INTERNAL;
-        }
-        data->defined = false;
-        data->function_table = NULL;
-        data->params = 0;
-
-        if (global_table_insert(&(*rootPtr), id, data) == ERR_INTERNAL) {
-            // Chyba
-            return ERR_INTERNAL;
-        }
-
-    }
-    else {
-        bool found = global_table_search((*rootPtr), id, &data);
-        if (!found) {
-            // Premenná neexistuje zatiaľ
-
-            // Vytvor nový uzol v tabulke vlastne
-            data = (tDataNodeGlobal *) malloc(sizeof(tDataNodeGlobal));
-            if (data == NULL) {
-                // chyba
-                return ERR_INTERNAL;
-            }
-            data->defined = false;
-            data->function_table = NULL;
-            data->params = 0;
-
-            if (global_table_insert(&(*rootPtr), id, data) == ERR_INTERNAL) {
-                // Chyba
-                return ERR_INTERNAL;
-            }
-
-        }
-        else {
-            // Premmenná existuje - nastav defined
-            data->defined = false;
         }
     }
 

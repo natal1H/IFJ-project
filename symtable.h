@@ -174,16 +174,6 @@
      */
     int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id);
 
-    // Todo: Treba naozaj túto funkciu?
-    /**
-     * @brief Nastavenie funkcie ako nedefinovanej
-     *
-     * @param rootPtr Ukazovateľ na globálnu tabuľky symbolov
-     * @param id Názov funkcie
-     * @return Chybový kód
-     */
-    int function_set_undefined(tGlobalTableNodePtr *rootPtr, char *id);
-
     /**
      * @brief Získanie uzla s funkciou podľa identifikátora
      * @param rootPtr Koreň stromu
