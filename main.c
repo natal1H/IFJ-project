@@ -3,7 +3,16 @@
 
 int main() {
     printf("MAIN.c\n");
-
+    
+    
+/*
+//Odkomentovat ak sa projekt spusta v CLion
+//--------------CLion-------------------
+//Subor input.txt sa musi nachadzat v cmake-build-debug v danej zlozke projektu
+freopen("input.txt","r",stdin);
+//--------------------------------------
+*/
+    
 
     // inicializuj scanner najprv cez scanner_initialize()
     if ( scanner_initialize() != 0 ) {
