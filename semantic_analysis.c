@@ -63,6 +63,7 @@ bool is_int(char *str) {
     return true;
 }
 
+// TODO: prerobiť, aby bralo aj 1.2e10 (desatinná časť pred e)
 bool is_float(char *str) {
     // Predpokladá neprázdny reťazec
     int N = strlen(str);
@@ -119,4 +120,29 @@ bool is_nil(char *str) {
 
 bool is_variable(tLocalTableNodePtr current_function_root, char *str) {
     return get_variable_node(current_function_root, str) != NULL;
+}
+
+char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
+    static int n = 1;
+    char prefix[] = "tmp";
+    char *name = NULL;
+    do {
+        char *n_str = integer_to_string(n);
+        name = realloc(name, sizeof(char) * (strlen(n_str) + strlen(prefix)));
+        if (name == NULL) {
+            return NULL;
+        }
+        strcpy(name, prefix);
+        strcat(name, n_str);
+
+        n++;
+
+    } while (is_variable(local_table, name)); // Skontrolovať, či už neni premenná s takým názvom v tabuľke symbolov
+
+    return name;
+}
+
+int arithmetic_check_compatibility(tSemType type1, tSemType type2) {
+
+    return ERR_OK;
 }

@@ -399,27 +399,45 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
     // token_ID1:
     if (is_int(token_ID1)) token1 = SEM_TYPE_INT;
     else if (is_float(token_ID1)) token1 = SEM_TYPE_FLOAT;
-    else if (is_variable(*actual_function_ptr, token_ID1)) token1 = SEM_TYPE_VAR;
+    else if (is_variable(*actual_function_ptr, token_ID1)) {
+        //token1 = SEM_TYPE_VAR;
+        // Pozrieť sa do tabuľky symbolov a vrátiť typ
+
+    }
+    else if (is_nil(token_ID1)) token1 = SEM_TYPE_NIL;
     else token1 = SEM_TYPE_STRING;
-    // TODO: is_function?
     // token_ID2:
     if (is_int(token_ID2)) token2 = SEM_TYPE_INT;
     else if (is_float(token_ID2)) token2 = SEM_TYPE_FLOAT;
-    else if (is_variable(*actual_function_ptr, token_ID2)) token2 = SEM_TYPE_VAR;
+    else if (is_variable(*actual_function_ptr, token_ID2)) {
+        //token2 = SEM_TYPE_VAR;
+        // Pozrieť sa do tabuľky symbolov a vrátiť typ
+
+    }
+    else if (is_nil(token_ID2)) token2 = SEM_TYPE_NIL;
     else token2 = SEM_TYPE_STRING;
-    // TODO is_function?
 
     printf("\ntoken1: %d, token2: %d\n", token1, token2);
+
+    char *var_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" operácie
+    printf("\nVar name: %s\n", var_name);
+    variable_set_defined(actual_function_ptr, var_name);
 
     switch(token_OP.type){
 
         case (ADDITION) : {
 
+            // Sémantická kontrola: skontrolovať kompatibilitu typov
+            int compatibilty_err_code = arithmetic_check_compatibility()
+
+            return var_name;
+            /*
             int result = 0;
 
             result = string_to_integer(token_ID1) + string_to_integer(token_ID2); //vypocet int + int
             char* tmp = integer_to_string(result); // pretypovanie int -> *char
             return tmp; // <- toto sa vlastne hodí na zásobník (asi?)
+             */
 
         }
 
@@ -790,25 +808,26 @@ int CallExpressionParser(Token *token) {
 
 
 
+/*
+int main(int argc, char *argv[]) {
 
-//int main(int argc, char *argv[]) {
-//
-//    freopen("input.txt","r",stdin);
-//    int ScannerErrorCheck = 0;
-//    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
-//        return ScannerErrorCheck;
-//    }
-//
-//    Token *token;
-//    token = token_initialize();
-//
-//    ScannerErrorCheck = get_next_token(token);
-//    if(ScannerErrorCheck != 0){
-//        return ScannerErrorCheck;
-//    }
-//
-//    CallExpressionParser(token);
-//
-//    print_token(token);
-//
-//}
+    freopen("input.txt","r",stdin);
+    int ScannerErrorCheck = 0;
+    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+        return ScannerErrorCheck;
+    }
+
+    Token *token;
+    token = token_initialize();
+
+    ScannerErrorCheck = get_next_token(token);
+    if(ScannerErrorCheck != 0){
+        return ScannerErrorCheck;
+    }
+
+    CallExpressionParser(token);
+
+    print_token(token);
+
+}
+*/

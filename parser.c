@@ -569,17 +569,12 @@ printf("expr ");
 printf("%s ", token->attribute);
 
 		// Sémantická kontrola
-		// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
-		id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute));
-		strcpy(id_copy, token->attribute);
-		printf("\nid copy(=ID() ): %s\n", id_copy);
-
-		if (!check_if_function_already_defined(global_table, id_copy)) {
+		if (!check_if_function_already_defined(global_table, token->attribute)) {
 			// Funkcia ešte nebola definovaná - chyba
 			fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
 			return ERR_SEM_UNDEF;
 		}
-		expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
+		expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
 		printf("\nExpected number params: %d\n", expected_params);
 		// Funkcia musí byť už definovaná
 
