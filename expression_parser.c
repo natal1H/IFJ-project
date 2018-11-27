@@ -313,6 +313,11 @@ void LoadToBuffer(Token *Token, tDLList *ExprList) {
         return;
     } else {
 
+        Expr->next = NULL;
+        Expr->prev = NULL;
+        Expr->Token.attribute = NULL;
+        Expr->Token.type = 0;
+
         if (ExprList->First == NULL) {
             (*Expr).Token = *Token; //inicializacia noveho prvku
             ExprList->First = Expr;        //prvy v zozname ak je prvy prvok
@@ -832,11 +837,24 @@ void FreeBuffer(tDLList *ExprList){
 
 
 
-int CallExpressionParser(Token *token) {
+/**
+ * Vynuluje hodnoty SyntaxTable ktore pocitaju pocet nacitanych jednotlivych tokenov 
+ */
+void CleanSyntaxTable(){
+    //Cislo 22 je velkost tabulky TODO Nahradit skrz define
+    for(int i=0; i<=22; i++) {
+        syntax_table[i][COUNTER_OF_TOKEN] = 0;
+    }
 
+}
+
+int CallExpressionParser(Token *token) {
+    
+        
     // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
     typeFinal = T_UNDEFINED;
-
+        
+        
     //Ulozenie adresy ktoru dostanem pre zapis posledneho tokenu
     Token *SaveMyToken = token;
 
@@ -847,6 +865,11 @@ int CallExpressionParser(Token *token) {
     }
 
     tDLList *ExprArray = malloc(sizeof(tDLList));
+            ExprArray->First = NULL;
+            ExprArray->Symbol = NULL;
+            ExprArray->SyntaxChecker = NULL;
+            ExprArray->Last = NULL;
+
 
     while   (token->type != EOL &&
              token->type != TYPE_EOF &&
@@ -870,6 +893,7 @@ int CallExpressionParser(Token *token) {
     MainSyntaxStatus = MainSyntaxCheck(ExprArray);
 
     FreeBuffer(ExprArray);
+    CleanSyntaxTable();
 
     //true = error
     if (MainSyntaxStatus == true) {
@@ -902,7 +926,26 @@ int main(int argc, char *argv[]) {
 
     CallExpressionParser(token);
 
-    print_token(token);
 
+    print_token(token);
+    free(token);
+
+
+//----------------druhy-vstup----------------
+    freopen("input2.txt","r",stdin);
+    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
+        return ScannerErrorCheck;
+    }
+
+    token = token_initialize();
+
+    ScannerErrorCheck = get_next_token(token);
+    if(ScannerErrorCheck != 0){
+        return ScannerErrorCheck;
+    }
+
+    CallExpressionParser(token);
+
+    print_token(token);
 }
 */
