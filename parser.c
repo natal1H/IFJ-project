@@ -576,6 +576,13 @@ printf(") ");
 
 	else if (token->type == ASSIGN) {
 printf("= ");
+printf("\n\tID COPY: %s\n", id_copy);	
+		// Sémantická akcia	
+		// Definovať premennú	
+        	variable_set_defined(actual_function_ptr, id_copy);	
+        	// Koniec sémantickej akcie	
+        	// TODO: neskôr po priradení treba ešte nastaviť typ premennej	
+
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}
@@ -594,7 +601,12 @@ int def_value (Token *token) {
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || token->type == LEFT_ROUND_BRACKET || 
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
-		return CallExpressionParser(token);
+		int ret = CallExpressionParser(token);	
+        	printf("\n\t\tId copy: %s\n", id_copy);	
+        	// Sémantická akcia:	
+        	variable_set_type(*actual_function_ptr, id_copy, typeFinal);	
+        	// Koniec sémantickej akcie	
+        	return ret;
 	}
 
 	// Pravidlo 20: <def_value> -> ID ( <arg> )
@@ -602,40 +614,51 @@ printf("expr ");
 	else if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
 
-		// Sémantická kontrola
-		if (!check_if_function_already_defined(global_table, token->attribute)) {
-			// Funkcia ešte nebola definovaná - chyba
-			fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
-			return ERR_SEM_UNDEF;
-		}
-		expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
-		printf("\nExpected number params: %d\n", expected_params);
-		// Funkcia musí byť už definovaná
-
-		// Koniec sémantickej kontroly
-
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
-
-		if (token->type == LEFT_ROUND_BRACKET) {
-printf("( ");
-			withoutBrackets = false;		
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
-
-			if (token->type == RIGHT_ROUND_BRACKET) {
-printf(") ");
-				return ERR_OK;
-			}
-			else return arg(token);
-		}
-		else if (token->type == IDENTIFIER) {
-			withoutBrackets = true;
-
-			return arg(token);
-		}
+        // Pozrieť či sa jedná o funkciu alebo premennú -> ak premenná, poslať hneď parseru výrazov
+        if (get_function_node(global_table, token->attribute) != NULL) {
+            // Volanie funkcie
+             // Sémantická kontrola
+            if (!check_if_function_already_defined(global_table, token->attribute)) {
+                // Funkcia ešte nebola definovaná - chyba
+                fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
+                return ERR_SEM_UNDEF;
+            }
+            expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
+            printf("\nExpected number params: %d\n", expected_params);
+            // Funkcia musí byť už definovaná
+             // Koniec sémantickej kontroly
+             if (get_next_token(token) == ERR_SCANNER) {
+                return ERR_SCANNER;
+            }
+             if (token->type == LEFT_ROUND_BRACKET) {
+                printf("( ");
+                if (get_next_token(token) == ERR_SCANNER) {
+                    return ERR_SCANNER;
+                }
+                 if (token->type == RIGHT_ROUND_BRACKET) {
+                    printf(") ");
+                    return ERR_OK;
+                } else return arg(token);
+            }
+         }
+        else {
+            // Výraz začínajúci premennou -> zavolať parser výrazov
+            int ret = CallExpressionParser(token);
+            printf("\n\t\tId copy: %s\n", id_copy);
+            // Sémantická akcia:
+            variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+            // Koniec sémantickej akcie
+            return ret;
+        }
+	}
+	else if (token->type == LEFT_ROUND_BRACKET) {
+printf("expr ");
+        int ret = CallExpressionParser(token);
+        printf("\n\t\tId copy: %s\n", id_copy);
+        // Sémantická akcia:
+        variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+        // Koniec sémantickej akcie
+        return ret;
 	}
 	
 	return ERR_SYNTAX;
