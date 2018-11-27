@@ -176,30 +176,74 @@ int gen_idiv(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_v
     return ret_val;
 }
 
-int gen_int2float(char *var_name, char *symbol, bool global) {
-    return add_instruction_with_1_symbol(I_INT2FLOAT, var_name, symbol, "int@", global);
+int gen_int2float(char *var_name, char *symbol, bool is_var, bool global) {
+    // Získanie prefixu
+    char *prefix;
+    if (is_var) {
+        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // TODO ošetriť alokáciu
+        if (global) strcpy(prefix, "GF@");
+        else strcpy(prefix, "LF@");
+    }
+    else {
+        prefix = malloc(sizeof(char) * strlen("int@")); // TODO ošetriť alokáciu
+        strcpy(prefix, "int@");
+    }
+
+    int ret_val = add_instruction_with_1_symbol(I_INT2FLOAT, var_name, symbol, prefix, global);
+    free(prefix);
+    return ret_val;
 }
 
-int gen_float2int(char *var_name, char *symbol, bool global) {
-    return add_instruction_with_1_symbol(I_FLOAT2INT, var_name, symbol, "float@", global);
+int gen_float2int(char *var_name, char *symbol, bool is_var, bool global) {
+    // Získanie prefixu
+    char *prefix;
+    if (is_var) {
+        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // TODO ošetriť alokáciu
+        if (global) strcpy(prefix, "GF@");
+        else strcpy(prefix, "LF@");
+    }
+    else {
+        prefix = malloc(sizeof(char) * strlen("float@")); // TODO ošetriť alokáciu
+        strcpy(prefix, "float@");
+    }
+
+    int ret_val = add_instruction_with_1_symbol(I_FLOAT2INT, var_name, symbol, prefix, global);
+    free(prefix);
+    return ret_val;
 }
 
-int gen_int2char(char *var_name, char *symbol, bool global) {
-    return add_instruction_with_1_symbol(I_INT2CHAR, var_name, symbol, "int@", global);
+int gen_int2char(char *var_name, char *symbol, bool is_var, bool global) {
+    // Získanie prefixu
+    char *prefix;
+    if (is_var) {
+        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // TODO ošetriť alokáciu
+        if (global) strcpy(prefix, "GF@");
+        else strcpy(prefix, "LF@");
+    }
+    else {
+        prefix = malloc(sizeof(char) * strlen("int@")); // TODO ošetriť alokáciu
+        strcpy(prefix, "int@");
+    }
+
+    return add_instruction_with_1_symbol(I_INT2CHAR, var_name, symbol, prefix, global);
 }
 
+// TODO
 int gen_stri2int(char *var_name, char *symbol1, char *symbol2, bool global) {
     return add_instruction_with_2_symbols(I_STRI2INT, var_name, symbol1, symbol2, "string@", "int@", global);
 }
 
+// TODO
 int gen_concat(char *var_name, char *symbol1, char *symbol2, bool global) {
     return add_instruction_with_2_symbols(I_CONCAT, var_name, symbol1, symbol2, "string@", "string@", global);
 }
 
+// TODO
 int gen_strlen(char *var_name, char *symbol, bool global) {
     return add_instruction_with_1_symbol(I_STRLEN, var_name, symbol, "string@", global);
 }
 
+// TODO
 int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global) {
     return add_instruction_with_2_symbols(I_SETCHAR, var_name, symbol1, symbol2, "string@", "int@", global);
 }
@@ -221,10 +265,13 @@ int main() {
     gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
     gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
 
+    gen_int2float("my_float", "42", false, true);
+    gen_int2float("my_float", "tmp", true, false);
+
     list_print_instructions(&instr_list);
 
     code_gen_end();
 
     return 0;
 }
- */
+*/

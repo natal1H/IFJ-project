@@ -37,9 +37,9 @@
     // TODO prerobiť
     // TODO odtadeto to treba prerobiť aby to fungovalo ako aritmetické, že berie aj premenné
     // Inštrukcie na prevody
-    int gen_int2float(char *var_name, char *symbol, bool global);
-    int gen_float2int(char *var_name, char *symbol, bool global);
-    int gen_int2char(char *var_name, char *symbol, bool global);
+    int gen_int2float(char *var_name, char *symbol, bool is_var, bool global);
+    int gen_float2int(char *var_name, char *symbol, bool is_var, bool global);
+    int gen_int2char(char *var_name, char *symbol, bool is_var, bool global);
     int gen_stri2int(char *var_name, char *symbol1, char *symbol2, bool global);
     // Vstupno výstupné inštrukcie
     // TODO - doplniť
