@@ -27,9 +27,10 @@ int main() {
     set_function_table(&main_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
 
 
-variable_set_defined(&new_local_table, "var@main");
-local_table_print(*(main_global_node->data->function_table));
-actual_function_ptr = (main_global_node->data->function_table);
+    //variable_set_defined(&new_local_table, "var@main");
+    //local_table_print(*(main_global_node->data->function_table));
+
+    actual_function_ptr = (main_global_node->data->function_table); // Dôležité
 
     /*
     printf("1\n");

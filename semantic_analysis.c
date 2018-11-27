@@ -142,7 +142,32 @@ char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
     return name;
 }
 
-int arithmetic_check_compatibility(tSemType type1, tSemType type2) {
-
-    return ERR_OK;
+int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
+    if ( (type1 == T_INT && type2 == T_STRING) || (type1 == T_STRING && type2 == T_INT) ) {
+        // INT op STRING -> chyba
+        return ERR_SEM_TYPE;
+    }
+    else if ( (type1 == T_FLOAT && type2 == T_STRING) || (type1 == T_STRING && type2 == T_FLOAT) ) {
+        // FLOAT op STRING -> chyba
+        return ERR_SEM_TYPE;
+    }
+    else if ( (type1 == T_INT && type2 == T_NIL) || (type1 == T_NIL && type2 == T_INT)) {
+        // INT op NIL -> chyba
+        return ERR_SEM_TYPE;
+    }
+    else if ( (type1 == T_FLOAT && type2 == T_NIL) || (type1 == T_NIL && type2 == T_FLOAT) ) {
+        // FLOAT op NIL -> chyba
+        return ERR_SEM_TYPE;
+    }
+    else if ( (type1 == T_STRING && type2 == T_NIL) || (type1 == T_NIL && type2 == T_STRING) ) {
+        // STRING op NIL -> chyba
+        return ERR_SEM_TYPE;
+    }
+    else if (type1 == T_BOOLEAN || type2 == T_BOOLEAN) {
+        // BOOLEAN nemôže byť medzi aritmetickými operáciami (ok?)
+        return ERR_SEM_TYPE;
+    }
+    else {
+        return ERR_OK;
+    }
 }

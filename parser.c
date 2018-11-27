@@ -121,6 +121,9 @@ printf("eol\n");
 		else if (strcmp(token->attribute, "end") == 0) {
 			if (in_def && !in_if_or_while) {
 				printf("## BOLO V DEFINíCII, teraz prechádza naspäť do main ##\n");
+
+local_table_print(*actual_function_ptr);
+
 				// Nebolo už vo while/if, vychádza z definície funkcie
 				// Sémantická akcia - presunúť ukazovať na aktuálnu lokálnu tabuľku naspäť na MAIN
 				tGlobalTableNodePtr main_global_node = get_function_node(global_table, MAIN); // Vráti ukazovvateľ na uzol s MAIN v GTS
@@ -192,7 +195,7 @@ printf("%s ", token->attribute);
 				tLocalTableNodePtr new_local_table;
 				local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
 				tGlobalTableNodePtr function_global_node = get_function_node(global_table, token->attribute); // Vráti ukazovvateľ na uzol s token->attribute v GTS
-variable_set_defined(&new_local_table, token->attribute);
+//variable_set_defined(&new_local_table, token->attribute);
 				set_function_table(&function_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
 				// Bude nasledovať definícia funkcie - preto treba zmeniť ukazovateľ na aktuálnu lokálnu TS z MAIN na tabuľku novej funkcie
 				// Nastaviť actual_function_name (ID funkcie, v ktorej sa práve nachádza program) na token->attribute

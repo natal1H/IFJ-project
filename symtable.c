@@ -615,6 +615,13 @@ void variable_set_type(tLocalTableNodePtr function_table, char *id, tDataType ty
     }
 }
 
+tDataType variable_get_type(tLocalTableNodePtr function_table, char *id) {
+    // Predpokladá, že existuje premenná
+    tDataNodeLocal *data;
+    local_table_search(function_table, id, &data);
+    return data->type;
+}
+
 tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id) {
     if (rootPtr == NULL) {
         return NULL;

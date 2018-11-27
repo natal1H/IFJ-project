@@ -395,27 +395,41 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
     printf("\n --- EVALUATE NOW: %s %d %s\n", token_ID1, token_OP.type, token_ID2);
 
     // Sémantická akcia - zistiť typy token_ID1, token_ID2
-    tSemType token1, token2;
+    tDataType token1 = T_UNDEFINED; tDataType token2 = T_UNDEFINED;
     // token_ID1:
-    if (is_int(token_ID1)) token1 = SEM_TYPE_INT;
-    else if (is_float(token_ID1)) token1 = SEM_TYPE_FLOAT;
+    if (is_int(token_ID1)) token1 = T_INT;
+    else if (is_float(token_ID1)) token1 = T_FLOAT;
     else if (is_variable(*actual_function_ptr, token_ID1)) {
         //token1 = SEM_TYPE_VAR;
         // Pozrieť sa do tabuľky symbolov a vrátiť typ
-
+        token1 = variable_get_type(*actual_function_ptr, token_ID1);
     }
-    else if (is_nil(token_ID1)) token1 = SEM_TYPE_NIL;
-    else token1 = SEM_TYPE_STRING;
+    else if (is_nil(token_ID1)) token1 = T_NIL;
+    // TODO
+    //else if (is_string(token_ID2)) {
+    //    token2 = T_STRING;
+    //}
+    else {
+        // Sémantická chyba - nedefinovaná premenná
+    }
+
     // token_ID2:
-    if (is_int(token_ID2)) token2 = SEM_TYPE_INT;
-    else if (is_float(token_ID2)) token2 = SEM_TYPE_FLOAT;
+    if (is_int(token_ID2)) token2 = T_INT;
+    else if (is_float(token_ID2)) token2 = T_FLOAT;
     else if (is_variable(*actual_function_ptr, token_ID2)) {
         //token2 = SEM_TYPE_VAR;
         // Pozrieť sa do tabuľky symbolov a vrátiť typ
+        token2 = variable_get_type(*actual_function_ptr, token_ID2);
+    }
+    else if (is_nil(token_ID2)) token2 = T_NIL;
+    // TODO
+    //else if (is_string(token_ID2)) {
+    //    token2 = T_STRING;
+    //}
+    else {
+        // Sémantická chyba - nedefinovaná premenná
 
     }
-    else if (is_nil(token_ID2)) token2 = SEM_TYPE_NIL;
-    else token2 = SEM_TYPE_STRING;
 
     printf("\ntoken1: %d, token2: %d\n", token1, token2);
 
@@ -428,7 +442,11 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
         case (ADDITION) : {
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
-            int compatibilty_err_code = arithmetic_check_compatibility()
+            int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
+            printf("\nCompatibility: %d\n", compatibility_err_code);
+
+            // TODO - nastaviť správny typ;
+            variable_set_type(*actual_function_ptr, var_name, T_INT); // temp - prerobiť
 
             return var_name;
             /*

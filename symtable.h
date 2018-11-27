@@ -12,13 +12,13 @@
 
     // Datový typ premennej
     typedef enum {
-        T_INT,
-        T_FLOAT,
-        T_STRING,
-        T_BOOLEAN,
-        T_NIL,
-        T_UNDEFINED,
-        T_PARAM
+        T_INT,      //0
+        T_FLOAT,    //1
+        T_STRING,   //2
+        T_BOOLEAN,  //3
+        T_NIL,      //4
+        T_UNDEFINED,//5
+        T_PARAM,    //6
     } tDataType;
 
     typedef struct {
@@ -83,6 +83,7 @@
     // Špeciálne pre lokálnu tabuľku
     int variable_set_defined(tLocalTableNodePtr *rootPtr, char *id);
     void variable_set_type(tLocalTableNodePtr function_table, char *id, tDataType type);
+    tDataType variable_get_type(tLocalTableNodePtr function_table, char *id);
     tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id);
 
     // Upratanie
