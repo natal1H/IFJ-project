@@ -541,9 +541,16 @@ printf(") TUTOTO");
 	}
 
 	// Pravidlo 17: <after_id> = <def_value>
-
 	else if (token->type == ASSIGN) {
 printf("= ");
+printf("\n\tID COPY: %s\n", id_copy);
+
+        // Sémantická akcia
+        // Definovať premennú
+        variable_set_defined(actual_function_ptr, id_copy);
+        // Koniec sémantickej akcie
+        // TODO: neskôr po priradení treba ešte nastaviť typ premennej
+
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
 		}
@@ -571,34 +578,43 @@ printf("expr ");
 	else if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
 
-		// Sémantická kontrola
-		if (!check_if_function_already_defined(global_table, token->attribute)) {
-			// Funkcia ešte nebola definovaná - chyba
-			fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
-			return ERR_SEM_UNDEF;
-		}
-		expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
-		printf("\nExpected number params: %d\n", expected_params);
-		// Funkcia musí byť už definovaná
+        // Pozrieť či sa jedná o funkciu alebo premennú -> ak premenná, poslať hneď parseru výrazov
+        if (get_function_node(global_table, token->attribute) != NULL) {
+            // Volanie funkcie
 
-		// Koniec sémantickej kontroly
+            // Sémantická kontrola
+            if (!check_if_function_already_defined(global_table, token->attribute)) {
+                // Funkcia ešte nebola definovaná - chyba
+                fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
+                return ERR_SEM_UNDEF;
+            }
+            expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
+            printf("\nExpected number params: %d\n", expected_params);
+            // Funkcia musí byť už definovaná
 
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+            // Koniec sémantickej kontroly
 
-		if (token->type == LEFT_ROUND_BRACKET) {
-printf("( ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+            if (get_next_token(token) == ERR_SCANNER) {
+                return ERR_SCANNER;
+            }
 
-			if (token->type == RIGHT_ROUND_BRACKET) {
-printf(") ");
-				return ERR_OK;
-			}
-			else return arg(token);
-		}
+            if (token->type == LEFT_ROUND_BRACKET) {
+                printf("( ");
+                if (get_next_token(token) == ERR_SCANNER) {
+                    return ERR_SCANNER;
+                }
+
+                if (token->type == RIGHT_ROUND_BRACKET) {
+                    printf(") ");
+                    return ERR_OK;
+                } else return arg(token);
+            }
+
+        }
+        else {
+            // Výraz začínajúci premennou -> zavolať parser výrazov
+            return CallExpressionParser(token);
+        }
 	}
 	else if (token->type == LEFT_ROUND_BRACKET) {
 printf("expr ");
