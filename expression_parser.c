@@ -394,41 +394,16 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
     printf("\n --- EVALUATE NOW: %s %d %s\n", token_ID1, token_OP.type, token_ID2);
 
-    // Sémantická akcia - zistiť typy token_ID1, token_ID2
+    // Sémantická kontrola
     tDataType token1 = T_UNDEFINED; tDataType token2 = T_UNDEFINED;
-    // token_ID1:
-    if (is_int(token_ID1)) token1 = T_INT;
-    else if (is_float(token_ID1)) token1 = T_FLOAT;
-    else if (is_variable(*actual_function_ptr, token_ID1)) {
-        //token1 = SEM_TYPE_VAR;
-        // Pozrieť sa do tabuľky symbolov a vrátiť typ
-        token1 = variable_get_type(*actual_function_ptr, token_ID1);
+    // Získanie typov tokenov
+    if (get_type_from_token(actual_function_ptr, token_ID1, &token1) != ERR_OK) {
+        // Sémantická chyba - riešiť
+        // TODO
     }
-    else if (is_nil(token_ID1)) token1 = T_NIL;
-    // TODO
-    //else if (is_string(token_ID2)) {
-    //    token2 = T_STRING;
-    //}
-    else {
-        // Sémantická chyba - nedefinovaná premenná
-    }
-
-    // token_ID2:
-    if (is_int(token_ID2)) token2 = T_INT;
-    else if (is_float(token_ID2)) token2 = T_FLOAT;
-    else if (is_variable(*actual_function_ptr, token_ID2)) {
-        //token2 = SEM_TYPE_VAR;
-        // Pozrieť sa do tabuľky symbolov a vrátiť typ
-        token2 = variable_get_type(*actual_function_ptr, token_ID2);
-    }
-    else if (is_nil(token_ID2)) token2 = T_NIL;
-    // TODO
-    //else if (is_string(token_ID2)) {
-    //    token2 = T_STRING;
-    //}
-    else {
-        // Sémantická chyba - nedefinovaná premenná
-
+    if (get_type_from_token(actual_function_ptr, token_ID2, &token2) != ERR_OK) {
+        // Sémantická chyba - riešiť
+        // TODO
     }
 
     printf("\ntoken1: %d, token2: %d\n", token1, token2);
@@ -445,18 +420,12 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
             printf("\nCompatibility: %d\n", compatibility_err_code);
 
-            // TODO - nastaviť správny typ;
-            variable_set_type(*actual_function_ptr, var_name, T_INT); // temp - prerobiť
+            // Sémantická akcia: zistenie výsledného typu
+            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            printf("\nFinal type: %d\n", typeFinal);
+            variable_set_type(*actual_function_ptr, var_name, typeFinal);
 
             return var_name;
-            /*
-            int result = 0;
-
-            result = string_to_integer(token_ID1) + string_to_integer(token_ID2); //vypocet int + int
-            char* tmp = integer_to_string(result); // pretypovanie int -> *char
-            return tmp; // <- toto sa vlastne hodí na zásobník (asi?)
-             */
-
         }
 
         case (MULTIPLICATION) : {

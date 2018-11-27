@@ -72,14 +72,14 @@
      */
     bool is_variable(tLocalTableNodePtr current_function_root, char *str);
 
+    // TODO
     /**
-     * @brief Skúma kompatibilitu typov pri aritmetických operáciách
-     * @param current_function_root Aktuálna lokálna tabuľka symbolov
-     * @param id1 Reťazec 1
-     * @param id2 Reťazec 2
-     * @return Chybobý kód
+     * @brief Zistí, či je reťazec reťazcový literál (začína sa " a končí " )
+     *
+     * @param str Skúmaný reťazec
+     * @return True ak môže byť reťazcový literál, false ak nemôže
      */
-    int check_type_compatibility_aritmetic(tLocalTableNodePtr *current_function_root, char *id1, char *id2);
+    bool is_string_literal(char *str);
 
     /**
      * @brief Vytvára unikátne meno pre premennú
@@ -89,6 +89,17 @@
      */
     char *expr_parser_create_unique_name(tLocalTableNodePtr local_table);
 
+    // TODO: ošetriť rozoznanie string
+    /**
+     * @brief Uloží typ tokenu podľa reťazca, kotroluje zároveň sémantické chyby
+     *
+     * @param current_function_root Lokálna tabuľka symbolov
+     * @param token_ID Reťazec
+     * @param type Ukazovateľ na typ, kde sa uloží výsledný typ
+     * @return Chybový kód (ERR_OK/ERR_SEM_UNDEF)
+     */
+    int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_ID, tDataType *type);
+
     /**
      * @brief Skúma kompatibilitu typov pri aritmetický operáciách
      *
@@ -97,5 +108,13 @@
      * @return Chybový kód
      */
     int arithmetic_check_compatibility(tDataType type1, tDataType type2);
+
+    /**
+     * @brief Vráti výsledný typ operácie
+     * @param token1
+     * @param token2
+     * @return
+     */
+    tDataType aritmetic_get_final_type(tDataType token1, tDataType token2);
 
 #endif

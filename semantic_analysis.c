@@ -122,6 +122,25 @@ bool is_variable(tLocalTableNodePtr current_function_root, char *str) {
     return get_variable_node(current_function_root, str) != NULL;
 }
 
+// TODO: najprv prerobiť vrátenie string v scannery aby to vrátilo ako \"txt\", lebo inak neni šanca to rozoznať od symbolu iba z pohľadu na reťazec
+bool is_string_literal(char *str) {
+    int N = strlen(str); // Dĺžka reťazca
+
+    // Kontrola, či je dĺžka aspoň 2 - prázdny reťazec je ""
+    if (N < 2) return false;
+
+    // Kontrola, či sa začína na "
+    if (str[0] != '"') return false;
+
+    for (int i = 1; i < N; i+i) {
+
+    }
+
+    //
+
+    return true;
+}
+
 char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
     static int n = 1;
     char prefix[] = "tmp";
@@ -141,6 +160,7 @@ char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
 
     return name;
 }
+
 
 int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
     if ( (type1 == T_INT && type2 == T_STRING) || (type1 == T_STRING && type2 == T_INT) ) {
@@ -170,4 +190,44 @@ int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
     else {
         return ERR_OK;
     }
+}
+
+int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_ID, tDataType *type) {
+
+    if (is_int(token_ID)) {
+        *type = T_INT;
+        return ERR_OK;
+    }
+    else if (is_float(token_ID)) {
+        *type = T_FLOAT;
+        return ERR_OK;
+    }
+    else if (is_variable(*current_function_root, token_ID)) {
+        // Pozrieť sa do tabuľky symbolov a vrátiť typ
+        *type = variable_get_type(*current_function_root, token_ID);
+        if (*type != T_UNDEFINED) return ERR_OK;
+        else return ERR_SEM_UNDEF; // Sémantická chyba: nedefinovaná premenná
+    }
+    else if (is_nil(token_ID)) {
+        *type = T_NIL;
+        return ERR_OK;
+    }
+    // TODO
+    //else if (is_string_literal(token_ID)) {
+    //    *type = T_STRING;
+    //    return ERR_OK;
+    //}
+    else {
+        // Sémantická chyba - nedefinovaná premenná
+        return ERR_SEM_UNDEF;
+    }
+
+}
+
+tDataType aritmetic_get_final_type(tDataType token1, tDataType token2) {
+    if (token1 == T_INT && token2 == T_INT) return T_INT;
+    else if ( (token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT) ) return T_FLOAT;
+    else if ( (token1 == T_STRING && token2 == T_STRING)) return T_STRING;
+    else if ( (token1 == T_INT && token2 == T_NIL)) return T_NIL;
+    else return T_UNDEFINED;
 }
