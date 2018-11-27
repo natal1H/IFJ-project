@@ -8,6 +8,7 @@
 #define table_size 25
 #define MAXSTACK 50                      /* maximální počet prvků v zásobníku */
 
+tDataType typeFinal; // Výsledný datový typ operácie
 
 typedef struct tDLElem {                 /* prvek dvousměrně vázaného seznamu */
     struct token Token;                                            /* užitečná data */

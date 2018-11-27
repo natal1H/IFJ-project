@@ -8,6 +8,10 @@
     #include "stringlib.h"
     #include "error.h"
     #include "instr_list.h"
+    #include "semantic_analysis.h"
+    #include "symtable.h"
+
+    #define VAR_PREFIX_LEN 3
 
     // štruktúra - zoznam inštrukcií
     tListOfInstr instr_list;
@@ -23,14 +27,15 @@
 
     // Pomocné funkcie pre generovanie rôznych situácií
     // Aritmetické inštrukcie
-    int gen_add_int(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_add_float(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_sub_int(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_sub_float(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_mul_int(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_mul_float(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_div(char *var_name, char *symbol1, char *symbol2, bool global);
-    int gen_idiv(char *var_name, char *symbol1, char *symbol2, bool global);
+    int gen_add(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+    int gen_sub(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+    int gen_mul(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+    int gen_div(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+    int gen_idiv(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+
+
+    // TODO prerobiť
+    // TODO odtadeto to treba prerobiť aby to fungovalo ako aritmetické, že berie aj premenné
     // Inštrukcie na prevody
     int gen_int2float(char *var_name, char *symbol, bool global);
     int gen_float2int(char *var_name, char *symbol, bool global);
@@ -47,6 +52,7 @@
     char *get_string_with_prefix(char *str, char *prefix);
     int add_instruction_with_2_symbols(tInstruction_type type, char *var_name, char *symbol1, char *symbol2, char *symbol1_prefix, char *symbol2_prefix, bool global);
     int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *symbol, char *symbol_prefix, bool global);
+    char *determine_prefix_arithmetic(tDataType type, bool is_var, bool global);
 
 
 #endif

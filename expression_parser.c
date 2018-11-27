@@ -423,7 +423,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             printf("\nCompatibility: %d\n", compatibility_err_code);
 
             // Sémantická akcia: zistenie výsledného typu
-            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            typeFinal = aritmetic_get_final_type(token1, token2);
             printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
@@ -442,7 +442,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             printf("\nCompatibility: %d\n", compatibility_err_code);
 
             // Sémantická akcia: zistenie výsledného typu
-            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            typeFinal = aritmetic_get_final_type(token1, token2);
             printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
@@ -461,7 +461,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             printf("\nCompatibility: %d\n", compatibility_err_code);
 
             // Sémantická akcia: zistenie výsledného typu
-            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            typeFinal = aritmetic_get_final_type(token1, token2);
             printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
@@ -480,7 +480,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             printf("\nCompatibility: %d\n", compatibility_err_code);
 
             // Sémantická akcia: zistenie výsledného typu
-            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            typeFinal = aritmetic_get_final_type(token1, token2);
             printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
@@ -490,6 +490,36 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             // Koniec generovania kódu
 
             return var_name;
+        }
+
+        case (LESS) : {
+
+            return var_name;
+        }
+
+        case (LESS_OR_EQUALS) : {
+
+            return var_name;
+        }
+
+        case (GREATER) : {
+
+            return var_name;
+        }
+
+        case (GREATER_OR_EQUALS) : {
+
+            return var_name;
+        }
+
+        case (EQUALS) : {
+
+            return  var_name;
+        }
+
+        case (NOT_EQUALS) : {
+
+            return  var_name;
         }
 
         default:{}
@@ -803,6 +833,9 @@ void FreeBuffer(tDLList *ExprList){
 
 
 int CallExpressionParser(Token *token) {
+
+    // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
+    typeFinal = T_UNDEFINED;
 
     //Ulozenie adresy ktoru dostanem pre zapis posledneho tokenu
     Token *SaveMyToken = token;

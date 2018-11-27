@@ -93,35 +93,87 @@ int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *
 
 }
 
-int gen_add_int(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_ADD, var_name, symbol1, symbol2, "int@", "int@", global);
+char *determine_prefix_arithmetic(tDataType type, bool is_var, bool global) {
+    char *prefix;
+    if (is_var) { // Premenná
+        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // strlen
+        if (prefix == NULL) return NULL;
+        if (global) {
+            strcpy(prefix, "GF@");
+        }
+        else {
+            strcpy(prefix, "LF@");
+        }
+    }
+    else { // INT/FLOAT
+        if (type == T_INT) { // INT
+            prefix = malloc(sizeof(char) * strlen("int@")); // strlen
+            if (prefix == NULL) return NULL;
+            strcpy(prefix, "int@");
+        }
+        else { // FLOAT
+            prefix = malloc(sizeof(char) * strlen("float@")); // strlen
+            if (prefix == NULL) return NULL;
+            strcpy(prefix, "float@");
+        }
+    }
+
+    return prefix;
 }
 
-int gen_add_float(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_ADD, var_name, symbol1, symbol2, "float@", "float@", global);
+int gen_add(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_ADD, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
 }
 
-int gen_sub_int(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_SUB, var_name, symbol1, symbol2, "int@", "int@", global);
+int gen_sub(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_SUB, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
 }
 
-int gen_sub_float(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_SUB, var_name, symbol1, symbol2, "float@", "float@", global);
+int gen_mul(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_MUL, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
 }
 
-int gen_mul_int(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_MUL, var_name, symbol1, symbol2, "int@", "int@", global);
+int gen_div(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_DIV, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
 }
 
-int gen_mul_float(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_MUL, var_name, symbol1, symbol2, "float@", "float@", global);
-}
+int gen_idiv(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
 
-int gen_div(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_DIV, var_name, symbol1, symbol2, "float@", "float@", global);
-}
-int gen_idiv(char *var_name, char *symbol1, char *symbol2, bool global) {
-    return add_instruction_with_2_symbols(I_IDIV, var_name, symbol1, symbol2, "int@", "int@", global);
+    int ret_val = add_instruction_with_2_symbols(I_IDIV, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
 }
 
 int gen_int2float(char *var_name, char *symbol, bool global) {
@@ -152,8 +204,8 @@ int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global) {
     return add_instruction_with_2_symbols(I_SETCHAR, var_name, symbol1, symbol2, "string@", "int@", global);
 }
 
-// test
 /*
+// test
 int main() {
     printf("CODE GEN TEST\n");
 
@@ -163,19 +215,11 @@ int main() {
     //listInsertLast(&instr_list, first_instr);
     //listFirst(&instr_list);
 
-    gen_add_int("a", "10", "42", true);
-    gen_add_float("var", "2.5", "1.2", false);
-    gen_sub_int("_var", "2", "1", false);
-    gen_sub_float("sub_var", "2.5", "1.2", true);
-    gen_mul_int("sub_var", "2.5", "1.2", true);
-    gen_mul_float("sub_var", "2.5", "1.2", true);
-    gen_div("sub_var", "2.5", "1.2", true);
-    gen_idiv("sub_var", "2.5", "1.2", true);
-
-    gen_int2float("myvar", "5", false);
-    gen_float2int("myvar2", "5.2", true);
-    gen_int2char("myvar2", "64", true);
-    gen_stri2int("str", "text", "2", true);
+    gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
 
     list_print_instructions(&instr_list);
 
@@ -183,4 +227,4 @@ int main() {
 
     return 0;
 }
-*/
+ */

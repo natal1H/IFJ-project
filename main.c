@@ -32,18 +32,6 @@ int main() {
 
     actual_function_ptr = (main_global_node->data->function_table); // Dôležité
 
-    /*
-    printf("1\n");
-    function_definition(&global_table, MAIN);
-    printf("2\n");
-    tGlobalTableNodePtr main = get_function_node(global_table, MAIN);
-    printf("3\n");
-    tLocalTableNodePtr main_loc = *(main->data->function_table);
-    printf("4\n");
-    variable_set_defined(&main_loc, "var@main");
-    printf("5\n");
-    actual_function_ptr = (main->data->function_table);
-    */
 
     actual_function_name = MAIN; // Nastaviť actual_function_name na MAIN
 
