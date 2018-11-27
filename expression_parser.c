@@ -399,10 +399,12 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
     // Získanie typov tokenov
     if (get_type_from_token(actual_function_ptr, token_ID1, &token1) != ERR_OK) {
         // Sémantická chyba - riešiť
+        fprintf(stderr, "Chyba! Nedefinovaná premenná %s.\n", token_ID1);
         // TODO
     }
     if (get_type_from_token(actual_function_ptr, token_ID2, &token2) != ERR_OK) {
         // Sémantická chyba - riešiť
+        fprintf(stderr, "Chyba! Nedefinovaná premenná %s.\n", token_ID2);
         // TODO
     }
 
@@ -423,18 +425,71 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
             // Sémantická akcia: zistenie výsledného typu
             tDataType typeFinal = aritmetic_get_final_type(token1, token2);
             printf("\nFinal type: %d\n", typeFinal);
+
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
+
+            // Generovanie kódu
+            // Sem pôjde kód na generovanie kódu
+            // Koniec generovania kódu
 
             return var_name;
         }
 
         case (MULTIPLICATION) : {
-            int result = 0;
 
-            result = string_to_integer(token_ID1) * string_to_integer(token_ID2); //vypocet int + int
-            char* tmp = integer_to_string(result); // pretypovanie int -> *char
+            // Sémantická kontrola: skontrolovať kompatibilitu typov
+            int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
+            printf("\nCompatibility: %d\n", compatibility_err_code);
 
-            return tmp;
+            // Sémantická akcia: zistenie výsledného typu
+            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            printf("\nFinal type: %d\n", typeFinal);
+
+            variable_set_type(*actual_function_ptr, var_name, typeFinal);
+
+            // Generovanie kódu
+            // Sem pôjde kód na generovanie kódu
+            // Koniec generovania kódu
+
+            return var_name;
+        }
+
+        case (SUBTRACTION) : {
+
+            // Sémantická kontrola: skontrolovať kompatibilitu typov
+            int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
+            printf("\nCompatibility: %d\n", compatibility_err_code);
+
+            // Sémantická akcia: zistenie výsledného typu
+            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            printf("\nFinal type: %d\n", typeFinal);
+
+            variable_set_type(*actual_function_ptr, var_name, typeFinal);
+
+            // Generovanie kódu
+            // Sem pôjde kód na generovanie kódu
+            // Koniec generovania kódu
+
+            return var_name;
+        }
+
+        case (DIVISION) : {
+
+            // Sémantická kontrola: skontrolovať kompatibilitu typov
+            int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
+            printf("\nCompatibility: %d\n", compatibility_err_code);
+
+            // Sémantická akcia: zistenie výsledného typu
+            tDataType typeFinal = aritmetic_get_final_type(token1, token2);
+            printf("\nFinal type: %d\n", typeFinal);
+
+            variable_set_type(*actual_function_ptr, var_name, typeFinal);
+
+            // Generovanie kódu
+            // Sem pôjde kód na generovanie kódu
+            // Koniec generovania kódu
+
+            return var_name;
         }
 
         default:{}
