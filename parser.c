@@ -540,6 +540,10 @@ printf(") ");
 			// Sémantická kontrola
 			// Porovnanie počtu parametrov
 			printf("\n##Výsledné expected params: %d\n", expected_params);
+			if (expected_params != 0) {
+			    // Sémantická chyba - nesprávny počet parametrov
+			    return ERR_SEM_PARAM;
+			}
 			// Koniec sémantickej kontroly
 
 			if (get_next_token(token) == ERR_SCANNER) {
@@ -568,6 +572,11 @@ printf(") ");
 	//Token obsahuje prvy argument funkcie
 	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
 		withoutBrackets = true;
+
+		// Volanie funkcie bez zátvoriek
+       		expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
+        	printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
+
 		
 		return arg(token);
 	}
@@ -585,17 +594,15 @@ printf(") ");
 	else if (token->type == ASSIGN) {
 printf("= ");
 printf("\n\tID COPY: %s\n", id_copy);	
-		// Sémantická akcia	
-		// Definovať premennú	
-        	variable_set_defined(actual_function_ptr, id_copy);	
-        	// Koniec sémantickej akcie	
-        	// TODO: neskôr po priradení treba ešte nastaviť typ premennej	
-
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
-
-		return def_value(token);
+		// Sémantická akcia
+		// Definovať premennú
+		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
+		variable_set_defined(actual_function_ptr, id_copy);
+        	// Koniec sémantickej akcie
+        	// Generovanie kódu
+        	gen_defvar(id_copy, false);
+        	printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+        	// Koniec
 	}
 	
 	return retVal;
@@ -609,13 +616,21 @@ int def_value (Token *token) {
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || token->type == LEFT_ROUND_BRACKET || 
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
-		int ret = CallExpressionParser(token);	
-        	printf("\n\t\tId copy: %s\n", id_copy);	
-        	// Sémantická akcia:
-        	printf("\n\tNASTAVENIE HODNOTY %s na %d\n", id_copy, typeFinal);
-        	variable_set_type(*actual_function_ptr, id_copy, typeFinal);	
-        	// Koniec sémantickej akcie	
-        	return ret;
+
+		int ret = CallExpressionParser(token);
+printf("\n\t\tId copy: %s\n", id_copy);
+		if (ret == ERR_OK) {
+			// Sémantická akcia:
+			printf("\n\tNASTAVENIE HODNOTY %s na %d\n", id_copy, typeFinal);
+			variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+printf("\n\tFinalVar: %s\n", finalVar);
+			// Koniec sémantickej akcie
+			// Generovanie kódu
+			// Presun výsledku výrazu do premennej (MOVE id_copy finalVar)
+			gen_move_var(id_copy, finalVar, false);
+			// Koniec generovania kódu
+		}
+       		return ret;
 	}
 
 	// Pravidlo 20: <def_value> -> ID ( <arg> )
