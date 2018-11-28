@@ -5,13 +5,9 @@
 			   - <arg> pre print nesedi s gramatikou (v printe musia byt arumenty, nemoze byt epsilon)
 			   - pridat pravidlo <stat_list> -> epsilon
 			   - vymazat stav <value> (nahradeny <expr>)
+			   - pridat volanie funkcie bez zatvoriek
 
 		Kod: - Pri volani funkcie nemusia byt okolo argumentov zatvorky
-		     - Doriesit priradovanie do premennej:
-			(semanticka anlyza pozrie ci je identifikator 
-			 v lokalnej tabulke symbolov(premenna) alebo
-			 v globalnej tabulke symbolov(funkcia).
-			 Ak je v lokalnej, vola sa expression parser.)
 
 */
 
@@ -169,6 +165,7 @@ printf("eol\n");
 printf("eof\n");
 			return ERR_OK;
 		}
+		else return ERR_SYNTAX;
 	}
 	
 	return statRetVal;
@@ -497,7 +494,7 @@ printf("\n- decreasing exp params\n");
 
 	// Pravidlo 15: <arg_next> -> epsilon
 
-	else if (token->type == RIGHT_ROUND_BRACKET) {
+	else if (token->type == RIGHT_ROUND_BRACKET && !withoutBrackets) {
 printf(") ");
 
 		return ERR_OK;
@@ -516,6 +513,7 @@ int after_id (Token *token) {
 	int retVal;
 
 	// Pravidlo 16: <after_id> -> ( <arg> )
+	// Volanie funkcie so zatvorkami
 
 	if (token->type == LEFT_ROUND_BRACKET) {
 printf("( ");
@@ -568,15 +566,26 @@ printf(") ");
 		}
 
 	}
-
+	//--------------------------------------------|
+	//Volanie funkcie S argumentami BEZ zatvoriek |
+	//--------------------------------------------|
+	//Token obsahuje prvy argument funkcie
 	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
 		withoutBrackets = true;
 
 		// Volanie funkcie bez zátvoriek
-        expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
-        printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
+       		expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
+        	printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
 
+		
 		return arg(token);
+	}
+	//---------------------------------------------|
+	//Volanie funkcie bez argumentov bez zatvoriek |
+	//---------------------------------------------|
+	//Token obsahuje EOL
+	else if (token->type == EOL) {
+		//TODO Volanie funkcie bez parametrov bez zatvoriek
 	}
 
 
@@ -585,16 +594,15 @@ printf(") ");
 	else if (token->type == ASSIGN) {
 printf("= ");
 printf("\n\tID COPY: %s\n", id_copy);	
-		// Sémantická akcia	
+		// Sémantická akcia
 		// Definovať premennú
 		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
 		variable_set_defined(actual_function_ptr, id_copy);
-        // Koniec sémantickej akcie
-
-        // Generovanie kódu
-        gen_defvar(id_copy, false);
-        printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
-        // Koniec
+        	// Koniec sémantickej akcie
+        	// Generovanie kódu
+        	gen_defvar(id_copy, false);
+        	printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+        	// Koniec
 
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
@@ -608,12 +616,13 @@ printf("\n\tID COPY: %s\n", id_copy);
 
 
 int def_value (Token *token) {
-	//TODO: vid zaciatok suboru
+
 	// Pravidlo 19: <def_value> -> <expr>
 
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || token->type == LEFT_ROUND_BRACKET || 
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
+
 		int ret = CallExpressionParser(token);
 printf("\n\t\tId copy: %s\n", id_copy);
 		if (ret == ERR_OK) {
@@ -622,14 +631,12 @@ printf("\n\t\tId copy: %s\n", id_copy);
 			variable_set_type(*actual_function_ptr, id_copy, typeFinal);
 printf("\n\tFinalVar: %s\n", finalVar);
 			// Koniec sémantickej akcie
-
 			// Generovanie kódu
 			// Presun výsledku výrazu do premennej (MOVE id_copy finalVar)
 			gen_move_var(id_copy, finalVar, false);
 			// Koniec generovania kódu
 		}
-
-       	return ret;
+       		return ret;
 	}
 
 	// Pravidlo 20: <def_value> -> ID ( <arg> )
