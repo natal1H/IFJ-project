@@ -82,6 +82,8 @@ local_table_print(*actual_function_ptr);
     // Upratanie po generovaní kódu
     code_gen_end();
 
+    printf("\n"); // TODO: dať preč!!!, je to tu iba kvôli zozbrazovaniu v termináli
+
     return ret;
 }
 

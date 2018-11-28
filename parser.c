@@ -542,6 +542,10 @@ printf(") ");
 			// Sémantická kontrola
 			// Porovnanie počtu parametrov
 			printf("\n##Výsledné expected params: %d\n", expected_params);
+			if (expected_params != 0) {
+			    // Sémantická chyba - nesprávny počet parametrov
+			    return ERR_SEM_PARAM;
+			}
 			// Koniec sémantickej kontroly
 
 			if (get_next_token(token) == ERR_SCANNER) {
@@ -567,7 +571,11 @@ printf(") ");
 
 	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
 		withoutBrackets = true;
-		
+
+		// Volanie funkcie bez zátvoriek
+        expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
+        printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
+
 		return arg(token);
 	}
 
