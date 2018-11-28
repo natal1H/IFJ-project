@@ -8,6 +8,9 @@ int code_gen_start() {
     // Inicializovať štruktúru, do ktorej sa bude zapisovať aktuálna inštrukcia
     curr_instr = tInstr_init();
 
+    // Inicializácia špeciálnej lokálnej tabuľky s návestiami
+    local_table_init(&label_table);
+
     // Vložiť hlavičku, JUMP $main, LABEL $main
     // Hlavička
     tInstr_set_instruction(curr_instr, I_HEADER, NULL, NULL, NULL);
@@ -36,6 +39,9 @@ int code_gen_end() {
 
     // uvoľniť štrukturú, v ktorej bola aktuálna inštrukcia
     tInst_free_instruction(curr_instr);
+
+    // Uvoľnenie lokálnej tabuľky s návestiami
+    local_table_dispose(&label_table);
 
     return ERR_OK;
 }
@@ -367,6 +373,33 @@ int gen_not(char *var_name, char *symbol, bool global) {
     return ret_val;
 }
 
+char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix) {
+    int n = 1;
+    char *name = NULL;
+
+    do {
+        char *n_str = malloc(sizeof(char) * sizeof(int) * 4 + 1);
+        name = realloc(name, sizeof(char) * (strlen(n_str) + strlen(prefix)));
+        if (n_str) {
+            sprintf(n_str, "%d", n);
+        }
+
+        if (name == NULL) {
+            return NULL;
+        }
+        strcpy(name, prefix);
+        strcat(name, n_str);
+
+        free(n_str);
+        n++;
+    } while (is_variable(*label_table, name));
+
+    // Vložiť do lokálnej tabuľky symbolov
+    variable_set_defined(label_table, name);
+
+    return name;
+}
+
 /*
 // test
 int main() {
@@ -378,14 +411,26 @@ int main() {
     //listInsertLast(&instr_list, first_instr);
     //listFirst(&instr_list);
 
-    gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
-    gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
-    gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    printf("Label Table:\n");
+    local_table_print(label_table);
 
-    gen_int2float("my_float", "42", false, true);
-    gen_int2float("my_float", "tmp", true, false);
+    char *label = get_and_set_unique_label(&label_table, "if");
+    get_and_set_unique_label(&label_table, "if");
+    get_and_set_unique_label(&label_table, "while");
+    get_and_set_unique_label(&label_table, "else");
+    get_and_set_unique_label(&label_table, "while");
+
+    local_table_print(label_table);
+
+
+    //gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    //gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    //gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    //gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    //gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+
+    //gen_int2float("my_float", "42", false, true);
+    //gen_int2float("my_float", "tmp", true, false);
 
     list_print_instructions(&instr_list);
 

@@ -42,7 +42,6 @@ void listInsertPostActive(tListOfInstr *L, tInstr *I) {
     }
 
     if (L->active == NULL) {
-        printf("TU SOM!\n");
         // Prázdny zoznam ešte, tak nech pridá na začiatok
         L->first = newItem;
         L->first->nextItem = NULL;
@@ -403,13 +402,6 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         return -1; // TODO vhodný chybový kód dať
     }
 
-    if (addr1 != NULL)
-        printf("SI adr1: %s\n", addr1);
-    if (addr2 != NULL)
-        printf("SI adr2: %s\n", addr2);
-    if (addr3 != NULL)
-        printf("SI adr3: %s\n", addr3);
-
     // Nastavenie nového typu
     instr->instType = type;
 
@@ -429,9 +421,7 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             return -1; // TODO vhodný chybový kód dať
         }
         //}
-        printf("Kopírovanie -%s-\n", addr1);
         strcpy(instr->addr1, addr1);
-        printf("Post copy: -%s- -%s-\n", instr->addr1, addr1);
     }
     else {
         if (instr->addr1 != NULL) {
@@ -439,7 +429,6 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         }
         instr->addr1 = NULL;
     }
-printf("SI a adr1: %s\n", instr->addr1);
     // Nastavenie addr2
     if (addr2 != NULL) {
         // Pozrieť či predtým niečo bolo na addr2
@@ -464,7 +453,6 @@ printf("SI a adr1: %s\n", instr->addr1);
         }
         instr->addr2 = NULL;
     }
-printf("SI b adr1: %s\n", instr->addr1);
     // Nastavenie addr3
     if (addr3 != NULL) {
         // Pozrieť či predtým niečo bolo na addr3
@@ -489,14 +477,6 @@ printf("SI b adr1: %s\n", instr->addr1);
         }
         instr->addr3 = NULL;
     }
-
-    if (addr1 != NULL)
-        printf("SI END adr1: %s\n", instr->addr1);
-    if (addr2 != NULL)
-        printf("SI END adr2: %s\n", instr->addr2);
-    if (addr3 != NULL)
-        printf("SI END adr3: %s\n", instr->addr3);
-    printf("SI_END\n");
 
     return ERR_OK;
 }
