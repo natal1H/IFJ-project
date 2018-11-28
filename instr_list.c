@@ -180,12 +180,15 @@ void tInstr_print_single_instruction(tInstr *I) {
     }
 
     if (I->instType == I_HEADER) {
-        printf(".IFJcode18\n");
+        printf(".IFJcode18");
         return ;
     }
     else if (I->instType == I_COMENT) {
-        printf("%s\n", I->addr1);
+        printf("\n%s", I->addr1);
         return ;
+    }
+    else {
+        printf("\n");
     }
 
     // Vypíš opcode
@@ -372,7 +375,6 @@ void tInstr_print_single_instruction(tInstr *I) {
         printf(" %s", I->addr3);
     }
 
-    printf("\n");
 }
 
 void list_print_instructions(tListOfInstr *L) {
