@@ -33,8 +33,14 @@
     int gen_div(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
     int gen_idiv(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
 
+    int gen_lt(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+    int gen_gt(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
+    int gen_eq(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
 
-    // TODO prerobiť
+    int gen_or(char *var_name, char *symbol1, char *symbol2, bool global);
+
+
+// TODO prerobiť
     // TODO odtadeto to treba prerobiť aby to fungovalo ako aritmetické, že berie aj premenné
     // Inštrukcie na prevody
     int gen_int2float(char *var_name, char *symbol, bool is_var, bool global);
@@ -48,11 +54,15 @@
     int gen_strlen(char *var_name, char *symbol, bool global);
     int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global);
 
+    int gen_defvar(char *var_name, bool global);
+
     // Ďalšie pomocné funkcie
     char *get_string_with_prefix(char *str, char *prefix);
     int add_instruction_with_2_symbols(tInstruction_type type, char *var_name, char *symbol1, char *symbol2, char *symbol1_prefix, char *symbol2_prefix, bool global);
     int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *symbol, char *symbol_prefix, bool global);
-    char *determine_prefix_arithmetic(tDataType type, bool is_var, bool global);
+    char *determine_prefix(tDataType type, bool is_var, bool global);
+
+    void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, char **converted_name);
 
 
 #endif

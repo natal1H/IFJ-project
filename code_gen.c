@@ -93,10 +93,10 @@ int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *
 
 }
 
-char *determine_prefix_arithmetic(tDataType type, bool is_var, bool global) {
+char *determine_prefix(tDataType type, bool is_var, bool global) {
     char *prefix;
     if (is_var) { // Premenná
-        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // strlen
+        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN);
         if (prefix == NULL) return NULL;
         if (global) {
             strcpy(prefix, "GF@");
@@ -107,24 +107,38 @@ char *determine_prefix_arithmetic(tDataType type, bool is_var, bool global) {
     }
     else { // INT/FLOAT
         if (type == T_INT) { // INT
-            prefix = malloc(sizeof(char) * strlen("int@")); // strlen
+            prefix = malloc(sizeof(char) * strlen("int@"));
             if (prefix == NULL) return NULL;
             strcpy(prefix, "int@");
         }
-        else { // FLOAT
-            prefix = malloc(sizeof(char) * strlen("float@")); // strlen
+        else if (type == T_FLOAT) { // FLOAT
+            prefix = malloc(sizeof(char) * strlen("float@"));
             if (prefix == NULL) return NULL;
             strcpy(prefix, "float@");
         }
+        else if (type == T_STRING) {
+            prefix = malloc(sizeof(char) * strlen("string@"));
+            if (prefix == NULL) return NULL;
+            strcpy(prefix, "string@");
+        }
+        else if (type == T_BOOLEAN) {
+            prefix = malloc(sizeof(char) * strlen("boolean@"));
+            if (prefix == NULL) return NULL;
+            strcpy(prefix, "boolean@");
+        }
+        else { // NIL
+            prefix = malloc(sizeof(char) * strlen("nil@"));
+            if (prefix == NULL) return NULL;
+            strcpy(prefix, "nil@");
+        }
     }
-
     return prefix;
 }
 
 int gen_add(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
-    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
 
     int ret_val = add_instruction_with_2_symbols(I_ADD, var_name, symbol1, symbol2, prefix1, prefix2, global);
     free(prefix1);
@@ -134,8 +148,8 @@ int gen_add(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_va
 
 int gen_sub(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
-    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
 
     int ret_val = add_instruction_with_2_symbols(I_SUB, var_name, symbol1, symbol2, prefix1, prefix2, global);
     free(prefix1);
@@ -145,8 +159,8 @@ int gen_sub(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_va
 
 int gen_mul(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
-    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
 
     int ret_val = add_instruction_with_2_symbols(I_MUL, var_name, symbol1, symbol2, prefix1, prefix2, global);
     free(prefix1);
@@ -156,8 +170,8 @@ int gen_mul(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_va
 
 int gen_div(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
-    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
 
     int ret_val = add_instruction_with_2_symbols(I_DIV, var_name, symbol1, symbol2, prefix1, prefix2, global);
     free(prefix1);
@@ -167,8 +181,8 @@ int gen_div(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_va
 
 int gen_idiv(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = determine_prefix_arithmetic(symbol1_type, s1_is_var, global);
-    char *prefix2 = determine_prefix_arithmetic(symbol2_type, s2_is_var, global);
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
 
     int ret_val = add_instruction_with_2_symbols(I_IDIV, var_name, symbol1, symbol2, prefix1, prefix2, global);
     free(prefix1);
@@ -246,6 +260,87 @@ int gen_strlen(char *var_name, char *symbol, bool global) {
 // TODO
 int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global) {
     return add_instruction_with_2_symbols(I_SETCHAR, var_name, symbol1, symbol2, "string@", "int@", global);
+}
+
+int gen_defvar(char *var_name, bool global) {
+    if (var_name == NULL) {
+        // Chyba
+        return -1; // TODO nájsť vhodný chybový kód
+    }
+
+    // Pred var a pred symboly dať predponu
+    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@" : "LF@") );
+    if (var_complete == NULL) {
+        // Chyba pri alokácii
+        return -1;
+    }
+
+    // Nastaviť správne aktuálnu inštrukciu
+    tInstr_set_instruction(curr_instr, I_DEFVAR ,var_complete, NULL, NULL);
+
+    // Vložiť inštrukciu do zoznamu
+    listInsertPostActive(&instr_list, curr_instr);
+
+    // Uvoľniť miesto, kde boli var_complete
+    free(var_complete);
+
+    return ERR_OK;
+}
+
+int gen_lt(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_LT, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
+}
+
+int gen_gt(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_GT, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
+}
+
+int gen_eq(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = determine_prefix(symbol1_type, s1_is_var, global);
+    char *prefix2 = determine_prefix(symbol2_type, s2_is_var, global);
+
+    int ret_val = add_instruction_with_2_symbols(I_EQ, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    free(prefix1);
+    free(prefix2);
+    return ret_val;
+}
+
+void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, char **converted_name) {
+    *converted_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať konverzia
+
+    // Vytvorenie premennej v loc. tabuľke symbolov
+    variable_set_defined(actual_function_ptr, *converted_name);
+    variable_set_type(*actual_function_ptr, *converted_name, T_FLOAT);
+
+    // Vygenerovanie premennej, ktorá vznikne pri konverzii
+    gen_defvar(*converted_name, false);
+
+    // Pridať inštrukciu INT2FLOAT
+    gen_int2float(*converted_name, symbol, is_variable(*actual_function_ptr, symbol), false);
+}
+
+int gen_or(char *var_name, char *symbol1, char *symbol2, bool global) {
+    // Nastavenie prefixov
+    char *prefix1 = global ? "GT@" : "LF@";
+    char *prefix2 = global ? "GT@" : "LF@";
+
+    int ret_val = add_instruction_with_2_symbols(I_OR, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    return ret_val;
 }
 
 /*

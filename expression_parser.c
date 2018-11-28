@@ -435,48 +435,23 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
                 printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
-
-                // TODO: generovanie DEFVAR!!!
+                // Vygenerovanie novej premennej v kóde
+                gen_defvar(var_name, false);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
                 if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
-                    printf("\n--Treba spraviť INT2FLOAT");
                     if (token1 == T_INT) {
-                        // treba token1 prekonvertovať
-                        printf(" tokenu1\n");
-                        converted_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať konverzia
-                        printf("\nconverted name: %s\n", converted_name);
-
-                        // Vytvorenie premennej v loc. tabuľke symbolov
-                        variable_set_defined(actual_function_ptr, converted_name);
-                        variable_set_type(*actual_function_ptr, converted_name, T_FLOAT);
-
-                        // TODO: generovanie DEFVAR!!!
-
-                        // Pridať inštrukciu INT2FLOAT
-                        gen_int2float(converted_name, token_ID1, is_variable(*actual_function_ptr, token_ID1), false);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        // treba token2 prekonvertovať
-                        printf(" tokenu2\n");
-                        converted_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať konverzia
-                        printf("\nconverted name: %s\n", converted_name);
-
-                        // Vytvorenie premennej v loc. tabuľke symbolov
-                        variable_set_defined(actual_function_ptr, converted_name);
-                        variable_set_type(*actual_function_ptr, converted_name, T_FLOAT);
-
-                        // TODO: generovanie DEFVAR!!!
-
-                        // Pridať inštrukciu INT2FLOAT
-                        gen_int2float(converted_name, token_ID2, is_variable(*actual_function_ptr, token_ID2), false);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -508,9 +483,31 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
                 printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
+                // Vygenerovanie novej premennej v kóde
+                gen_defvar(var_name, false);
 
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                // Generovanie samotnej inštrukcie MUL
+                gen_mul(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
                 // Koniec generovania kódu
             }
             else {
@@ -534,9 +531,31 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
                 printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
+                // Vygenerovanie novej premennej v kóde
+                gen_defvar(var_name, false);
 
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                // Generovanie samotnej inštrukcie SUB
+                gen_sub(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
                 // Koniec generovania kódu
             }
             else {
@@ -560,9 +579,34 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
                 printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
+                // Vygenerovanie novej premennej v kóde
+                gen_defvar(var_name, false);
 
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                // Generovanie samotnej inštrukcie DIV/IDIV
+                if (typeFinal == T_INT) // Celočíselné delenie (IDIV)
+                    gen_idiv(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                else // Normálne delenie (DIV)
+                    gen_div(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
                 // Koniec generovania kódu
             }
             else {
@@ -588,7 +632,26 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                gen_lt(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
                 // Koniec generovania kódu
             }
             else {
@@ -614,7 +677,35 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                // Vygenerovanie LT
+                char *var_name_lt = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
+                variable_set_defined(actual_function_ptr, var_name_lt);
+                gen_lt(var_name_lt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                // Vygenerovanie EQ
+                char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
+                variable_set_defined(actual_function_ptr, var_name_eq);
+                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                // Vygenerovanie OR medzi porovnaní
+                gen_or(var_name, var_name_lt, var_name_eq, false);
                 // Koniec generovania kódu
             }
             else {
@@ -640,9 +731,28 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
-                // Koniec generovania kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                gen_gt(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
             }
+                // Koniec generovania kódu
             else {
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
@@ -666,7 +776,35 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                // Vygenerovanie GT
+                char *var_name_gt = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
+                variable_set_defined(actual_function_ptr, var_name_gt);
+                gen_gt(var_name_gt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                // Vygenerovanie EQ
+                char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
+                variable_set_defined(actual_function_ptr, var_name_eq);
+                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                // Vygenerovanie OR medzi porovnaní
+                gen_or(var_name, var_name_gt, var_name_eq, false);
                 // Koniec generovania kódu
             }
             else {
@@ -692,9 +830,28 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
-                // Sem pôjde kód na generovanie kódu
-                // Koniec generovania kódu
+                // Zistiť či treba konverziu INT2FLOAT
+                if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
+                    // Treba konverziu jednej z hodnôt
+                    char *converted_name;
+                    if (token1 == T_INT) {
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+
+                        // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
+                        token1 = T_FLOAT;
+                        token_ID1 = converted_name;
+                    }
+                    else {
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+
+                        // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
+                        token2 = T_FLOAT;
+                        token_ID2 = converted_name;
+                    }
+                }
+                gen_eq(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
             }
+                // Koniec generovania kódu
             else {
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
