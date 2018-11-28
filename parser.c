@@ -68,7 +68,7 @@ int prog (Token *token) {
 */
 int stat_list (Token *token) {
 
-	int statRetVal; //Uchovava navratovu hodnotu funkcie stat
+	int statRetVal = 0; //Uchovava navratovu hodnotu funkcie stat
 
 	// Pravidlo 2: <stat_list> -> <stat> EOL <stat_list>	
 
