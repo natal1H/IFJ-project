@@ -11,7 +11,7 @@
     #include "semantic_analysis.h"
     #include "symtable.h"
 
-    #define VAR_PREFIX_LEN 3
+    #define VAR_PREFIX_LEN 4 // GF@% LF@%
 
     // štruktúra - zoznam inštrukcií
     tListOfInstr instr_list;

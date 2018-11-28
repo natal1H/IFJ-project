@@ -99,10 +99,10 @@ char *determine_prefix(tDataType type, bool is_var, bool global) {
         prefix = malloc(sizeof(char) * VAR_PREFIX_LEN);
         if (prefix == NULL) return NULL;
         if (global) {
-            strcpy(prefix, "GF@");
+            strcpy(prefix, "GF@%");
         }
         else {
-            strcpy(prefix, "LF@");
+            strcpy(prefix, "LF@%");
         }
     }
     else { // INT/FLOAT
@@ -195,8 +195,8 @@ int gen_int2float(char *var_name, char *symbol, bool is_var, bool global) {
     char *prefix;
     if (is_var) {
         prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // TODO ošetriť alokáciu
-        if (global) strcpy(prefix, "GF@");
-        else strcpy(prefix, "LF@");
+        if (global) strcpy(prefix, "GF@%");
+        else strcpy(prefix, "LF@%");
     }
     else {
         prefix = malloc(sizeof(char) * strlen("int@")); // TODO ošetriť alokáciu
@@ -213,8 +213,8 @@ int gen_float2int(char *var_name, char *symbol, bool is_var, bool global) {
     char *prefix;
     if (is_var) {
         prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // TODO ošetriť alokáciu
-        if (global) strcpy(prefix, "GF@");
-        else strcpy(prefix, "LF@");
+        if (global) strcpy(prefix, "GF@%");
+        else strcpy(prefix, "LF@%");
     }
     else {
         prefix = malloc(sizeof(char) * strlen("float@")); // TODO ošetriť alokáciu
@@ -231,8 +231,8 @@ int gen_int2char(char *var_name, char *symbol, bool is_var, bool global) {
     char *prefix;
     if (is_var) {
         prefix = malloc(sizeof(char) * VAR_PREFIX_LEN); // TODO ošetriť alokáciu
-        if (global) strcpy(prefix, "GF@");
-        else strcpy(prefix, "LF@");
+        if (global) strcpy(prefix, "GF@%");
+        else strcpy(prefix, "LF@%");
     }
     else {
         prefix = malloc(sizeof(char) * strlen("int@")); // TODO ošetriť alokáciu
@@ -269,7 +269,7 @@ int gen_defvar(char *var_name, bool global) {
     }
 
     // Pred var a pred symboly dať predponu
-    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@" : "LF@") );
+    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@%" : "LF@%") );
     if (var_complete == NULL) {
         // Chyba pri alokácii
         return -1;
@@ -336,8 +336,8 @@ void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, 
 
 int gen_or(char *var_name, char *symbol1, char *symbol2, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = global ? "GT@" : "LF@";
-    char *prefix2 = global ? "GT@" : "LF@";
+    char *prefix1 = global ? "GT@%" : "LF@%";
+    char *prefix2 = global ? "GT@%" : "LF@%";
 
     int ret_val = add_instruction_with_2_symbols(I_OR, var_name, symbol1, symbol2, prefix1, prefix2, global);
     return ret_val;
