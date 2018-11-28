@@ -53,20 +53,28 @@ int tstring_append_char(TString *tstr, char c) {
 }
 
 int tstring_clear_string(TString *tstr) {
-  if (tstr->allocated <= 0 && tstr != NULL) {
-    // Chyba - nie je inicializované alebo niečo podobné
-    return -1; // TODO: return actual error code
+//  if (tstr->allocated <= 0 && tstr != NULL) {
+  if ( tstr == NULL ) {
+//      if(tstr->allocated <= 0) {
+          // Chyba - nie je inicializované alebo niečo podobné
+          return -1; // TODO: return actual error code
+//      }
   }
-  tstr->string[0] = '\0';
-  tstr->length = 0;
+    if(tstr->allocated <= 0) {
+        return -1;
+    }
+      tstr->string[0] = '\0';
+      tstr->length = 0;
 
   return 0;
 }
 
 void tstring_free_string(TString *tstr) {
-  free(tstr->string);
-  tstr->length = 0;
-  tstr->allocated = 0;
+  if(tstr != NULL) {
+      free(tstr->string);
+      tstr->length = 0;
+      tstr->allocated = 0;
+  }
 }
 
 void tstring_free_struct(TString *tstr) {
