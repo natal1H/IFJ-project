@@ -10,17 +10,18 @@ void listInit(tListOfInstr *L) {
 }
 
 void listFree(tListOfInstr *L) {
-    tListItem *ptr;
-    while (L->first != NULL)
-    {
-        ptr = L->first;
-        L->first = L->first->nextItem;
+    if(L != NULL && L->first != NULL) {
+        tListItem *ptr = NULL;
+        while (L->first != NULL) {
+            ptr = L->first;
+            L->first = L->first->nextItem;
 
-        // Uvolníme inštrukciu v ptr
-        tInst_free_instruction(ptr->Instruction);
+            // Uvolníme inštrukciu v ptr
+            tInst_free_instruction(ptr->Instruction);
 
-        // uvolnime celu polozku
-        free(ptr);
+            // uvolnime celu polozku
+            free(ptr);
+        }
     }
 }
 
@@ -32,8 +33,10 @@ void listInsertPostActive(tListOfInstr *L, tInstr *I) {
     }
     */
 
-    tListItem *newItem;
+    tListItem *newItem = NULL;
     newItem = malloc(sizeof (tListItem));
+    newItem->Instruction = NULL;
+    newItem->nextItem = NULL;
 
     newItem->Instruction = tInstr_create(I->instType, I->addr1, I->addr2, I->addr3);
     if (newItem->Instruction == NULL) {

@@ -10,6 +10,12 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
         // Vytvorenie nového uzlu
         tGlobalTableNodePtr newPtr = (tGlobalTableNodePtr) malloc(sizeof(struct tGlobalTableNode));
         if (newPtr != NULL) {
+
+            newPtr->data = NULL;
+            newPtr->id = NULL;
+            newPtr->lPtr = NULL;
+            newPtr->rPtr = NULL;
+
             // Podarilo sa alokovať miesto
             // ID
             newPtr->id = (char *) malloc(sizeof(char) * strlen(id));
@@ -314,7 +320,14 @@ int local_table_insert(tLocalTableNodePtr *rootPtr, char *id, tDataNodeLocal *da
     if ((*rootPtr) == NULL) {
         // Vytvorenie nového uzlu
         tLocalTableNodePtr newPtr = (tLocalTableNodePtr) malloc(sizeof(struct tLocalTableNode));
+
         if (newPtr != NULL) {
+
+            newPtr->data = NULL;
+            newPtr->id = NULL;
+            newPtr->lPtr = NULL;
+            newPtr->rPtr = NULL;
+
             // Podarilo sa alokovať miesto
             // ID
             newPtr->id = (char *) malloc(sizeof(char) * strlen(id));
