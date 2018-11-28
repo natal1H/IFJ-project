@@ -9,6 +9,7 @@
 #define MAXSTACK 50                      /* maximální počet prvků v zásobníku */
 
 tDataType typeFinal; // Výsledný datový typ operácie
+char *finalVar; // Názov výslednej premennej
 
 typedef struct tDLElem {                 /* prvek dvousměrně vázaného seznamu */
     struct token Token;                                            /* užitečná data */

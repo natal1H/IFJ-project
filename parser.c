@@ -586,10 +586,11 @@ printf(") ");
 printf("= ");
 printf("\n\tID COPY: %s\n", id_copy);	
 		// Sémantická akcia	
-		// Definovať premennú	
-        	variable_set_defined(actual_function_ptr, id_copy);	
-        	// Koniec sémantickej akcie	
-        	// TODO: neskôr po priradení treba ešte nastaviť typ premennej	
+		// Definovať premennú
+		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
+		variable_set_defined(actual_function_ptr, id_copy);
+        // Koniec sémantickej akcie
+        // TODO: neskôr po priradení treba ešte nastaviť typ premennej
 
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
@@ -609,13 +610,22 @@ int def_value (Token *token) {
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || token->type == LEFT_ROUND_BRACKET || 
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
-		int ret = CallExpressionParser(token);	
-        	printf("\n\t\tId copy: %s\n", id_copy);	
-        	// Sémantická akcia:
-        	printf("\n\tNASTAVENIE HODNOTY %s na %d\n", id_copy, typeFinal);
-        	variable_set_type(*actual_function_ptr, id_copy, typeFinal);	
-        	// Koniec sémantickej akcie	
-        	return ret;
+		int ret = CallExpressionParser(token);
+printf("\n\t\tId copy: %s\n", id_copy);
+		if (ret == ERR_OK) {
+			// Sémantická akcia:
+			printf("\n\tNASTAVENIE HODNOTY %s na %d\n", id_copy, typeFinal);
+			variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+printf("\n\tFinalVar: %s\n", finalVar);
+			// Koniec sémantickej akcie
+
+			// Generovanie kódu
+			// Presun výsledku výrazu do premennej (MOVE id_copy finalVar)
+			gen_move_var(id_copy, finalVar, false);
+			// Koniec generovania kódu
+		}
+
+       	return ret;
 	}
 
 	// Pravidlo 20: <def_value> -> ID ( <arg> )

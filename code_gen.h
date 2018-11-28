@@ -83,6 +83,7 @@
     int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global);
 
     int gen_defvar(char *var_name, bool global);
+    int gen_move_var(char *var_name, char *symbol, bool global);
 
     // Ďalšie pomocné funkcie
     char *get_string_with_prefix(char *str, char *prefix);

@@ -358,8 +358,8 @@ void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, 
 
 int gen_or(char *var_name, char *symbol1, char *symbol2, bool global) {
     // Nastavenie prefixov
-    char *prefix1 = global ? "GT@%" : "LF@%";
-    char *prefix2 = global ? "GT@%" : "LF@%";
+    char *prefix1 = global ? "GF@%" : "LF@%";
+    char *prefix2 = global ? "GF@%" : "LF@%";
 
     int ret_val = add_instruction_with_2_symbols(I_OR, var_name, symbol1, symbol2, prefix1, prefix2, global);
     return ret_val;
@@ -367,10 +367,16 @@ int gen_or(char *var_name, char *symbol1, char *symbol2, bool global) {
 
 int gen_not(char *var_name, char *symbol, bool global) {
     // Nastavenie prefixov
-    char *prefix = global ? "GT@%" : "LF@%";
+    char *prefix = global ? "GF@%" : "LF@%";
 
     int ret_val = add_instruction_with_1_symbol(I_OR, var_name, symbol, prefix, global);
     return ret_val;
+}
+
+int gen_move_var(char *var_name, char *symbol, bool global) {
+    char *prefix = global ? "GF@%" : "LF@%";
+
+    return add_instruction_with_1_symbol(I_MOVE, var_name, symbol, prefix, global);
 }
 
 char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix) {

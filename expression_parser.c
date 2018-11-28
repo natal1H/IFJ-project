@@ -420,6 +420,8 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
     char *var_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" operácie
     variable_set_defined(actual_function_ptr, var_name);
 
+    finalVar = var_name;
+
     switch(token_OP.type){
 
         case (ADDITION) : {
@@ -1239,8 +1241,8 @@ void CleanSyntaxTable(){
 }
 
 int CallExpressionParser(Token *token) {
-    printf("\n------------\n");
-    local_table_print(*actual_function_ptr);
+    printf("\n---ACTUAL FUNCTION TABLE---------\n");
+    //local_table_print(*actual_function_ptr);
     printf("\n------------\n");
         
     // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
