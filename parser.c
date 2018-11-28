@@ -603,6 +603,12 @@ printf("\n\tID COPY: %s\n", id_copy);
         	gen_defvar(id_copy, false);
         	printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
         	// Koniec
+
+		if (get_next_token(token) == ERR_SCANNER) {
+			return ERR_SCANNER;
+		}
+
+		return def_value(token);
 	}
 	
 	return retVal;
