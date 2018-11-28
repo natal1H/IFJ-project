@@ -403,27 +403,21 @@ int string_to_integer(char* x){
  */
 char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorStatus){
     
-
-    printf("\n --- EVALUATE NOW: %s %d %s\n", token_ID1, token_OP.type, token_ID2);
-
     // Sémantická kontrola
     tDataType token1 = T_UNDEFINED; tDataType token2 = T_UNDEFINED;
     // Získanie typov tokenov
     if (get_type_from_token(actual_function_ptr, token_ID1, &token1) != ERR_OK) {
         // Sémantická chyba - riešiť
         fprintf(stderr, "Chyba! Nedefinovaná premenná %s.\n", token_ID1);
-        // TODO
+        *ErrorStatus = ERR_SEM_UNDEF;
     }
     if (get_type_from_token(actual_function_ptr, token_ID2, &token2) != ERR_OK) {
         // Sémantická chyba - riešiť
         fprintf(stderr, "Chyba! Nedefinovaná premenná %s.\n", token_ID2);
-        // TODO
+        *ErrorStatus = ERR_SEM_UNDEF;
     }
 
-    printf("\ntoken1: %d, token2: %d\n", token1, token2);
-
     char *var_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" operácie
-    printf("\nVar name: %s\n", var_name);
     variable_set_defined(actual_function_ptr, var_name);
 
     switch(token_OP.type){
@@ -432,12 +426,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
 
             if (compatibility_err_code == ERR_OK) {
                 // Sémantická akcia: zistenie výsledného typu
                 typeFinal = aritmetic_get_final_type(token1, token2);
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -471,6 +463,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -480,12 +473,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
 
             if (compatibility_err_code == ERR_OK) {
                 // Sémantická akcia: zistenie výsledného typu
                 typeFinal = aritmetic_get_final_type(token1, token2);
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -519,6 +510,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -528,12 +520,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
 
             if (compatibility_err_code == ERR_OK) {
                 // Sémantická akcia: zistenie výsledného typu
                 typeFinal = aritmetic_get_final_type(token1, token2);
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -567,6 +557,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -576,12 +567,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = arithmetic_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
 
             if (compatibility_err_code == ERR_OK) {
                 // Sémantická akcia: zistenie výsledného typu
                 typeFinal = aritmetic_get_final_type(token1, token2);
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -618,6 +607,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -627,13 +617,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
-            printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -666,6 +653,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -675,13 +663,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
-            printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -725,6 +710,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -734,8 +720,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
-            printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
@@ -743,7 +727,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
@@ -776,6 +759,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -785,8 +769,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
-            printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
@@ -794,7 +776,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
@@ -825,7 +806,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
                 variable_set_defined(actual_function_ptr, var_name_eq);
-  printf("\n\t----DEFVAR var: %s\n", var_name_eq);
                 gen_defvar(var_name_eq, false);
                 gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
                 // Vygenerovanie OR medzi porovnaní
@@ -836,6 +816,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -845,8 +826,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
-            printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
@@ -854,7 +833,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
@@ -884,6 +862,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
@@ -893,8 +872,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
-            printf("\nCompatibility: %d\n", compatibility_err_code);
-            printf("\nFinal type: %d\n", typeFinal);
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
@@ -902,7 +879,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
-                printf("\nFinal type: %d\n", typeFinal);
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Generovanie kódu
@@ -938,6 +914,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Sémantická chyba - ERR_SEM_TYPE
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
+                *ErrorStatus = compatibility_err_code;
             }
 
             return var_name;
