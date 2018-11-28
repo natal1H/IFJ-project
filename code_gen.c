@@ -286,6 +286,7 @@ int gen_setchar(char *var_name, char *symbol1, char *symbol2, bool global) {
 }
 
 int gen_defvar(char *var_name, bool global) {
+    printf("\nDEFVAL: %s\n", var_name);
     if (var_name == NULL) {
         // Chyba
         return -1; // TODO nájsť vhodný chybový kód

@@ -723,10 +723,6 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
             // Sémantická kontrola: skontrolovať kompatibilitu typov
             int compatibility_err_code = comparison_check_compatibility(token1, token2);
 
-            variable_set_type(*actual_function_ptr, var_name, typeFinal);
-            // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name, false);
-
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
 

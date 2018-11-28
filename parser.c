@@ -590,7 +590,11 @@ printf("\n\tID COPY: %s\n", id_copy);
 		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
 		variable_set_defined(actual_function_ptr, id_copy);
         // Koniec sémantickej akcie
-        // TODO: neskôr po priradení treba ešte nastaviť typ premennej
+
+        // Generovanie kódu
+        gen_defvar(id_copy, false);
+        printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+        // Koniec
 
 		if (get_next_token(token) == ERR_SCANNER) {
 			return ERR_SCANNER;
