@@ -21,6 +21,9 @@
     #include "symtable.h"
 
     #define VAR_PREFIX_LEN 4 // GF@% LF@%
+    #define VAR_PREFIX "LF@%"
+    #define LABEL_PREFIX "$"
+    #define FUNCTION_PREFIX "?"
 
     // Štruktúra - špeciálna lokálna tabuľka na názvy návestí
     tLocalTableNodePtr label_table;
@@ -89,8 +92,13 @@
     char *get_string_with_prefix(char *str, char *prefix);
     int add_instruction_with_2_symbols(tInstruction_type type, char *var_name, char *symbol1, char *symbol2, char *symbol1_prefix, char *symbol2_prefix, bool global);
     int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *symbol, char *symbol_prefix, bool global);
+    int add_instruction_unary(tInstruction_type type, char *symbol, char *symbol_prefix);
     char *determine_prefix(tDataType type, bool is_var, bool global);
     char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix);
 
+    // Generovanie funkcií
+    int gen_push_param(char *symbol, tDataType type, bool is_var);
+    int gen_pop_var(char *var_name);
+    int gen_call(char *function_name);
 
 #endif

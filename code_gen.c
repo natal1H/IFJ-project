@@ -99,7 +99,7 @@ int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *
     char *symbol_complete = get_string_with_prefix(symbol, symbol_prefix );
     if (var_complete == NULL || symbol_complete == NULL) {
         // Chyba pri alokácii
-        return -1;
+        return ERR_INTERNAL;
     }
 
     // Nastaviť správne aktuálnu inštrukciu
@@ -114,6 +114,31 @@ int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *
 
     return ERR_OK;
 
+}
+
+int add_instruction_unary(tInstruction_type type, char *symbol, char *symbol_prefix) {
+    if (symbol == NULL) {
+        // Chyba
+        return -1; // TODO nájsť vhodný chybový kód
+    }
+
+    // Pred var a pred symboly dať predponu
+    char *symbol_complete = get_string_with_prefix(symbol, symbol_prefix );
+    if (symbol_complete == NULL) {
+        // Chyba pri alokácii
+        return ERR_INTERNAL;
+    }
+
+    // Nastaviť správne aktuálnu inštrukciu
+    tInstr_set_instruction(curr_instr, type, symbol_complete, NULL, NULL);
+
+    // Vložiť inštrukciu do zoznamu
+    listInsertPostActive(&instr_list, curr_instr);
+
+    // Uvoľniť miesto
+    free(symbol_complete);
+
+    return ERR_OK;
 }
 
 char *determine_prefix(tDataType type, bool is_var, bool global) {
@@ -407,6 +432,48 @@ char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix) {
     return name;
 }
 
+int gen_push_var(char *symbol, tDataType type, bool is_var) {
+    int ret;
+    if (is_var)
+        ret = add_instruction_unary(I_PUSHS, symbol, VAR_PREFIX);
+    else if (type == T_INT)
+        ret = add_instruction_unary(I_PUSHS, symbol, "int@");
+    else if (type == T_FLOAT)
+        ret = add_instruction_unary(I_PUSHS, symbol, "float@");
+    else if (type == T_STRING)
+        ret = add_instruction_unary(I_PUSHS, symbol, "string@");
+    else if (type == T_NIL)
+        ret = add_instruction_unary(I_PUSHS, symbol, "nil@");
+
+    return ret;
+}
+
+int gen_pop_var(char *var_name) {
+    return add_instruction_unary(I_POPS, var_name, VAR_PREFIX);
+}
+
+int gen_call(char *function_name) {
+    return add_instruction_unary(I_CALL, function_name, FUNCTION_PREFIX);
+}
+
+int gen_function_label(char *function_name) {
+    return add_instruction_unary(I_LABEL, function_name, FUNCTION_PREFIX);
+}
+
+void prepare_for_func() {
+    listFirst(&instr_list); // Aktívny je prvý -> .IFJcode2018
+    listNext(&instr_list); // Aktívny je druhý -> JUMP $main
+    // teraz sa bude vkladať za JUMP $main
+}
+
+void end_function() {
+    // RETURN a presune aktivitu na posledný prvok
+    tInstr_set_instruction(curr_instr, I_RETURN, NULL, NULL, NULL);
+    listInsertPostActive(&instr_list, curr_instr);
+
+    listLast(&instr_list);
+}
+
 /*
 // test
 int main() {
@@ -427,17 +494,26 @@ int main() {
     get_and_set_unique_label(&label_table, "else");
     get_and_set_unique_label(&label_table, "while");
 
-    local_table_print(label_table);
+    //local_table_print(label_table);
 
+    gen_push_var("42", T_INT, false);
+    gen_pop_var("ret");
+    gen_call("func");
 
-    //gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    //gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
-    //gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    //gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
-    //gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    prepare_for_func();
+    gen_function_label("func");
 
-    //gen_int2float("my_float", "42", false, true);
-    //gen_int2float("my_float", "tmp", true, false);
+    gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    gen_push_var("42", T_INT, false);
+
+    end_function();
+
+    gen_int2float("my_float", "42", false, true);
+    gen_int2float("my_float", "tmp", true, false);
 
     list_print_instructions(&instr_list);
 

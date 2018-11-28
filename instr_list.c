@@ -93,19 +93,8 @@ void listNext(tListOfInstr *L) {
         L->active = L->active->nextItem;
 }
 
-void listGoto(tListOfInstr *L, void *gotoInstr) {
-    L->active = (tListItem*) gotoInstr;
-}
-
-void *listGetPointerLast(tListOfInstr *L) {
-    return (void*) L->last;
-}
-
-tInstr *listGetData(tListOfInstr *L) {
-    if (L->active == NULL) {
-        return NULL;
-    }
-    else return (L->active->Instruction);
+void listLast(tListOfInstr *L) {
+    L->active = L->last;
 }
 
 tInstr *tInstr_init() {
@@ -483,27 +472,3 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
 
     return ERR_OK;
 }
-
-/*
-int main() {
-    tInstr *instr1 = tInstr_create(I_MOVE, "var1", "symbol1", NULL);
-    tInstr_print_single_instruction(instr1);
-
-    tInstr *instr2 = tInstr_create(I_READ, "var2", "symbol2", "symbol3");
-    tInstr_print_single_instruction(instr2);
-
-
-    tListOfInstr L;
-    listInit(&L);
-    listInsertLast(&L, instr1);
-    listInsertLast(&L, instr2);
-
-    list_print_instructions(&L);
-
-    listFree(&L);
-    tInst_free_instruction(instr1);
-    tInst_free_instruction(instr2);
-
-    return 0;
-}
- */
