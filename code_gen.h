@@ -38,6 +38,7 @@
     int gen_eq(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var, bool global);
 
     int gen_or(char *var_name, char *symbol1, char *symbol2, bool global);
+    int gen_not(char *var_name, char *symbol, bool global);
 
 
 // TODO prerobiť

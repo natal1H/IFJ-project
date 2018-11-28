@@ -8,7 +8,17 @@ int code_gen_start() {
     // Inicializovať štruktúru, do ktorej sa bude zapisovať aktuálna inštrukcia
     curr_instr = tInstr_init();
 
-    // Vložiť prvú inštrukciu - obyčajný komentár
+    // Vložiť hlavičku, JUMP $main, LABEL $main
+    // Hlavička
+    tInstr_set_instruction(curr_instr, I_HEADER, NULL, NULL, NULL);
+    listInsertPostActive(&instr_list, curr_instr);
+    // JUMP $main
+    tInstr_set_instruction(curr_instr, I_JUMP, "$main", NULL, NULL);
+    listInsertPostActive(&instr_list, curr_instr);
+    // LABEL $main
+    tInstr_set_instruction(curr_instr, I_LABEL, "$main", NULL, NULL);
+    listInsertPostActive(&instr_list, curr_instr);
+
     return ERR_OK;
 }
 
@@ -43,7 +53,7 @@ int add_instruction_with_2_symbols(tInstruction_type type, char *var_name, char 
     }
 
     // Pred var a pred symboly dať predponu
-    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@" : "LF@") );
+    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@%" : "LF@%") );
     char *symbol1_complete = get_string_with_prefix(symbol1, symbol1_prefix );
     char *symbol2_complete = get_string_with_prefix(symbol2, symbol2_prefix );
     if (var_complete == NULL || symbol1_complete == NULL || symbol2_complete == NULL) {
@@ -72,7 +82,7 @@ int add_instruction_with_1_symbol(tInstruction_type type, char *var_name, char *
     }
 
     // Pred var a pred symboly dať predponu
-    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@" : "LF@") );
+    char *var_complete = get_string_with_prefix(var_name, (global ? "GF@%" : "LF@%") );
     char *symbol_complete = get_string_with_prefix(symbol, symbol_prefix );
     if (var_complete == NULL || symbol_complete == NULL) {
         // Chyba pri alokácii
@@ -267,19 +277,25 @@ int gen_defvar(char *var_name, bool global) {
         // Chyba
         return -1; // TODO nájsť vhodný chybový kód
     }
-
+printf("\n--DEFVAR name: %s\n", var_name);
     // Pred var a pred symboly dať predponu
     char *var_complete = get_string_with_prefix(var_name, (global ? "GF@%" : "LF@%") );
     if (var_complete == NULL) {
         // Chyba pri alokácii
         return -1;
     }
+    printf("\n--DEFVAR name compl: %s\n", var_complete);
 
     // Nastaviť správne aktuálnu inštrukciu
     tInstr_set_instruction(curr_instr, I_DEFVAR ,var_complete, NULL, NULL);
 
     // Vložiť inštrukciu do zoznamu
     listInsertPostActive(&instr_list, curr_instr);
+printf("\n###\n");
+tInstr_print_single_instruction(curr_instr);
+printf("adr1 is null: %d\n", curr_instr->addr1 == NULL);
+printf("adr1 is: %s\n", curr_instr->addr1);
+printf("\n###\n");
 
     // Uvoľniť miesto, kde boli var_complete
     free(var_complete);
@@ -340,6 +356,14 @@ int gen_or(char *var_name, char *symbol1, char *symbol2, bool global) {
     char *prefix2 = global ? "GT@%" : "LF@%";
 
     int ret_val = add_instruction_with_2_symbols(I_OR, var_name, symbol1, symbol2, prefix1, prefix2, global);
+    return ret_val;
+}
+
+int gen_not(char *var_name, char *symbol, bool global) {
+    // Nastavenie prefixov
+    char *prefix = global ? "GT@%" : "LF@%";
+
+    int ret_val = add_instruction_with_1_symbol(I_OR, var_name, symbol, prefix, global);
     return ret_val;
 }
 

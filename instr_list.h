@@ -8,6 +8,9 @@
     typedef enum {
         I_UNDEFINED, // Špeciálny typ - po inicializácii pred nastavením skutočného typu
 
+        I_HEADER, // Hlavička
+        I_COMENT, // Komentár
+        
         // Práca s rámcami, volanie funkcií
         I_MOVE,
         I_CREATEFRAME,

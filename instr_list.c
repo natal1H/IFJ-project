@@ -179,6 +179,15 @@ void tInstr_print_single_instruction(tInstr *I) {
         return;
     }
 
+    if (I->instType == I_HEADER) {
+        printf(".IFJcode18\n");
+        return ;
+    }
+    else if (I->instType == I_COMENT) {
+        printf("%s\n", I->addr1);
+        return ;
+    }
+
     // Vypíš opcode
     switch (I->instType) {
         case I_MOVE:
@@ -392,6 +401,13 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         return -1; // TODO vhodný chybový kód dať
     }
 
+    if (addr1 != NULL)
+        printf("SI adr1: %s\n", addr1);
+    if (addr2 != NULL)
+        printf("SI adr2: %s\n", addr2);
+    if (addr3 != NULL)
+        printf("SI adr3: %s\n", addr3);
+
     // Nastavenie nového typu
     instr->instType = type;
 
@@ -402,13 +418,18 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             // uvoľniť a znovu alokovať
             // TODO - lepšie použiť realloc?
             free(instr->addr1);
+            //instr->addr1 = realloc(instr->addr1, sizeof(char) * strlen(addr1));
         }
+        //else {
         instr->addr1 = malloc(sizeof(char) * strlen(addr1));
         if (instr->addr1 == NULL) {
             // Chyba - nepodarilo sa alokovať
             return -1; // TODO vhodný chybový kód dať
         }
+        //}
+        printf("Kopírovanie -%s-\n", addr1);
         strcpy(instr->addr1, addr1);
+        printf("Post copy: -%s- -%s-\n", instr->addr1, addr1);
     }
     else {
         if (instr->addr1 != NULL) {
@@ -416,7 +437,7 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         }
         instr->addr1 = NULL;
     }
-
+printf("SI a adr1: %s\n", instr->addr1);
     // Nastavenie addr2
     if (addr2 != NULL) {
         // Pozrieť či predtým niečo bolo na addr2
@@ -424,21 +445,24 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             // uvoľniť a znovu alokovať
             // TODO - lepšie použiť realloc?
             free(instr->addr2);
+            //instr->addr2 = realloc(instr->addr2, sizeof(char) * strlen(addr2));
         }
+        //else {
         instr->addr2 = malloc(sizeof(char) * strlen(addr2));
         if (instr->addr2 == NULL) {
             // Chyba - nepodarilo sa alokovať
             return -1; // TODO vhodný chybový kód dať
         }
+        //}
         strcpy(instr->addr2, addr2);
     }
     else {
         if (instr->addr2 != NULL) {
-            free(instr->addr1);
+            free(instr->addr2);
         }
         instr->addr2 = NULL;
     }
-
+printf("SI b adr1: %s\n", instr->addr1);
     // Nastavenie addr3
     if (addr3 != NULL) {
         // Pozrieť či predtým niečo bolo na addr3
@@ -446,12 +470,15 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             // uvoľniť a znovu alokovať
             // TODO - lepšie použiť realloc?
             free(instr->addr3);
+            //instr->addr3 = realloc(instr->addr3, sizeof(char) * strlen(addr3));
         }
+        //else {
         instr->addr3 = malloc(sizeof(char) * strlen(addr3));
         if (instr->addr3 == NULL) {
             // Chyba - nepodarilo sa alokovať
             return -1; // TODO vhodný chybový kód dať
         }
+        //}
         strcpy(instr->addr3, addr3);
     }
     else {
@@ -460,6 +487,14 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         }
         instr->addr3 = NULL;
     }
+
+    if (addr1 != NULL)
+        printf("SI END adr1: %s\n", instr->addr1);
+    if (addr2 != NULL)
+        printf("SI END adr2: %s\n", instr->addr2);
+    if (addr3 != NULL)
+        printf("SI END adr3: %s\n", instr->addr3);
+    printf("SI_END\n");
 
     return ERR_OK;
 }
