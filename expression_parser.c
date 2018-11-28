@@ -402,7 +402,11 @@ int string_to_integer(char* x){
  * @return Vrati vysledok danej operacie
  */
 char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorStatus){
-    
+
+    if (*ErrorStatus == ERR_SEM_UNDEF || *ErrorStatus == ERR_SEM_TYPE) {
+        return "ERROR";
+    }
+
     // Sémantická kontrola
     tDataType token1 = T_UNDEFINED; tDataType token2 = T_UNDEFINED;
     // Získanie typov tokenov
@@ -410,11 +414,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
         // Sémantická chyba - riešiť
         fprintf(stderr, "Chyba! Nedefinovaná premenná %s.\n", token_ID1);
         *ErrorStatus = ERR_SEM_UNDEF;
+        return "ERROR";
     }
     if (get_type_from_token(actual_function_ptr, token_ID2, &token2) != ERR_OK) {
         // Sémantická chyba - riešiť
         fprintf(stderr, "Chyba! Nedefinovaná premenná %s.\n", token_ID2);
         *ErrorStatus = ERR_SEM_UNDEF;
+        return "ERROR";
     }
 
     char *var_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" operácie
@@ -466,6 +472,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -513,6 +520,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -560,6 +568,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -610,6 +619,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -656,6 +666,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -713,6 +724,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -758,6 +770,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -815,6 +828,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -861,6 +875,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -913,6 +928,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 fprintf(stderr, "Chyba! Nekompatibilné typy operandov %s a %s.\n", token_ID1, token_ID2);
                 // Vrátiť compatibility_err_code
                 *ErrorStatus = compatibility_err_code;
+                return "ERROR";
             }
 
             return var_name;
@@ -953,7 +969,14 @@ char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *sta
 
             } else {
                 //Pushni na vysledny charovy stack vysledok
-                PushStackSTRING(stackOutputCHAR, EvaluateNow(PopStackSTRING(stackOutputCHAR), tmp, PopStackSTRING(stackOutputCHAR), ErrorStatus));
+                char *retChar = EvaluateNow(PopStackSTRING(stackOutputCHAR), tmp, PopStackSTRING(stackOutputCHAR), ErrorStatus);
+                if (*ErrorStatus != ERR_SEM_TYPE || *ErrorStatus != ERR_SEM_UNDEF) {
+                    PushStackSTRING(stackOutputCHAR, retChar);
+                }
+                else {
+                    // Teraz by malo skončiť s vyčslovaním
+                    // TODO: TU NEJAK UKONČIŤ VYČíSLOVANIE! - update: už asi netreba
+                }
             }
     }
     //Vrat vysledok zo zasobnika
