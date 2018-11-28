@@ -173,9 +173,12 @@ void LoadToBuffer(Token *Token, tDLList *ExprList);
  * @param token_ID1 Prvy operand
  * @param token_OP Operacia
  * @param token_ID2 Druhy operand
+ * @param ErrorStatus Premenna uchovavajuca ci nastal/nenastal error
  * @return Vrati vysledok danej operacie
  */
-//long EvaluateNow(long token_ID1, Token token_OP, long token_ID2 );
+char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorStatus);
+
+
 
 /**
  * Vypocita vyraz v postfixovej notacii
@@ -187,7 +190,7 @@ void LoadToBuffer(Token *Token, tDLList *ExprList);
  * @param last_operation Posledna operacia - momentalne nepotrebne
  * @return Vracia vysledok v datovom type long
  */
-char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackCHAR, tStackINT *stackOutputINT , tStackCHAR *stackOutputCHAR, int last_operation);
+char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackCHAR, tStackINT *stackOutputINT , tStackCHAR *stackOutputCHAR, int last_operation, int *ErrorStatus);
 
 /**
  * Spracuje infixovy vyraz do postfixovej notacie pomocou precedencnej tabulky
@@ -202,10 +205,10 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
 /**
  * Vykonava syntakticku kontrolu vyrazu
  * @param ExprList Zoznam s vyrazom
- * @param SyntaxError Premenna pre status ci nastal/nenastal error
+ * @param ErrorStatus Premenna pre status ci nastal/nenastal error
  * @return Vrati true ak je vyraz syntakticky spravne inak false
  */
-bool FindRule(tDLList *ExprList, bool *SyntaxError);
+int FindRule(tDLList *ExprList, int *ErrorStatus);
 
 /**
  * Zastresuje syntakticku kontrolu
@@ -213,7 +216,7 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError);
  * @return Vrati true ak je vyraz syntakticky spravne inak false
  * @note TODO Spojenie s Rules
  */
-bool MainSyntaxCheck(tDLList *ExprList);
+int MainSyntaxCheck(tDLList *ExprList);
 
 /**
  * Zastresuje vsetky funkcie vyrazoveho parseru

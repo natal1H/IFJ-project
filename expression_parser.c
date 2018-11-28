@@ -345,6 +345,10 @@ char* integer_to_string(int x)
         sprintf(buffer, "%d", x);
     }
 
+    char* tmp = "";
+
+    printf("%s", tmp);
+
     return buffer; // TODO neuvolnena pamat!
 }
 
@@ -397,7 +401,8 @@ int string_to_integer(char* x){
  * @param token_ID2 Druhy operand
  * @return Vrati vysledok danej operacie
  */
-char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
+char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorStatus){
+    
 
     printf("\n --- EVALUATE NOW: %s %d %s\n", token_ID1, token_OP.type, token_ID2);
 
@@ -952,7 +957,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2 ){
  * @param last_operation Posledna operacia - momentalne nepotrebne - TODO momentalne nepotrebne
  * @return Vracia vysledok v datovom type long
  */
-char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackCHAR, tStackINT *stackOutputINT , tStackCHAR *stackOutputCHAR, int last_operation) {
+char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackCHAR, tStackINT *stackOutputINT , tStackCHAR *stackOutputCHAR, int last_operation, int *ErrorStatus) {
 
     //Obratenie zasobnika, najskor POPnut potrebujeme operandy ktore su na spodku zasobnika
     while(stackPostfix->top > 0){
@@ -973,7 +978,7 @@ char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *sta
 
             } else {
                 //Pushni na vysledny charovy stack vysledok
-                PushStackSTRING(stackOutputCHAR, EvaluateNow(PopStackSTRING(stackOutputCHAR), tmp, PopStackSTRING(stackOutputCHAR)));
+                PushStackSTRING(stackOutputCHAR, EvaluateNow(PopStackSTRING(stackOutputCHAR), tmp, PopStackSTRING(stackOutputCHAR), ErrorStatus));
             }
     }
     //Vrat vysledok zo zasobnika
@@ -1052,7 +1057,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
     return *stackOutput;
 }
 
-bool FindRule(tDLList *ExprList, bool *SyntaxError) {
+int FindRule(tDLList *ExprList, int *ErrorStatus) {
 
 
 // TODO kontrola syntaxe
@@ -1062,7 +1067,7 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError) {
 
             if(ExprList->Act->next != NULL) {
                 if (syntax_table[ExprList->Act->Token.type][ExprList->Act->next->Token.type] == false) {
-                    *SyntaxError = true;
+                    *ErrorStatus = true;
                 }
             }
 
@@ -1076,7 +1081,7 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError) {
                          syntax_table[RIGHT_ROUND_BRACKET][COUNTER_OF_TOKEN] += 1;
 
                   } else if(ExprList->Act->Token.type == RIGHT_ROUND_BRACKET){
-                         *SyntaxError = true;
+                         *ErrorStatus = true;
                   } else {
                          syntax_table[ExprList->Act->Token.type][COUNTER_OF_TOKEN] += 1;
                   }
@@ -1164,33 +1169,30 @@ bool FindRule(tDLList *ExprList, bool *SyntaxError) {
 
 
         ){
-            *SyntaxError = true;
+            *ErrorStatus = true;
         }
-    return *SyntaxError;
+    return *ErrorStatus;
 }
 
-bool MainSyntaxCheck(tDLList *ExprList) {
+int MainSyntaxCheck(tDLList *ExprList) {
     if (ExprList == NULL) {
         return false; //Ziadny vyraz TODO osetrit specialny stav
     } else {
 
-        //Kontrola syntaxe vyrazu
-        bool syntaxStatus = false;
-
         //Inicializacia temporary
-        bool SyntaxError = false;
-        bool *SyntaxErroPtr = &SyntaxError;
+        int  ErrorStatus = ERR_OK;
+        int *ErrorStatusPtr = &ErrorStatus;
 
         //Kontrolujeme syntax od zaciatku zoznamu
         ExprList->Act = ExprList->First;
 
         //Kontroluje syntakticke pravidla
-        syntaxStatus =  FindRule(ExprList, SyntaxErroPtr);
+        ErrorStatus =  FindRule(ExprList, ErrorStatusPtr);
 
 
         int static last_operation = no_operation_pTable; //TODO Nepouzivane
 
-        if(syntaxStatus == ERR_OK) { //Ak je error semanticku cast preskoc
+        if(ErrorStatus == ERR_OK) { //Ak je error semanticku cast preskoc
 
             //Alokacia zasobnika
             tStackP *stack = malloc(sizeof(tStackP));
@@ -1213,7 +1215,7 @@ bool MainSyntaxCheck(tDLList *ExprList) {
 
             //Vysledok daneho vyrazu TODO Zmenit
             char* vysledok = 0;
-            vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, stackOutputCHAR, last_operation);
+            vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, stackOutputCHAR, last_operation, ErrorStatusPtr);
 //            printf("Vysledok: %s\n", vysledok);
 
             free(stack);
@@ -1221,10 +1223,10 @@ bool MainSyntaxCheck(tDLList *ExprList) {
             free(stackOutputINT);
             free(stackOutputCHAR);
         } else {
-            return syntaxStatus; //ERR_SYNTAX return
+            return ErrorStatus; //ERR_SYNTAX return
         }
-printf("Syntax status: %d\n", syntaxStatus);
-        return syntaxStatus; //ERR_OK return
+        printf("ErrorStatus: %d\n", ErrorStatus);
+        return ErrorStatus; //ERR_OK return
     }
 }
 
@@ -1278,6 +1280,7 @@ int CallExpressionParser(Token *token) {
     }
 
     tDLList *ExprArray = malloc(sizeof(tDLList));
+            //Inicializacia
             ExprArray->First = NULL;
             ExprArray->Symbol = NULL;
             ExprArray->SyntaxChecker = NULL;
@@ -1302,20 +1305,43 @@ int CallExpressionParser(Token *token) {
         SaveMyToken->attribute = token->attribute;
     }
 
-    bool MainSyntaxStatus = false;
+    int MainSyntaxStatus = ERR_OK;
     MainSyntaxStatus = MainSyntaxCheck(ExprArray);
 
     FreeBuffer(ExprArray);
     CleanSyntaxTable();
 
     //true = error
-    if (MainSyntaxStatus == true) {
-//        printf("%d", ERR_SYNTAX);
-        return ERR_SYNTAX;
-    } else {
-//        printf("%d", ERR_OK);
+    if (MainSyntaxStatus == ERR_OK) {
         return ERR_OK;
+
+    } else if (MainSyntaxStatus == ERR_SYNTAX) {
+        return ERR_SYNTAX;
+
+    } else if (MainSyntaxStatus == ERR_SCANNER) {
+        return ERR_SCANNER;
+
+    } else if (MainSyntaxStatus == ERR_SEM_UNDEF) {
+        return ERR_SEM_UNDEF;
+
+    } else if (MainSyntaxStatus == ERR_SEM_TYPE) {
+        return ERR_SEM_TYPE;
+
+    } else if (MainSyntaxStatus == ERR_SEM_PARAM) {
+        return ERR_SEM_PARAM;
+
+    } else if (MainSyntaxStatus == ERR_SEM_ELSE) {
+        return ERR_SEM_ELSE;
+
+    } else if (MainSyntaxStatus == ERR_ZERO_DIV) {
+        return ERR_ZERO_DIV;
+
+    } else if (MainSyntaxStatus == ERR_INTERNAL) {
+        return ERR_INTERNAL;
+
     }
+
+    return -10; //TODO je mozne ze nastane?
 }
 
 
