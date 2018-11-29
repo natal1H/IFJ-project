@@ -50,6 +50,7 @@ printf("Actual TREE\n");
 local_table_print(*actual_function_ptr);
 
     id_copy = NULL; // Netreba zatiaľ nijaké id zálohovať
+    func_id_copy = NULL;
 
     // Príprava generovania kódu
     code_gen_start();

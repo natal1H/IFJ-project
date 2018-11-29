@@ -12,6 +12,8 @@
 */
 
 
+#define GET_NEXT_TOKEN() if(get_next_token(token) == ERR_SCANNER) return ERR_SCANNER 
+
 int depth_index = 0;
 bool in_if_or_while = false;
 bool in_def = false;
@@ -76,15 +78,11 @@ int stat_list (Token *token) {
 		if (strcmp(token->attribute, "def") == 0  && !in_if_or_while && !in_def) {	//Definícia funkcie sa nemôže nachádzať v zložených príkazoch ani v tele inej funkcie
 			statRetVal = stat(token);
 			if (statRetVal == ERR_OK) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
 
 				if (token->type == EOL) {
 printf("eol\n");
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
+					GET_NEXT_TOKEN();
 
 					return stat_list(token);
 				}
@@ -93,15 +91,11 @@ printf("eol\n");
 		else if (strcmp(token->attribute, "if") == 0) {
 			statRetVal = stat(token);
 			if (statRetVal == ERR_OK) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
 
 				if (token->type == EOL) {
 printf("eol\n");
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
+					GET_NEXT_TOKEN();
 
 					return stat_list(token);
 				}
@@ -110,15 +104,11 @@ printf("eol\n");
 		else if (strcmp(token->attribute, "while") == 0) {
 			statRetVal = stat(token);
 			if (statRetVal == ERR_OK) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
 
 				if (token->type == EOL) {\
 printf("eol\n");
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
+					GET_NEXT_TOKEN();
 
 					return stat_list(token);
 				}
@@ -156,9 +146,7 @@ printf("else ");
 		if (statRetVal == ERR_OK) {
 			if (token->type == EOL) {
 printf("eol\n");
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
 
 				return stat_list(token);
 			}
@@ -192,9 +180,7 @@ int stat (Token *token) {
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0) {
 printf("def ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 
 			if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
@@ -219,37 +205,27 @@ printf("Actual function name: %s\n", actual_function_name);
 //local_table_print(*actual_function_ptr);
 				// Koniec sémantickej kontroly
 
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
 
 				if (token->type == LEFT_ROUND_BRACKET) {
 printf("( ");
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
+					GET_NEXT_TOKEN();
 
 					// Pravidlo 10: <params> -> epsilon
 
 					if (token->type == RIGHT_ROUND_BRACKET) {
 printf(") ");
-						if (get_next_token(token) == ERR_SCANNER) {
-							return ERR_SCANNER;
-						}	
+						GET_NEXT_TOKEN();	
 					}
 					else {
 						if (params(token) == ERR_OK) {
-							if (get_next_token(token) == ERR_SCANNER) {
-								return ERR_SCANNER;
-							}
+							GET_NEXT_TOKEN();
 						}
 					}
 
 					if (token->type == EOL) {
 printf("eol\n");
-						if (get_next_token(token) == ERR_SCANNER) {
-							return ERR_SCANNER;
-						}
+						GET_NEXT_TOKEN();
 
 						depth_index++;
 						in_def = true;
@@ -271,22 +247,16 @@ printf("eol\n");
 
 		else if (strcmp(token->attribute, "if") == 0) {
 printf("if ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 
 			if (CallExpressionParser(token) == ERR_OK) {
 				if (strcmp(token->attribute, "then") == 0) {
 printf("then ");
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
+					GET_NEXT_TOKEN();
 
 					if (token->type == EOL) {
 printf("eol\n");
-						if (get_next_token(token) == ERR_SCANNER) {
-							return ERR_SCANNER;
-						}
+						GET_NEXT_TOKEN();
 						
 						depth_index++;
 						in_if_or_while = true;
@@ -294,15 +264,11 @@ printf("eol\n");
 						if (stat_list(token) == ERR_OK) {
 							if (strcmp(token->attribute, "else") == 0) {
 printf("else ");
-								if (get_next_token(token) == ERR_SCANNER) {
-									return ERR_SCANNER;
-								}
+								GET_NEXT_TOKEN();
 
 								if (token->type == EOL) {
 printf("eol\n");
-									if (get_next_token(token) == ERR_SCANNER) {
-										return ERR_SCANNER;
-									}
+									GET_NEXT_TOKEN();
 
 									if (stat_list(token) == ERR_OK) {
 										if (strcmp(token->attribute, "end") == 0) {
@@ -324,22 +290,16 @@ printf("eol\n");
 
 		else if (strcmp(token->attribute, "while") == 0) {
 printf("while ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 
 			if (CallExpressionParser(token) == ERR_OK) {
 				if (strcmp(token->attribute, "do") == 0) {
 printf("do ");
-					if (get_next_token(token) == ERR_SCANNER) {
-						return ERR_SCANNER;
-					}
+					GET_NEXT_TOKEN();
 
 					if (token->type == EOL) {
 printf("eol\n");
-						if (get_next_token(token) == ERR_SCANNER) {
-							return ERR_SCANNER;
-						}
+						GET_NEXT_TOKEN();
 						depth_index++;
 						in_if_or_while = true;
 
@@ -367,10 +327,8 @@ printf("%s ", token->attribute);
 		strcpy(id_copy, token->attribute);
 printf("\n##ID COPY: %s\n", id_copy);
 		
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
-		
+		GET_NEXT_TOKEN();
+
 		withoutBrackets = false;
 
 		return after_id(token);
@@ -402,9 +360,7 @@ printf("\n\n");
 	variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
 	// Koniec sémantickej akcie
 
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+		GET_NEXT_TOKEN();
 
 		return params_next(token);
 	}
@@ -423,9 +379,7 @@ int params_next (Token *token) {
 
 	if (token->type == COMMA) {
 printf(", ");
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+		GET_NEXT_TOKEN();
 
 		if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
@@ -441,9 +395,7 @@ printf("\n\n");
 		variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
 		// Koniec sémantickej akcie
 
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 
 			return params_next(token);
 		}
@@ -506,9 +458,7 @@ int arg_next (Token *token) {
 
 	if (token->type == COMMA) {
 printf(", ");
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+		GET_NEXT_TOKEN();
 		
 		if (value(token) == ERR_OK) {
 			expected_params--;
@@ -546,24 +496,27 @@ int after_id (Token *token) {
 	int retVal;
 
 	// Pravidlo 16: <after_id> -> ( <arg> )
-	// Volanie funkcie so zatvorkami
-
+	//-------------------------------|
+	// Volanie funkcie so zatvorkami |
+	//-------------------------------|
+	//Token obsahuje lavu zatvorku
 	if (token->type == LEFT_ROUND_BRACKET) {
 printf("( ");
+		func_id_copy = id_copy;
+		id_copy = NULL;
 		withoutBrackets = false;
+
 		// Sémantická kontrola
-		if (!check_if_function_already_defined(global_table, id_copy)) {
+		if (!check_if_function_already_defined(global_table, func_id_copy)) {
 			// Funkcia ešte nebola definovaná - chyba
 			fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
 			return ERR_SEM_UNDEF;
 		}
-		expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
+		expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
 printf("\nExpected number params: %d\n", expected_params);
 		// Koniec sémantickej kontroly
 
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+		GET_NEXT_TOKEN();
 
 		// Pravidlo 13: <arg> -> epsilon
 
@@ -571,17 +524,13 @@ printf("\nExpected number params: %d\n", expected_params);
 printf(") ");
 
 			// Sémantická kontrola
-			// Porovnanie počtu parametrov
-			printf("\n##Výsledné expected params: %d\n", expected_params);
 			if (expected_params != 0) {
 			    // Sémantická chyba - nesprávny počet parametrov
 			    return ERR_SEM_PARAM;
 			}
 			// Koniec sémantickej kontroly
 
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 
 			return ERR_OK;
 
@@ -590,9 +539,7 @@ printf(") ");
 			retVal = arg(token);
 	
 			if (retVal == ERR_OK) {
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
 
 				return ERR_OK;
 			}
@@ -603,12 +550,13 @@ printf(") ");
 	//Volanie funkcie S argumentami BEZ zatvoriek |
 	//--------------------------------------------|
 	//Token obsahuje prvy argument funkcie
-	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
+	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {	
+		func_id_copy = id_copy;
+		id_copy = NULL;
 		withoutBrackets = true;
 
-		// Volanie funkcie bez zátvoriek
-       		expected_params = function_get_number_params(global_table, id_copy); // Získaj počet params funkcie
-        	printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
+     	expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
+        printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
 
 		
 		return arg(token);
@@ -618,7 +566,15 @@ printf(") ");
 	//---------------------------------------------|
 	//Token obsahuje EOL
 	else if (token->type == EOL) {
-		//TODO Volanie funkcie bez parametrov bez zatvoriek
+		func_id_copy = id_copy;
+		id_copy = NULL;
+
+		expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
+		
+		if (expected_params == 0) {
+			return ERR_OK;
+		}
+		else return ERR_SEM_PARAM;
 	}
 
 
@@ -637,9 +593,7 @@ printf("\n\tID COPY: %s\n", id_copy);
         	printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
         	// Koniec
 
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+		GET_NEXT_TOKEN();
 
 		return def_value(token);
 	}
@@ -654,15 +608,17 @@ printf("\n\tID COPY: %s\n", id_copy);
 
 int def_value (Token *token) {
 
+	int retVal;
+
 	// Pravidlo 19: <def_value> -> <expr>
 
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || token->type == LEFT_ROUND_BRACKET || 
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {
 printf("expr ");
 
-		int ret = CallExpressionParser(token);
+		retVal = CallExpressionParser(token);
 printf("\n\t\tId copy: %s\n", id_copy);
-		if (ret == ERR_OK) {
+		if (retVal == ERR_OK) {
 			// Sémantická akcia:
 			printf("\n\tNASTAVENIE HODNOTY %s na %d\n", id_copy, typeFinal);
 			variable_set_type(*actual_function_ptr, id_copy, typeFinal);
@@ -673,63 +629,106 @@ printf("\n\tFinalVar: %s\n", finalVar);
 			gen_move_var(id_copy, finalVar, false);
 			// Koniec generovania kódu
 		}
-       		return ret;
 	}
-
-	// Pravidlo 20: <def_value> -> ID ( <arg> )
 
 	else if (token->type == IDENTIFIER) {
 printf("%s ", token->attribute);
+		// Pravidlo 20: <def_value> -> ID ( <arg> )
+        // Kontrola, či sa jedná o definovanu funkciu. Ak nie poslať hneď parseru výrazov
 
-        // Pozrieť či sa jedná o funkciu alebo premennú -> ak premenná, poslať hneď parseru výrazov
-        if (get_function_node(global_table, token->attribute) != NULL) {
-            // Volanie funkcie
-             // Sémantická kontrola
-            if (!check_if_function_already_defined(global_table, token->attribute)) {
-                // Funkcia ešte nebola definovaná - chyba
-                fprintf(stderr, "Chyba! Funkcia volaná pred jej definíciou.\n");
-                return ERR_SEM_UNDEF;
-            }
-            expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
-            printf("\nExpected number params: %d\n", expected_params);
-            // Funkcia musí byť už definovaná
-             // Koniec sémantickej kontroly
-             if (get_next_token(token) == ERR_SCANNER) {
-                return ERR_SCANNER;
-            }
-             if (token->type == LEFT_ROUND_BRACKET) {
-                printf("( ");
-                if (get_next_token(token) == ERR_SCANNER) {
-                    return ERR_SCANNER;
-                }
-                 if (token->type == RIGHT_ROUND_BRACKET) {
-                    printf(") ");
-                    return ERR_OK;
-                } else return arg(token);
-            }
-         }
+        if (check_if_function_already_defined(global_table, token->attribute)) {
+        	expected_params = function_get_number_params(global_table, token->attribute); // Získaj počet params funkcie
+printf("\nExpected number params: %d\n", expected_params);
+            // Koniec sémantickej kontroly
+
+			// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
+			func_id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute));
+			strcpy(func_id_copy, token->attribute);
+            
+            GET_NEXT_TOKEN();
+
+			//-------------------------------|
+			// Volanie funkcie so zatvorkami |
+			//-------------------------------|
+			//Token obsahuje lavu zatvorku            
+			if (token->type == LEFT_ROUND_BRACKET) {
+printf("( ");
+				withoutBrackets = false;
+
+				GET_NEXT_TOKEN();	
+
+				// Pravidlo 13: <arg> -> epsilon
+
+				if (token->type == RIGHT_ROUND_BRACKET) {
+printf(") ");
+
+					// Sémantická kontrola
+					if (expected_params != 0) {
+					    // Sémantická chyba - nesprávny počet parametrov
+					    return ERR_SEM_PARAM;
+					}
+					// Koniec sémantickej kontroly
+
+					GET_NEXT_TOKEN();
+
+					return ERR_OK;
+				}
+				else {
+					retVal = arg(token);
+		
+					if (retVal == ERR_OK) {
+						GET_NEXT_TOKEN();
+
+						return ERR_OK;
+					}
+				}
+			}
+			//--------------------------------------------|
+			//Volanie funkcie S argumentami BEZ zatvoriek |
+			//--------------------------------------------|
+			//Token obsahuje prvy argument funkcie
+			else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
+				withoutBrackets = true;	
+
+	       		expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
+	        	printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
+		
+				return arg(token);
+			}
+			//---------------------------------------------|
+			//Volanie funkcie bez argumentov bez zatvoriek |
+			//---------------------------------------------|
+			//Token obsahuje EOL
+			else if (token->type == EOL) {
+			//TODO Volanie funkcie bez parametrov bez zatvoriek
+				expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
+			
+				if (expected_params == 0) {
+					return ERR_OK;
+				}
+				else return ERR_SEM_PARAM;
+			}
+	    }
         else {
             // Výraz začínajúci premennou -> zavolať parser výrazov
-            int ret = CallExpressionParser(token);
+            retVal = CallExpressionParser(token);
             printf("\n\t\tId copy: %s\n", id_copy);
             // Sémantická akcia:
             printf("Type final: %d\n", typeFinal);
             variable_set_type(*actual_function_ptr, id_copy, typeFinal);
             // Koniec sémantickej akcie
-            return ret;
         }
 	}
 	else if (token->type == LEFT_ROUND_BRACKET) {
 printf("expr ");
-        int ret = CallExpressionParser(token);
+        retVal = CallExpressionParser(token);
         printf("\n\t\tId copy: %s\n", id_copy);
         // Sémantická akcia:
         variable_set_type(*actual_function_ptr, id_copy, typeFinal);
         // Koniec sémantickej akcie
-        return ret;
 	}
 	
-	return ERR_SYNTAX;
+	return retVal;
 }
 
 
@@ -737,32 +736,24 @@ int value (Token *token) {
  	//Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID
  	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {
 printf("nil ");
-		if (get_next_token(token) == ERR_SCANNER) {
-			return ERR_SCANNER;
-		}
+		GET_NEXT_TOKEN();
 		return ERR_OK;
 	}
  	switch (token->type) {
 		case INTEGER:
 printf("integer ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 			return ERR_OK;
 			break;
 		
 		case FLOAT:
 printf("float ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 			return ERR_OK;
 			break;
  		case STRING:
 printf("string ");
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 			return ERR_OK;
 			break;
  		case IDENTIFIER:
@@ -778,15 +769,11 @@ printf("%s ", token->attribute);
 			}
 			// Koniec sémantickej kontroly
 
-			if (get_next_token(token) == ERR_SCANNER) {
-				return ERR_SCANNER;
-			}
+			GET_NEXT_TOKEN();
 			
 			if (token->type == LEFT_ROUND_BRACKET) {
 printf("( ");
-				if (get_next_token(token) == ERR_SCANNER) {
-					return ERR_SCANNER;
-				}
+				GET_NEXT_TOKEN();
  				if (token->type == RIGHT_ROUND_BRACKET) {
 printf(") ");
 					return ERR_OK;
