@@ -54,6 +54,10 @@ int prog (Token *token) {
 	else return ERR_SYNTAX;
 }
 
+
+
+
+
 /*
 	Funkcia pre stav <stat_list>.
 	
@@ -158,6 +162,7 @@ printf("eol\n");
 
 				return stat_list(token);
 			}
+			
 		}
 	}
 	else if (token->type == TYPE_EOF) {
@@ -170,6 +175,10 @@ printf("eof\n");
 	
 	return statRetVal;
 }
+
+
+
+
 
 
 /*
@@ -371,6 +380,10 @@ printf("\n##ID COPY: %s\n", id_copy);
 }
 
 
+
+
+
+
 int params (Token *token) {
 
 	// Pravidlo 8: <params> -> ID <params_next>
@@ -398,6 +411,10 @@ printf("\n\n");
 	
 	return ERR_SYNTAX;
 }
+
+
+
+
 
 
 int params_next (Token *token) {
@@ -443,6 +460,10 @@ printf(") ");
 }
 
 
+
+
+
+
 int arg (Token *token) {
 
 	// Pravidlo 12: <arg> -> <value> <arg_next>
@@ -475,6 +496,10 @@ printf("\n- decreasing exp param2s\n");
 }
 
 
+
+
+
+
 int arg_next (Token *token) {
 
 	// Pravidlo 14: <arg_next> -> , <value> <arg_next>
@@ -497,6 +522,10 @@ printf("\n- decreasing exp params\n");
 	else if (token->type == RIGHT_ROUND_BRACKET && !withoutBrackets) {
 printf(") ");
 
+		if (get_next_token(token) == ERR_SYNTAX) {
+			return ERR_SYNTAX;
+		}
+
 		return ERR_OK;
 	}
 	else if (token->type == EOL && withoutBrackets) {
@@ -504,6 +533,10 @@ printf(") ");
 	}
 	return ERR_SYNTAX;
 }
+
+
+
+
 
 
 int after_id (Token *token) {
@@ -613,6 +646,10 @@ printf("\n\tID COPY: %s\n", id_copy);
 	
 	return retVal;
 }
+
+
+
+
 
 
 int def_value (Token *token) {
