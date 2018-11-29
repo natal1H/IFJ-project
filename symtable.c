@@ -1,4 +1,5 @@
 #include "symtable.h"
+#include "main.h"
 
 // Funkcie pre globálnu TS
 void global_table_init(tGlobalTableNodePtr *rootPtr) {
@@ -18,7 +19,7 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
 
             // Podarilo sa alokovať miesto
             // ID
-            newPtr->id = (char *) malloc(sizeof(char) * strlen(id));
+            newPtr->id = (char *) malloc(sizeof(char) * strlen(id)+END_OF_STRING);
             if (newPtr == NULL) {
                 // Chyba
                 return ERR_INTERNAL;
@@ -330,7 +331,7 @@ int local_table_insert(tLocalTableNodePtr *rootPtr, char *id, tDataNodeLocal *da
 
             // Podarilo sa alokovať miesto
             // ID
-            newPtr->id = (char *) malloc(sizeof(char) * strlen(id));
+            newPtr->id = (char *) malloc(sizeof(char) * strlen(id)+END_OF_STRING);
             if (newPtr == NULL) {
                 // Chyba
                 return ERR_INTERNAL;

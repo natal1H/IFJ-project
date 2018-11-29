@@ -37,7 +37,7 @@ int code_gen_end() {
 }
 
 char *get_string_with_prefix(char *str, char *prefix) {
-    char *str_complete = malloc(sizeof(char) * (strlen(str) + strlen(prefix)));
+    char *str_complete = malloc(sizeof(char) * (strlen(str) + strlen(prefix))+END_OF_STRING);
     if (str_complete == NULL) {
         // Chyba
         return NULL;
@@ -113,33 +113,33 @@ int add_instruction_unary(tInstruction_type type, char *symbol, char *symbol_pre
 char *determine_prefix(tDataType type, bool is_var) {
     char *prefix;
     if (is_var) { // Premenná
-        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN);
+        prefix = malloc(sizeof(char) * VAR_PREFIX_LEN+END_OF_STRING);
         if (prefix == NULL) return NULL;
         strcpy(prefix, VAR_PREFIX);
     }
     else { // INT/FLOAT
         if (type == T_INT) { // INT
-            prefix = malloc(sizeof(char) * strlen("int@"));
+            prefix = malloc(sizeof(char) * strlen("int@")+END_OF_STRING);
             if (prefix == NULL) return NULL;
             strcpy(prefix, "int@");
         }
         else if (type == T_FLOAT) { // FLOAT
-            prefix = malloc(sizeof(char) * strlen("float@"));
+            prefix = malloc(sizeof(char) * strlen("float@")+END_OF_STRING);
             if (prefix == NULL) return NULL;
             strcpy(prefix, "float@");
         }
         else if (type == T_STRING) {
-            prefix = malloc(sizeof(char) * strlen("string@"));
+            prefix = malloc(sizeof(char) * strlen("string@")+END_OF_STRING);
             if (prefix == NULL) return NULL;
             strcpy(prefix, "string@");
         }
         else if (type == T_BOOLEAN) {
-            prefix = malloc(sizeof(char) * strlen("boolean@"));
+            prefix = malloc(sizeof(char) * strlen("boolean@")+END_OF_STRING);
             if (prefix == NULL) return NULL;
             strcpy(prefix, "boolean@");
         }
         else { // NIL
-            prefix = malloc(sizeof(char) * strlen("nil@"));
+            prefix = malloc(sizeof(char) * strlen("nil@")+END_OF_STRING);
             if (prefix == NULL) return NULL;
             strcpy(prefix, "nil@");
         }

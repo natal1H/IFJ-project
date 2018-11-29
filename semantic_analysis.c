@@ -147,7 +147,7 @@ char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
     char *name = NULL;
     do {
         char *n_str = integer_to_string(n);
-        name = realloc(name, sizeof(char) * (strlen(n_str) + strlen(prefix)));
+        name = realloc(name, sizeof(char) * (strlen(n_str) + strlen(prefix))+END_OF_STRING);
         if (name == NULL) {
             return NULL;
         }

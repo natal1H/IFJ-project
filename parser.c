@@ -301,7 +301,7 @@ _____*/
 	else if (token->type == IDENTIFIER) {																printf("%s ", token->attribute);
 
 		// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
-		id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute));
+		id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute)+END_OF_STRING);
 		strcpy(id_copy, token->attribute);																printf("\n##ID COPY: %s\n", id_copy);
 		GET_NEXT_TOKEN();
 

@@ -1,5 +1,6 @@
 #include "instr_list.h"
 #include "error.h"
+#include "main.h"
 
 #include <stdio.h>
 
@@ -128,7 +129,7 @@ tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *ad
 
     // Nastavenie addr1
     if (addr1 != NULL) {
-        i->addr1 = malloc(sizeof(char) * strlen(addr1));
+        i->addr1 = malloc(sizeof(char) * strlen(addr1)+END_OF_STRING);
         if (i->addr1 == NULL) {
             // Chyba
             return NULL;
@@ -140,7 +141,7 @@ tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *ad
 
     // Nastavenie addr2
     if (addr2 != NULL) {
-        i->addr2 = malloc(sizeof(char) * strlen(addr2));
+        i->addr2 = malloc(sizeof(char) * strlen(addr2)+END_OF_STRING);
         if (i->addr2 == NULL) {
             // Chyba
             return NULL;
@@ -152,7 +153,7 @@ tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *ad
 
     // Nastavenie addr3
     if (addr3 != NULL) {
-        i->addr3 = malloc(sizeof(char) * strlen(addr3));
+        i->addr3 = malloc(sizeof(char) * strlen(addr3)+END_OF_STRING);
         if (i->addr3 == NULL) {
             // Chyba
             return NULL;
@@ -407,7 +408,7 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             //instr->addr1 = realloc(instr->addr1, sizeof(char) * strlen(addr1));
         }
         //else {
-        instr->addr1 = malloc(sizeof(char) * strlen(addr1));
+        instr->addr1 = malloc(sizeof(char) * strlen(addr1)+END_OF_STRING);
 //        instr->addr1 = NULL;
         if (instr->addr1 == NULL) {
             // Chyba - nepodarilo sa alokovať
@@ -432,7 +433,7 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             //instr->addr2 = realloc(instr->addr2, sizeof(char) * strlen(addr2));
         }
         //else {
-        instr->addr2 = malloc(sizeof(char) * strlen(addr2));
+        instr->addr2 = malloc(sizeof(char) * strlen(addr2)+END_OF_STRING);
         if (instr->addr2 == NULL) {
             // Chyba - nepodarilo sa alokovať
             return -1; // TODO vhodný chybový kód dať
@@ -456,7 +457,7 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
             //instr->addr3 = realloc(instr->addr3, sizeof(char) * strlen(addr3));
         }
         //else {
-        instr->addr3 = malloc(sizeof(char) * strlen(addr3));
+        instr->addr3 = malloc(sizeof(char) * strlen(addr3)+END_OF_STRING);
         if (instr->addr3 == NULL) {
             // Chyba - nepodarilo sa alokovať
             return -1; // TODO vhodný chybový kód dať
