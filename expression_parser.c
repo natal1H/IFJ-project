@@ -1253,7 +1253,7 @@ void FreeBuffer(tDLList *ExprList){
  */
 void CleanSyntaxTable(){
     //Cislo 22 je velkost tabulky TODO Nahradit skrz define
-    for(int i=0; i<=22; i++) {
+    for(int i=0; i<=21; i++) {
         syntax_table[i][COUNTER_OF_TOKEN] = 0;
     }
 
