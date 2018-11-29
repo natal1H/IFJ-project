@@ -78,8 +78,7 @@
     int gen_float2int(char *var_name, char *symbol, bool is_var, bool global);
     int gen_int2char(char *var_name, char *symbol, bool is_var, bool global);
     int gen_stri2int(char *var_name, char *symbol1, char *symbol2, bool global);
-    // Vstupno výstupné inštrukcie
-    // TODO - doplniť
+
     // Práca s reťazcami
     int gen_concat(char *var_name, char *symbol1, char *symbol2, bool global);
     int gen_strlen(char *var_name, char *symbol, bool global);
@@ -95,6 +94,8 @@
     int add_instruction_unary(tInstruction_type type, char *symbol, char *symbol_prefix);
     char *determine_prefix(tDataType type, bool is_var, bool global);
     char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix);
+
+    void set_and_post_instr(tListOfInstr *L, tInstr *I, tInstruction_type type, char *addr1, char *addr2, char *addr3);
 
     // Generovanie funkcií
     int gen_push_param(char *symbol, tDataType type, bool is_var);

@@ -466,6 +466,11 @@ void prepare_for_func() {
     // teraz sa bude vkladať za JUMP $main
 }
 
+void set_and_post_instr(tListOfInstr *L, tInstr *I, tInstruction_type type, char *addr1, char *addr2, char *addr3) {
+    tInstr_set_instruction(I, type, addr1, addr2, addr3);
+    listInsertPostActive(L, I);
+}
+
 void end_function() {
     // RETURN a presune aktivitu na posledný prvok
     tInstr_set_instruction(curr_instr, I_RETURN, NULL, NULL, NULL);
@@ -474,38 +479,100 @@ void end_function() {
     listLast(&instr_list);
 }
 
-int gen_inputs() {}
-int gen_inputi() {}
-int gen_inputf() {}
-int gen_print() {}
-int gen_length() {}
+/** Generovanie vstavanej funkcie inputs **/
+int gen_inputs() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputs", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?inputs", NULL, NULL); // LABEL ?inputs
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "string", NULL); // READ LF@%ret string
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+
+    return ERR_OK;
+}
+
+/** Generovanie vstavenj funkcie inputi **/
+int gen_inputi() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputi", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?inputi", NULL, NULL); // LABEL ?inputi
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "int", NULL); // READ LF@%ret int
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+
+    return ERR_OK;
+}
+
+/** Generovanie vstavanej funkcie inputf **/
+int gen_inputf() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputf", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?inputf", NULL, NULL); // LABEL ?inputf
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "float", NULL); // READ LF@%ret float
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+
+    return ERR_OK;
+}
+
+/** Generovanie vstavanej funkcie print **/
+int gen_print() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie print", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?print", NULL, NULL); // LABEL ?print
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_WRITE, "LF@%p1", NULL, NULL); // WRITE LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@%nil", NULL, NULL); // PUSHS nil@nil
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+
+    return ERR_OK;
+}
+
+/** Generovanie vstavanej funkcie length **/
+int gen_length() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie length", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?length", NULL, NULL); // LABEL ?length
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_STRLEN, "LF@%ret", "LF@%p1", NULL); // STRLEN LF@%ret LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+
+    return ERR_OK;
+}
+
 int gen_substr() {}
 int gen_ord() {}
 
 /** Generovanie vstavanej funkcie chr **/
 int gen_chr() {
-    tInstr_set_instruction(curr_instr, I_COMENT, "Definícia funkcie chr", NULL, NULL); // Komentár pred definicícou
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_LABEL, "?chr", NULL, NULL); // LABEL ?chr
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_INT2CHAR, "LF@%ret", "LF@%p1", NULL); // INT2CHAR LF@%ret LF@%p1
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    listInsertPostActive(&instr_list, curr_instr);
-    tInstr_set_instruction(curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-    listInsertPostActive(&instr_list, curr_instr);
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie chr", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?chr", NULL, NULL); // LABEL ?chr
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_INT2CHAR, "LF@%ret", "LF@%p1", NULL); // INT2CHAR LF@%ret LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 
     return ERR_OK;
 }
@@ -546,6 +613,7 @@ int main() {
     //gen_push_var("42", T_INT, false);
 
     gen_chr();
+    //gen_print();
 
     //end_function();
     listLast(&instr_list);
