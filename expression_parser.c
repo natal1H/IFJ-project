@@ -365,29 +365,29 @@ int string_to_integer(char* x){
     //Resetovanie errno pred volanim
     errno = 0;
 
-    /*
-    //Osetrenie moznych errov pri pretypovani
-    if (x == ptr) {
-        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie  (no digits found, 0 returned)\n", return_value);
-    }
-    else if (errno == ERANGE && return_value == LONG_MIN) {
-        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (underflow occurred)\n", return_value);
-    }
-    else if (errno == ERANGE && return_value == LONG_MAX) {
-        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (overflow occurred)\n", return_value);
-    }
-    else if (errno == EINVAL) {  /* not in all c99 implementations - gcc OK * /
-        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (base contains unsupported value)\n", return_value);
-    }
-    else if (errno != 0 && return_value == 0) {
-        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (unspecified error occurred)\n", return_value);
-    }
-    else if (errno == 0 && x && *ptr != 0) {
-        fprintf(stderr, " token_ID1_in_Integer : %lu  platne pretypovanie   (but additional characters remain)\n", return_value);
-    }
-    else if (errno == 0 && x && !*ptr){
-    } //Ak je konverzia spravna
-    */
+//
+//    //Osetrenie moznych errov pri pretypovani
+//    if (x == ptr) {
+//        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie  (no digits found, 0 returned)\n", return_value);
+//    }
+//    else if (errno == ERANGE && return_value == LONG_MIN) {
+//        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (underflow occurred)\n", return_value);
+//    }
+//    else if (errno == ERANGE && return_value == LONG_MAX) {
+//        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (overflow occurred)\n", return_value);
+//    }
+//    else if (errno == EINVAL) {  /* not in all c99 implementations - gcc OK * /
+//        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (base contains unsupported value)\n", return_value);
+//    }
+//    else if (errno != 0 && return_value == 0) {
+//        fprintf(stderr, " token_ID1_in_Integer : %lu  neplatne pretypovanie   (unspecified error occurred)\n", return_value);
+//    }
+//    else if (errno == 0 && x && *ptr != 0) {
+//        fprintf(stderr, " token_ID1_in_Integer : %lu  platne pretypovanie   (but additional characters remain)\n", return_value);
+//    }
+//    else if (errno == 0 && x && !*ptr){
+//    } //Ak je konverzia spravna
+//
 
 
     return return_value;

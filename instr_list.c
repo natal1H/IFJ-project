@@ -408,6 +408,7 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         }
         //else {
         instr->addr1 = malloc(sizeof(char) * strlen(addr1));
+//        instr->addr1 = NULL;
         if (instr->addr1 == NULL) {
             // Chyba - nepodarilo sa alokovať
             return -1; // TODO vhodný chybový kód dať

@@ -1,4 +1,5 @@
 #include "scanner.h"
+#include "main.h"
 
 #define scanner_is_alpha(c) ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
 #define scanner_is_number(c) (c >= '0' && c <= '9')
@@ -103,7 +104,7 @@ int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
     token->type = type;
 
     // Nastav attribute - treba alokovať miesto pre string
-    token->attribute = (char *) malloc(sizeof(char) * strlen(attribute));
+    token->attribute = (char *) malloc(sizeof(char) * strlen(attribute)+END_OF_STRING);
     if (token->attribute == NULL) {
         return -1; // TODO: return actual error code
     }

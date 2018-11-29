@@ -10,6 +10,8 @@
     #include "expression_parser.h"
     #include "code_gen.h"
 
+
+    #define END_OF_STRING 1 //Znamena '\0'
     #define MAIN "main@function"
 
     tGlobalTableNodePtr global_table; // Globálna tabuľka symbolov, kde sú v jednotlivých uzloch uložené užívateľom definované funkcie podľa ich ID
