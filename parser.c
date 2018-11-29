@@ -533,7 +533,7 @@ ____*/
 		/* Definovať premennú */																		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
 		variable_set_defined(actual_function_ptr, id_copy);
         // Generovanie kódu
-        gen_defvar(id_copy, false);																		printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+        gen_defvar(id_copy);																			printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
         
 		GET_NEXT_TOKEN();
 
@@ -565,7 +565,7 @@ int def_value (Token *token) {
 			variable_set_type(*actual_function_ptr, id_copy, typeFinal);								printf("\n\tFinalVar: %s\n", finalVar);
 			// Generovanie kódu
 			// Presun výsledku výrazu do premennej (MOVE id_copy finalVar)
-			gen_move_var(id_copy, finalVar, false);
+			gen_move_var(id_copy, finalVar);
 		}
 	}
 
