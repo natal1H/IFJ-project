@@ -109,55 +109,55 @@
      *
      * @return Chybový kód
      */
-    int gen_inputs();
+    void gen_inputs();
 
     /**
      * @brief Generovanie vstavanej funkcie inputi
      *
      * @return Chybový kód
      */
-    int gen_inputi();
+    void gen_inputi();
 
     /**
      * @brief Generovanie vstavanej funkcie inputf
      *
      * @return Chybový kód
      */
-    int gen_inputf();
+    void gen_inputf();
 
     /**
      * @brief Generovanie vstavanej funkcie print
      *
      * @return Chybový kód
      */
-    int gen_print();
+    void gen_print();
 
     /**
      * @brief Generovanie vstavanej funkcie length
      *
      * @return Chybový kód
      */
-    int gen_length();
+    void gen_length();
 
     /**
      * @brief Generovanie vstavanej funkcie substr
      *
      * @return Chybový kód
      */
-    int gen_substr();
+    void gen_substr();
 
     /**
      * @brief Generovanie vstavanej funkcie ord
      *
      * @return Chybový kód
      */
-    int gen_ord();
+    void gen_ord();
 
     /**
      * @brief Generovanie vstavanej funkcie chr
      *
      * @return Chybový kód
      */
-    int gen_chr();
+    void gen_chr();
 
 #endif

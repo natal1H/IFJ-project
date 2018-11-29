@@ -480,7 +480,7 @@ void end_function() {
 }
 
 /** Generovanie vstavanej funkcie inputs **/
-int gen_inputs() {
+void gen_inputs() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputs", NULL, NULL); // Komentár pred definíciou funkcie
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?inputs", NULL, NULL); // LABEL ?inputs
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
@@ -490,12 +490,10 @@ int gen_inputs() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-
-    return ERR_OK;
 }
 
 /** Generovanie vstavenj funkcie inputi **/
-int gen_inputi() {
+void gen_inputi() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputi", NULL, NULL); // Komentár pred definíciou funkcie
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?inputi", NULL, NULL); // LABEL ?inputi
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
@@ -505,12 +503,10 @@ int gen_inputi() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-
-    return ERR_OK;
 }
 
 /** Generovanie vstavanej funkcie inputf **/
-int gen_inputf() {
+void gen_inputf() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputf", NULL, NULL); // Komentár pred definíciou funkcie
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?inputf", NULL, NULL); // LABEL ?inputf
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
@@ -520,12 +516,10 @@ int gen_inputf() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-
-    return ERR_OK;
 }
 
 /** Generovanie vstavanej funkcie print **/
-int gen_print() {
+void gen_print() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie print", NULL, NULL); // Komentár pred definíciou funkcie
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?print", NULL, NULL); // LABEL ?print
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
@@ -536,12 +530,10 @@ int gen_print() {
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@%nil", NULL, NULL); // PUSHS nil@nil
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-
-    return ERR_OK;
 }
 
 /** Generovanie vstavanej funkcie length **/
-int gen_length() {
+void gen_length() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie length", NULL, NULL); // Komentár pred definíciou funkcie
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?length", NULL, NULL); // LABEL ?length
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
@@ -553,15 +545,86 @@ int gen_length() {
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-
-    return ERR_OK;
 }
 
-int gen_substr() {}
-int gen_ord() {}
+/** Generovanie vstavanej funkcie substr **/
+void gen_substr() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie substr", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?substr", NULL, NULL); // LABEL ?substr
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p3", NULL, NULL); // DEFVAR LF@%p3
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p3", NULL, NULL); // POPS LF@%p3
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p2", NULL, NULL); // DEFVAR LF@%p2
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p2", NULL, NULL); // POPS LF@%p2
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%compare", NULL, NULL); // DEFVAR LF@%compare
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%length", NULL, NULL); // DEFVAR LF@%length
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%substr", NULL, NULL); // DEFVAR LF@%substr
+    set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%substr", "string@x", NULL); // MOVE LF@%substr string@x
+    set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%ret", "string@", NULL); // MOVE LF@%ret string@
+    set_and_post_instr(&instr_list, curr_instr, I_STRLEN, "LF@%length", "LF@%p1", NULL); // STRLEN LF@%length LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_LT, "LF@%compare", "LF@%p2", "int@0"); // LT LF@%compare LF@%p2 int@0
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$err", "LF@%compare", "bool@true"); // JUMPIFEQ $substr$err LF@%compare bool@true
+    set_and_post_instr(&instr_list, curr_instr, I_GT, "LF@%compare", "LF@%p2", "LF@%length"); // GT LF@%compare LF@%p2 LF@%length
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$err", "LF@%compare", "bool@true"); // JUMPIFEQ $substr$err LF@%compare bool@true
+    set_and_post_instr(&instr_list, curr_instr, I_LT, "LF@%compare", "LF@%p3", "int@0"); // LT LF@%compare LF@%p3 int@0
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$err", "LF@%compare", "bool@true"); // JUMPIFEQ $substr$err LF@%compare bool@true
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%until", NULL, NULL); // DEFVAR LF@%until
+    set_and_post_instr(&instr_list, curr_instr, I_ADD, "LF@%until", "LF@%p2", "LF@%p3"); // ADD LF@%until LF@%p2 LF@%p3
+    set_and_post_instr(&instr_list, curr_instr, I_GT, "LF@%compare", "LF@%until", "LF@%length"); // GT LF@%compare LF@%until LF@%length
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$curb", "LF@%compare", "bool@true"); // JUMPIFNEQ $subst$curb LF@%compare bool@true
+    set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%until", "LF@%length", NULL); // MOVE LF@%until LF@%length
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$curb", NULL, NULL); // LABEL $subst$curb
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%now", NULL, NULL); // DEFVAR LF@%now
+    set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%now", "LF@%p2", NULL); // MOVE LF@%now LF@%p2
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$loop", NULL, NULL); // LABEL $subst$loop
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$noerr", "LF@%now", "LF@%until"); // JUMPIFEQ $substr$noerr LF@%now LF@%until
+    set_and_post_instr(&instr_list, curr_instr, I_GETCHAR, "LF@%substr", "LF@%p1", "LF@%now"); // GETCHAR LF@%substr LF@%p1 LF@%now
+    set_and_post_instr(&instr_list, curr_instr, I_CONCAT, "LF@%ret", "LF@%ret", "LF@%substr"); // CONCAT LF@%ret LF@%ret LF@%substr
+    set_and_post_instr(&instr_list, curr_instr, I_ADD, "LF@%now", "LF@%now", "int@1"); // ADD LF@%now LF@%now int@1
+    set_and_post_instr(&instr_list, curr_instr, I_JUMP, "$substr$loop", NULL, NULL); // JUMP $substr$loop
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$err", NULL, NULL); // LABEL $substr$err
+    set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%ret", "nil@nil", NULL); // MOVE LF@%ret nil@nil
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$noerr", NULL, NULL); // LABEL $substr$noerr
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+}
+
+/** Generovanie vstavanej funkcie ord **/
+void gen_ord() {
+    set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie ord", NULL, NULL); // Komentár pred definíciou funkcie
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?ord", NULL, NULL); // LABEL ?ord
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p2", NULL, NULL); // DEFVAR LF@%p2
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p2", NULL, NULL); // POPS LF@%p2
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%compare", NULL, NULL); // DEFVAR LF@%compare
+    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%length", NULL, NULL); // DEFVAR LF@%length
+    set_and_post_instr(&instr_list, curr_instr, I_STRLEN, "LF@%length", "LF@%p1", NULL); // STRLEN LF@%length LF@%p1
+    set_and_post_instr(&instr_list, curr_instr, I_SUB, "LF@%length", "LF@%length", "int@1"); // SUB LF@%length LF@%length int@1
+    set_and_post_instr(&instr_list, curr_instr, I_LT, "LF@%compare", "LF@%p2", "int@0"); // LT LF@%compare LF@%p2 int@0
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$ord$err", "LF@%compare", "bool@true"); // JUMPIFEQ $ord$err LF@%compare bool@true
+    set_and_post_instr(&instr_list, curr_instr, I_GT, "LF@%compare", "LF@%p2", "LF@%length"); // GT LF@%compare LF@%p2 LF@%length
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$ord$err", "LF@%compare", "bool@true"); // JUMPIFEQ $ord$err LF@%compare bool@true
+    set_and_post_instr(&instr_list, curr_instr, I_STRI2INT, "LF@%ret", "LF@%ret", "LF@%p2"); // STRI2INT LF@%ret LF@%p1 LF@%p2
+    set_and_post_instr(&instr_list, curr_instr, I_JUMP, "$ord$noerr", NULL, NULL); // JUMP $ord$noerr
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$ord$err", NULL, NULL); // LABEL $orr$err
+    set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%ret", "nil@nil", NULL); // MOVE LF@%ret nil@nil
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$ord$noerr", NULL, NULL); // LABEL $orr$noerr
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+}
 
 /** Generovanie vstavanej funkcie chr **/
-int gen_chr() {
+void gen_chr() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie chr", NULL, NULL); // Komentár pred definíciou funkcie
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "?chr", NULL, NULL); // LABEL ?chr
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
@@ -573,8 +636,6 @@ int gen_chr() {
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
-
-    return ERR_OK;
 }
 
 // test
