@@ -101,4 +101,62 @@
     int gen_pop_var(char *var_name);
     int gen_call(char *function_name);
 
+    // Vstavané funkcie
+
+    /**
+     * @brief Generovanie vstavanej funkcie inputs
+     *
+     * @return Chybový kód
+     */
+    int gen_inputs();
+
+    /**
+     * @brief Generovanie vstavanej funkcie inputi
+     *
+     * @return Chybový kód
+     */
+    int gen_inputi();
+
+    /**
+     * @brief Generovanie vstavanej funkcie inputf
+     *
+     * @return Chybový kód
+     */
+    int gen_inputf();
+
+    /**
+     * @brief Generovanie vstavanej funkcie print
+     *
+     * @return Chybový kód
+     */
+    int gen_print();
+
+    /**
+     * @brief Generovanie vstavanej funkcie length
+     *
+     * @return Chybový kód
+     */
+    int gen_length();
+
+    /**
+     * @brief Generovanie vstavanej funkcie substr
+     *
+     * @return Chybový kód
+     */
+    int gen_substr();
+
+    /**
+     * @brief Generovanie vstavanej funkcie ord
+     *
+     * @return Chybový kód
+     */
+    int gen_ord();
+
+    /**
+     * @brief Generovanie vstavanej funkcie chr
+     *
+     * @return Chybový kód
+     */
+    int gen_chr();
+
 #endif

@@ -474,7 +474,42 @@ void end_function() {
     listLast(&instr_list);
 }
 
-/*
+int gen_inputs() {}
+int gen_inputi() {}
+int gen_inputf() {}
+int gen_print() {}
+int gen_length() {}
+int gen_substr() {}
+int gen_ord() {}
+
+/** Generovanie vstavanej funkcie chr **/
+int gen_chr() {
+    tInstr_set_instruction(curr_instr, I_COMENT, "Definícia funkcie chr", NULL, NULL); // Komentár pred definicícou
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_LABEL, "?chr", NULL, NULL); // LABEL ?chr
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_CREATEFRAME, NULL, NULL, NULL); // CREATEFRAME
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_DEFVAR, "LF@%p1", NULL, NULL); // DEFVAR LF@%p1
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_INT2CHAR, "LF@%ret", "LF@%p1", NULL); // INT2CHAR LF@%ret LF@%p1
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    listInsertPostActive(&instr_list, curr_instr);
+    tInstr_set_instruction(curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    listInsertPostActive(&instr_list, curr_instr);
+
+    return ERR_OK;
+}
+
 // test
 int main() {
     printf("CODE GEN TEST\n");
@@ -485,35 +520,40 @@ int main() {
     //listInsertLast(&instr_list, first_instr);
     //listFirst(&instr_list);
 
-    printf("Label Table:\n");
-    local_table_print(label_table);
+    //printf("Label Table:\n");
+    //local_table_print(label_table);
 
-    char *label = get_and_set_unique_label(&label_table, "if");
-    get_and_set_unique_label(&label_table, "if");
-    get_and_set_unique_label(&label_table, "while");
-    get_and_set_unique_label(&label_table, "else");
-    get_and_set_unique_label(&label_table, "while");
+    //char *label = get_and_set_unique_label(&label_table, "if");
+    //get_and_set_unique_label(&label_table, "if");
+    //get_and_set_unique_label(&label_table, "while");
+    //get_and_set_unique_label(&label_table, "else");
+    //get_and_set_unique_label(&label_table, "while");
 
     //local_table_print(label_table);
 
-    gen_push_var("42", T_INT, false);
-    gen_pop_var("ret");
-    gen_call("func");
+    //gen_push_var("42", T_INT, false);
+    //gen_pop_var("ret");
+    //gen_call("func");
 
     prepare_for_func();
-    gen_function_label("func");
+    //gen_function_label("func");
 
-    gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
-    gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
-    gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
-    gen_push_var("42", T_INT, false);
+    //gen_add("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    //gen_sub("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    //gen_mul("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    //gen_div("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, true);
+    //gen_idiv("my_var", "tmp1", T_INT, true, "1.2", T_FLOAT, false, false);
+    //gen_push_var("42", T_INT, false);
 
-    end_function();
+    gen_chr();
 
-    gen_int2float("my_float", "42", false, true);
-    gen_int2float("my_float", "tmp", true, false);
+    //end_function();
+    listLast(&instr_list);
+
+    gen_call("chr");
+    //gen_int2float("my_float", "42", false, true);
+    //gen_int2float("my_float", "tmp", true, false);
+
 
     list_print_instructions(&instr_list);
 
@@ -521,4 +561,3 @@ int main() {
 
     return 0;
 }
-*/

@@ -175,7 +175,7 @@ void tInstr_print_single_instruction(tInstr *I) {
         return ;
     }
     else if (I->instType == I_COMENT) {
-        printf("\n%s", I->addr1);
+        printf("\n# %s", I->addr1);
         return ;
     }
     else {
