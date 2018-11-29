@@ -441,7 +441,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -464,7 +464,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     }
                 }
                 // Generovanie samotnej inštrukcie ADD
-                gen_add(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_add(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Koniec generovania kódu
             }
             else {
@@ -489,7 +489,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -512,7 +512,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     }
                 }
                 // Generovanie samotnej inštrukcie MUL
-                gen_mul(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_mul(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Koniec generovania kódu
             }
             else {
@@ -537,7 +537,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -560,7 +560,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     }
                 }
                 // Generovanie samotnej inštrukcie SUB
-                gen_sub(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_sub(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Koniec generovania kódu
             }
             else {
@@ -585,7 +585,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -609,9 +609,9 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 }
                 // Generovanie samotnej inštrukcie DIV/IDIV
                 if (typeFinal == T_INT) // Celočíselné delenie (IDIV)
-                    gen_idiv(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                    gen_idiv(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 else // Normálne delenie (DIV)
-                    gen_div(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                    gen_div(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Koniec generovania kódu
             }
             else {
@@ -636,7 +636,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -658,7 +658,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                         token_ID2 = converted_name;
                     }
                 }
-                gen_lt(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_lt(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Koniec generovania kódu
             }
             else {
@@ -683,7 +683,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -708,15 +708,15 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie LT
                 char *var_name_lt = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
                 variable_set_defined(actual_function_ptr, var_name_lt);
-                gen_defvar(var_name_lt, false);
-                gen_lt(var_name_lt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_defvar(var_name_lt);
+                gen_lt(var_name_lt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
                 variable_set_defined(actual_function_ptr, var_name_eq);
-                gen_defvar(var_name_eq, false);
-                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_defvar(var_name_eq);
+                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie OR medzi porovnaní
-                gen_or(var_name, var_name_lt, var_name_eq, false);
+                gen_or(var_name, var_name_lt, var_name_eq);
                 // Koniec generovania kódu
             }
             else {
@@ -740,7 +740,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name, false);
+                gen_defvar(var_name);
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -762,7 +762,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                         token_ID2 = converted_name;
                     }
                 }
-                gen_gt(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_gt(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
             }
                 // Koniec generovania kódu
             else {
@@ -783,7 +783,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name, false);
+            gen_defvar(var_name);
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
@@ -812,15 +812,15 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie GT
                 char *var_name_gt = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
                 variable_set_defined(actual_function_ptr, var_name_gt);
-                gen_defvar(var_name_gt, false);
-                gen_gt(var_name_gt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_defvar(var_name_gt);
+                gen_gt(var_name_gt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
                 variable_set_defined(actual_function_ptr, var_name_eq);
-                gen_defvar(var_name_eq, false);
-                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_defvar(var_name_eq);
+                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie OR medzi porovnaní
-                gen_or(var_name, var_name_gt, var_name_eq, false);
+                gen_or(var_name, var_name_gt, var_name_eq);
                 // Koniec generovania kódu
             }
             else {
@@ -841,7 +841,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name, false);
+            gen_defvar(var_name);
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
@@ -867,7 +867,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                         token_ID2 = converted_name;
                     }
                 }
-                gen_eq(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_eq(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
             }
                 // Koniec generovania kódu
             else {
@@ -888,7 +888,7 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name, false);
+            gen_defvar(var_name);
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
@@ -917,10 +917,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
                 variable_set_defined(actual_function_ptr, var_name_eq);
-                gen_defvar(var_name_eq, false);
-                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2), false);
+                gen_defvar(var_name_eq);
+                gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie NOT
-                gen_not(var_name, var_name_eq, false);
+                gen_not(var_name, var_name_eq);
                 // Koniec generovania kódu
             }
             else {
