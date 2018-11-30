@@ -31,17 +31,6 @@ int function_definition(tGlobalTableNodePtr *global_table_root, char *function_i
         // Nastavenie počtu params na 0
         function_set_number_params((*global_table_root), function_id, 0);
 
-        /* TOTO SA RADŠEJ SPRAVí ručne podľa main potom
-        // Získanie uzla novej funkcie v global table
-        tGlobalTableNodePtr function_node = get_function_node(*global_table_root, function_id);
-        // Vytvorenie novej lokálnej tabuľky
-        tLocalTableNodePtr local_table;
-        // Inicializácia lokálnej tabuľky
-        local_table_init(&local_table);
-        // Previazanie lokálnej tabuľky s uzlom v globálnej
-        set_function_table(&function_node, &local_table);
-        */
-
         return ERR_OK;
     }
 }
@@ -259,4 +248,30 @@ int comparison_check_compatibility(tDataType type1, tDataType type2) {
         // Nepovolená kombinácia
         return ERR_SEM_TYPE;
     }
+}
+
+
+bool is_built_in_function(char *function_id) {
+    if (strcmp(function_id, "inputs") == 0) return true;
+    else if (strcmp(function_id, "inputi") == 0) return true;
+    else if (strcmp(function_id, "inputf") == 0) return true;
+    else if (strcmp(function_id, "print") == 0) return true;
+    else if (strcmp(function_id, "length") == 0) return true;
+    else if (strcmp(function_id, "substr") == 0) return true;
+    else if (strcmp(function_id, "ord") == 0) return true;
+    else if (strcmp(function_id, "chr") == 0) return true;
+    else return false;
+}
+
+void built_in_function_set_param(tGlobalTableNodePtr rootPtr, char *function_id) {
+    int param = 0;
+    if (strcmp(function_id, "inputs") == 0) param = 0;
+    else if (strcmp(function_id, "inputi") == 0) param = 0;
+    else if (strcmp(function_id, "inputf") == 0) param = 0;
+    else if (strcmp(function_id, "print") == 0) param = 1;
+    else if (strcmp(function_id, "length") == 0) param = 1;
+    else if (strcmp(function_id, "substr") == 0) param = 3;
+    else if (strcmp(function_id, "ord") == 0) param = 2;
+    else if (strcmp(function_id, "chr") == 0) param = 1;
+    function_set_number_params(rootPtr, function_id, param);
 }

@@ -149,6 +149,9 @@ int stat_list (Token *token) {
 
 				return stat_list(token);
 			}
+			else if (check_if_function_already_defined(global_table, func_id_copy)) { // TODO: dočasný fix, absolútne netuším, prečo sa to tak správa
+				return stat_list(token);
+			}
 			
 		}
 	}
@@ -437,15 +440,18 @@ int arg (Token *token) {
 
 	/* Sémantická kontrola */																			printf("\n#Expected number of params of function %s: %d\n", func_id_copy, expected_params);
 	// Kontrola počtu načítaných parametrov
-	if (expected_params != 0) {
+	if ((strcmp(func_id_copy, "print") != 0) && expected_params != 0) {
 		fprintf(stderr, "Chyba! Nesprávny počet argumentov pri volaní funkcie.\n");
 		return ERR_SEM_PARAM;
 	}
 	// Koniec sémantickej kontroly
-																										printf("\n- generating CALL %s\n", func_id_copy);
-	// Generovanie kódu - vygenerovanie CALL funkcie
-	gen_call(func_id_copy);
-	// Koniec generovania kódu
+
+	if (strcmp(func_id_copy, "print") != 0) {
+		printf("\n- generating CALL %s\n", func_id_copy);
+		// Generovanie kódu - vygenerovanie CALL funkcie
+		gen_call(func_id_copy);
+		// Koniec generovania kódu
+	}
 
 	return ERR_OK;
 }
@@ -496,13 +502,34 @@ int after_id (Token *token) {
   | Pravidlo 16: <after_id> -> ( <arg> ) |
   |______________________________________|
 */
+
+	// Sémantická akcia
+	// Pozriem sa, či sa nejedná o vstavanú funkciu
+	if (is_built_in_function(id_copy)) {
+		printf("Jedná sa o vstavanú funkciu.\n");
+		// Pozrieť sa, či už bola predtým definovaná
+		if (check_if_function_already_defined(global_table, id_copy) == false) {
+			// Pridať funkciu do globálnej tabuľky symbolov
+			function_set_defined(&global_table, id_copy);
+			// Nastaviť správny počet parametrov
+			built_in_function_set_param(global_table, id_copy);
+
+			// Vygenerovať definíciu pred main
+			prepare_for_func();
+			generate_built_in_function(id_copy);
+			end_function();
+		}
+	}
+	// Koniec sémantickej akcie
+
 	//VOLANIE FUNKCIE
 	//------------------------------
 	// Volanie funkcie so zatvorkami 
 	//------------------------------
 	if (token->type == LEFT_ROUND_BRACKET) {															printf("( ");
-		func_id_copy = id_copy;
-		id_copy = NULL;
+		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy));
+		strcpy(func_id_copy, id_copy);
+
 		withBrackets = true;
 
 		// Sémantická kontrola
@@ -525,10 +552,15 @@ int after_id (Token *token) {
 ____*/
 		if (token->type == RIGHT_ROUND_BRACKET) {														printf(") ");
 			// Sémantická kontrola
-			if (expected_params != 0) {
+			if ((strcmp(func_id_copy, "print") != 0) && expected_params != 0) {
 			    // Sémantická chyba - nesprávny počet parametrov
 			    return ERR_SEM_PARAM;
 			}
+
+			// Generovanie kódu - vygenerovanie CALL funkcie
+			gen_call(func_id_copy);
+			// Koniec generovania kódu
+
 			GET_NEXT_TOKEN();
 
 			return ERR_OK;
@@ -548,9 +580,9 @@ ____*/
 	//-------------------------------------------
 	//Volanie funkcie s argumentami bez zatvoriek 
 	//-------------------------------------------
-	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {	
-		func_id_copy = id_copy;
-		id_copy = NULL;
+	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
+		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy));
+		strcpy(func_id_copy, id_copy);
 		withBrackets = false;
 
      	expected_params = function_get_number_params(global_table, func_id_copy); /* Získaj počet params funkcie*/ printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
@@ -564,12 +596,17 @@ ____*/
 	//Volanie funkcie bez argumentov a bez zatvoriek
 	//----------------------------------------------
 	else if (token->type == EOL) {
-		func_id_copy = id_copy;
-		id_copy = NULL;
+		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy));
+		strcpy(func_id_copy, id_copy);
 
 		expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
 		
 		if (expected_params == 0) {
+
+			// Generovanie kódu - vygenerovanie CALL funkcie
+			gen_call(func_id_copy);
+			// Koniec generovania kódu
+
 			return ERR_OK;
 		}
 		else return ERR_SEM_PARAM;
@@ -629,13 +666,37 @@ int def_value (Token *token) {
   	  | Pravidlo 20: <def_value> -> ID ( <arg> ) |
   	  |__________________________________________|
 ____*/
-        // Kontrola, či sa jedná o definovanu funkciu. Ak nie poslať hneď parseru výrazov
+		// Sémantická akcia
+		// Pozriem sa, či sa nejedná o vstavanú funkciu
+		if (is_built_in_function(token->attribute)) {
+			printf("Jedná sa o vstavanú funkciu.\n");
+			// Pozrieť sa, či už bola predtým definovaná
+			if (check_if_function_already_defined(global_table, token->attribute) == false) {
+				// Pridať funkciu do globálnej tabuľky symbolov
+				function_set_defined(&global_table, token->attribute);
+				// Nastaviť správny počet parametrov
+				built_in_function_set_param(global_table, token->attribute);
+				global_table_print(global_table);
+
+				// Vygenerovať definíciu pred main
+				prepare_for_func();
+				generate_built_in_function(token->attribute);
+				end_function();
+			}
+		}
+		// Koniec sémantickej akcie
+
+		// Kontrola, či sa jedná o definovanu funkciu. Ak nie poslať hneď parseru výrazov
         if (check_if_function_already_defined(global_table, token->attribute)) {
         	expected_params = function_get_number_params(global_table, token->attribute); /* Získaj počet params funkcie */printf("\nExpected number params: %d\n", expected_params);
 			// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
-			func_id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute));
+			func_id_copy = (char *) realloc(func_id_copy, sizeof(char) * strlen(token->attribute));
 			strcpy(func_id_copy, token->attribute);
-            
+
+			// Nastavenie ukazovateľa na aktívny prvok zoznamu parametrov na first
+			function_param_list_set_first_active(global_table, func_id_copy);
+			// Koniec sémantickej kontroly
+
             GET_NEXT_TOKEN();
 
 			//------------------------------
@@ -651,10 +712,15 @@ ____*/
 ____________*/
 				if (token->type == RIGHT_ROUND_BRACKET) {												printf(") ");
 					// Sémantická kontrola
-					if (expected_params != 0) {
+					if ((strcmp(func_id_copy, "print") != 0) && expected_params != 0) {
 					    // Sémantická chyba - nesprávny počet parametrov
 					    return ERR_SEM_PARAM;
 					}
+
+					// Generovanie kódu - vygenerovanie CALL funkcie
+					gen_call(func_id_copy);
+					// Koniec generovania kódu
+
 					GET_NEXT_TOKEN();
 
 					return ERR_OK;
@@ -664,6 +730,11 @@ ____________*/
 
 					if (retVal == ERR_OK) {
 						GET_NEXT_TOKEN();
+
+						// Vygenerovanie vrátenia návratovej hodnoty funkcie
+						gen_pop_var(id_copy);
+						printf("\n--ID COPY: %s, FUNC_ID_COPY: %s\n", id_copy, func_id_copy);
+
 						return ERR_OK;
 					}
 				}
@@ -686,6 +757,10 @@ ____________*/
 				expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
 			
 				if (expected_params == 0) {
+					// Generovanie kódu - vygenerovanie CALL funkcie
+					gen_call(func_id_copy);
+					// Koniec generovania kódu
+
 					return ERR_OK;
 				}
 				else return ERR_SEM_PARAM;
@@ -731,8 +806,15 @@ int value (Token *token) {
  		// Vygenerovanie PUSHS nil@nil
  		gen_push_var("nil", T_NIL, false);
 
- 		// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
-		variable_set_type(*called_function_table_ptr, actual_parameter, T_NIL);
+ 		if (!is_built_in_function(func_id_copy)) {
+			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+			variable_set_type(*called_function_table_ptr, actual_parameter, T_NIL);
+		}
+ 		else if (strcmp(func_id_copy, "print") == 0) {
+			// Generovanie kódu - vygenerovanie CALL funkcie
+			gen_call(func_id_copy);
+			// Koniec generovania kódu
+ 		}
 
 		GET_NEXT_TOKEN();
 		return ERR_OK;
@@ -742,8 +824,15 @@ int value (Token *token) {
 			// Vygenerovanie PUSHS int@
 			gen_push_var(token->attribute, T_INT, false);
 
-			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
-			variable_set_type(*called_function_table_ptr, actual_parameter, T_INT);
+			if (!is_built_in_function(func_id_copy)) {
+				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+				variable_set_type(*called_function_table_ptr, actual_parameter, T_INT);
+			}
+			else if (strcmp(func_id_copy, "print") == 0) {
+				// Generovanie kódu - vygenerovanie CALL funkcie
+				gen_call(func_id_copy);
+				// Koniec generovania kódu
+			}
 
 			GET_NEXT_TOKEN();
 			return ERR_OK;
@@ -752,8 +841,15 @@ int value (Token *token) {
 			// Vygenerovanie PUSHS float@
 			gen_push_var(token->attribute, T_FLOAT, false);
 
-			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
-			variable_set_type(*called_function_table_ptr, actual_parameter, T_FLOAT);
+			if (!is_built_in_function(func_id_copy)) {
+				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+				variable_set_type(*called_function_table_ptr, actual_parameter, T_FLOAT);
+			}
+			else if (strcmp(func_id_copy, "print") == 0) {
+				// Generovanie kódu - vygenerovanie CALL funkcie
+				gen_call(func_id_copy);
+				// Koniec generovania kódu
+			}
 
 			GET_NEXT_TOKEN();
 			return ERR_OK;
@@ -762,8 +858,10 @@ int value (Token *token) {
 			// Vygenerovanie PUSHS string@
 			gen_push_var(token->attribute, T_STRING, false);
 
-			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
-			variable_set_type(*called_function_table_ptr, actual_parameter, T_STRING);
+			if (!is_built_in_function(func_id_copy)) {
+				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+				variable_set_type(*called_function_table_ptr, actual_parameter, T_STRING);
+			}
 
  			GET_NEXT_TOKEN();
 			return ERR_OK;
@@ -780,8 +878,15 @@ int value (Token *token) {
 			// Vygenerovanie PUSHS LF@%
 			gen_push_var(token->attribute, T_UNDEFINED, true);
 
-			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
-			variable_set_type(*called_function_table_ptr, actual_parameter, var_node->data->type);
+			if (!is_built_in_function(func_id_copy)) {
+				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+				variable_set_type(*called_function_table_ptr, actual_parameter, var_node->data->type);
+			}
+			else if (strcmp(func_id_copy, "print") == 0) {
+				// Generovanie kódu - vygenerovanie CALL funkcie
+				gen_call(func_id_copy);
+				// Koniec generovania kódu
+			}
 
 			GET_NEXT_TOKEN();
 

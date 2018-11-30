@@ -126,4 +126,19 @@
      */
     int comparison_check_compatibility(tDataType type1, tDataType type2);
 
+    /**
+    * @brief Podľa identifikátora funkcie zistí, či sa náhodou nejedná o vstavanú funkciu
+    *
+    * @param function_id Identifikátor funkcie
+    * @return True ak ide o vstavanú funkciu, inak false
+    */
+    bool is_built_in_function(char *function_id);
+
+    /**
+    * @brief Nastaví správny počet parametrov pre danú vstavanú funkciu
+    * @param rootPtr Koreň globálnej tabuľky symbolov
+    * @param function_id
+    */
+    void built_in_function_set_param(tGlobalTableNodePtr rootPtr, char *function_id);
+
 #endif

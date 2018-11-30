@@ -156,6 +156,14 @@
 
     // Vstavané funkcie
 
+
+    /**
+     * @brief Na základe identifikátora funkcie určí, ktorú vstavanú funkciu má vygenerovať
+     * @param function_id Identifikátor funkcie
+     */
+    void generate_built_in_function(char *function_id);
+
+
     /**
      * @brief Generovanie vstavanej funkcie inputs
      *
