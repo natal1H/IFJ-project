@@ -134,11 +134,13 @@
     // Skoky
     void gen_jump(char *label);
     void gen_jumpifneq(char *label, char *var);
+    void gen_jumpifeq(char *label, char *var);
 
     void gen_label(char *label);
 
     int gen_defvar(char *var_name);
     int gen_move_var(char *var_name, char *symbol);
+    int gen_move_general(char *var_name, char *symbol);
 
     // Ďalšie pomocné funkcie
     char *get_string_with_prefix(char *str, char *prefix);

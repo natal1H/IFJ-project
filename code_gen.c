@@ -370,6 +370,13 @@ void gen_jumpifneq(char *label, char *var) {
     free(var_complete);
 }
 
+void gen_jumpifeq(char *label, char *var) {
+    char *label_complete = get_string_with_prefix(label, LABEL_PREFIX);
+    char *var_complete = get_string_with_prefix(var, VAR_PREFIX);
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, label_complete, var_complete, "bool@true");
+    free(label_complete);
+    free(var_complete);
+}
 void gen_label(char *label) {
     add_instruction_unary(I_LABEL, label, LABEL_PREFIX);
 }
@@ -384,6 +391,13 @@ int gen_not(char *var_name, char *symbol) {
 
 int gen_move_var(char *var_name, char *symbol) {
     return add_instruction_binary(I_MOVE, var_name, symbol, VAR_PREFIX);
+}
+
+int gen_move_general(char *var_name, char *symbol) {
+    if (is_int(symbol)) return add_instruction_binary(I_MOVE, var_name, symbol, "int@");
+    else if (is_float(symbol)) return add_instruction_binary(I_MOVE, var_name, symbol, "float@");
+    else if (is_nil(symbol)) return add_instruction_binary(I_MOVE, var_name, symbol, "nil@");
+    else return add_instruction_binary(I_MOVE, var_name, symbol, "string@");
 }
 
 char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix) {

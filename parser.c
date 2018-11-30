@@ -306,9 +306,18 @@ printf("\n\tLABEL: %s\n", label_else);
 	  |_________________________________________________|
 _____*/
 		else if (strcmp(token->attribute, "while") == 0) {												printf("while ");
+			// Generovanie kódu
+			char *label_while = get_and_set_unique_label(&label_table, "while");
+			char *compare_var = NULL;
+			gen_label(label_while);
+			// Koniec generovania kódu
 			GET_NEXT_TOKEN();
 
 			if (CallExpressionParser(token) == ERR_OK) {
+				// Záloha finalVar, kvôli porovnávaniu na konci
+				compare_var = malloc(sizeof(char) * strlen(finalVar));
+				strcpy(compare_var, finalVar);
+
 				if (strcmp(token->attribute, "do") == 0) {												printf("do ");
 					GET_NEXT_TOKEN();
 
@@ -319,6 +328,11 @@ _____*/
 
 						if (stat_list(token) == ERR_OK) {
 							if (strcmp(token->attribute, "end") == 0) {
+								// Generovanie kódu
+								gen_jumpifeq(label_while, compare_var);
+								free(label_while);
+								free(compare_var);
+								// Koniec generovania kódu
 								depth_index--;
 								if (depth_index == 0 || (in_def && depth_index == 1)) {
 									in_if_or_while = false;
