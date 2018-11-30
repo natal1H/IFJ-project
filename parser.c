@@ -550,6 +550,11 @@ ____*/
 			    // Sémantická chyba - nesprávny počet parametrov
 			    return ERR_SEM_PARAM;
 			}
+
+			// Generovanie kódu - vygenerovanie CALL funkcie
+			gen_call(func_id_copy);
+			// Koniec generovania kódu
+
 			GET_NEXT_TOKEN();
 
 			return ERR_OK;
@@ -591,6 +596,11 @@ ____*/
 		expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
 		
 		if (expected_params == 0) {
+
+			// Generovanie kódu - vygenerovanie CALL funkcie
+			gen_call(func_id_copy);
+			// Koniec generovania kódu
+
 			return ERR_OK;
 		}
 		else return ERR_SEM_PARAM;
@@ -696,6 +706,11 @@ ____________*/
 					    // Sémantická chyba - nesprávny počet parametrov
 					    return ERR_SEM_PARAM;
 					}
+
+					// Generovanie kódu - vygenerovanie CALL funkcie
+					gen_call(func_id_copy);
+					// Koniec generovania kódu
+
 					GET_NEXT_TOKEN();
 
 					return ERR_OK;
@@ -732,6 +747,10 @@ ____________*/
 				expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
 			
 				if (expected_params == 0) {
+					// Generovanie kódu - vygenerovanie CALL funkcie
+					gen_call(func_id_copy);
+					// Koniec generovania kódu
+
 					return ERR_OK;
 				}
 				else return ERR_SEM_PARAM;
