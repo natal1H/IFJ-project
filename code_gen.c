@@ -1,5 +1,43 @@
 #include "code_gen.h"
 
+// Funkcie na prácu so zásobníkom parametrov
+
+void ParamStackInit(TParamStack *s) {
+    s->top = NULL;
+}
+
+void ParamStackPush(TParamStack *s, char *id) {
+    // Alokovanie miesta pre nový parameter na zásobníku
+    TParam *newParam = (TParam *) malloc(sizeof(TParam));
+    if (newParam == NULL) return ;
+    // Alokovanie miesta pre identifikátor parametra
+    newParam->id = (char *) malloc(sizeof(char) * strlen(id));
+    if (newParam->id == NULL) {
+        free(newParam);
+        return ;
+    }
+    strcpy(newParam->id, id);
+    newParam->next = s->top;
+    s->top = newParam;
+}
+
+void ParamStackPop(TParamStack *s) {
+    TParam *paramPtr;
+    if (s->top != NULL) {
+        paramPtr = s->top;
+        s->top = s->top->next;
+        free(paramPtr->id);
+        free(paramPtr);
+    }
+}
+char * ParamStackTop(TParamStack *s) {
+    return s->top->id;
+}
+
+bool ParamStackEmpty(TParamStack *s) {
+    return (s->top == NULL);
+}
+
 // Funkcia na prípravu generovania kódu
 int code_gen_start() {
     // inicializovať kam sa bude ukladať kód

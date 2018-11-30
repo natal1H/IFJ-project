@@ -6,6 +6,7 @@
 #include "error.h"
 #include "expression_parser.h"
 #include "semantic_analysis.h"
+#include "code_gen.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>

@@ -34,6 +34,59 @@
     // Pomocná štruktúra - aktuálna inštrukcia
     tInstr *curr_instr;
 
+    // Zásobník parametrov a základné funkcie preň
+    /** @struct Element zásobníka parametrov **/
+    typedef struct tparam {
+       char *id; // Identifikátor parametra
+       struct  tparam *next; // Nasledujúci parameter
+    } TParam;
+
+    /** @struct Zásobník parametrov **/
+    typedef struct {
+        TParam *top;
+    } TParamStack;
+
+    // Zásobník na parametre
+    TParamStack stackParam;
+
+    /**
+     * @brief Inicializácia zásobníka parametrov
+     *
+     * @param s Zásobník parametrov
+     */
+    void ParamStackInit(TParamStack *s);
+
+    /**
+     * @brief Vloženie parametra na zásobník parametrov
+     *
+     * @param s Zásobník parametrov
+     * @param id Identifikátor parametra
+     */
+    void ParamStackPush(TParamStack *s, char *id);
+
+    /**
+     * @brief Odstránenie hodnoty z vrcholu zásobníka parametrov
+     *
+     * @param s Zásobník parametrov
+     */
+    void ParamStackPop(TParamStack *s);
+
+    /**
+     * @brief Vrátenie hodnoty z vrcholu zásobníka parametrov
+     *
+     * @param s Zásobník parametrov
+     * @return Identifikátor parametra
+     */
+    char * ParamStackTop(TParamStack *s);
+
+    /**
+     * @brief Pozrie, či je zásobník parametrov prázdny
+     *
+     * @param s Zásobník parametrov
+     * @return True ak je prázdny, false ak nie je
+     */
+    bool ParamStackEmpty(TParamStack *s);
+
     // Funkcia na prípravu generovania kódu
     int code_gen_start();
 
@@ -92,9 +145,14 @@
     void set_and_post_instr(tListOfInstr *L, tInstr *I, tInstruction_type type, char *addr1, char *addr2, char *addr3);
 
     // Generovanie funkcií
-    int gen_push_param(char *symbol, tDataType type, bool is_var);
+    int gen_push_var(char *symbol, tDataType type, bool is_var);
     int gen_pop_var(char *var_name);
     int gen_call(char *function_name);
+    void prepare_for_func();
+    void end_function();
+    int gen_function_label(char *function_name);
+
+
 
     // Vstavané funkcie
 

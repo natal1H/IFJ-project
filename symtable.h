@@ -30,7 +30,7 @@
     } tDataType;
 
     /**
-     * Štruktúra: Dáta uzla lokálnej tabuľky symbolov
+     * @struct Dáta uzla lokálnej tabuľky symbolov
      */
     typedef struct {
         tDataType type; // Datový typ premennej
@@ -38,7 +38,7 @@
     } tDataNodeLocal;
 
     /**
-     * Štruktúra: Lokálna tabuľka symbolov
+     * @struct Lokálna tabuľka symbolov
      */
     typedef struct tLocalTableNode {
         char *id; // Identifikátor premennej
@@ -49,11 +49,49 @@
     } * tLocalTableNodePtr;
 
     /**
+     * @struct Prvok zoznamu parametrov
+     */
+    typedef struct paramListItem {
+        char *param_id;
+        struct paramListItem *next;
+    } TParamListItem;
+
+    /**
+     * @struct Zoznam parametrov funkcie
+     */
+    typedef struct paramlist {
+        TParamListItem *first;
+        TParamListItem *act;
+        TParamListItem *last;
+    } TParamList;
+
+    /**
+     * @brief Inicializácia zoznamu parametrov
+     *
+     * @param L Zoznam parametrov
+     */
+    void ParamListInit(TParamList *L);
+
+    /**
+     * @brief Vloženie parametru na koniec zoznamu
+     *
+     * @param L Zoznam parametrov
+     * @param id Identifikátor parametru
+     */
+    void ParamListInsertLast(TParamList *L, char *id);
+
+    void ParamListFirst(TParamList *L);
+    void ParamListNext(TParamList *L);
+    char *ParamListGetActive(TParamList *L);
+    void ParamListDispose(TParamList *L);
+
+    /**
      * @struct Dáta uzla globálnej tabuľky symbolov
      */
     typedef struct {
         bool defined; // Bola definovaná funkcia?
         int params; // Počet parametrov funkcie
+        TParamList *paramList; // Zoznam identifikátorov parametrov
         tLocalTableNodePtr  *function_table; // Odkaz na lokálnu tabuľku symbolov funkcie
     } tDataNodeGlobal;
 
@@ -138,6 +176,19 @@
     void global_table_print(tGlobalTableNodePtr TempTree);
 
     // Špeciálne pre globálnu tabuľku
+
+    /**
+     * @brief Pridá identifikátor parametra do zoznamu parametrov funkcie
+     *
+     * @param rootPtr Koreň globálnej tabuľky symbolov
+     * @param function_id Názov funkcie
+     * @param param_id Identifikátor parametra
+     */
+    void function_add_param_id_to_list(tGlobalTableNodePtr rootPtr, char *function_id, char *param_id);
+
+    void function_param_list_set_first_active(tGlobalTableNodePtr rootPtr, char *function_id);
+    void function_param_list_next(tGlobalTableNodePtr rootPtr, char *function_id);
+    char *function_param_list_get_active(tGlobalTableNodePtr rootPtr, char *function_id);
 
     /**
      * @brief Funkcia na vrátenie počtu parametrov funkcie
