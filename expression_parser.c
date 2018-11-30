@@ -1308,6 +1308,15 @@ int CallExpressionParser(Token *token) {
 
     //true = error
     if (MainSyntaxStatus == ERR_OK) {
+        // Ak bol do parseru výrazov poslaný iba jeden operand
+        if (is_int(finalVar) || is_float(finalVar) || is_nil(finalVar) || is_string_literal(finalVar)) {
+            char *var_name = expr_parser_create_unique_name(*actual_function_ptr);
+            gen_defvar(var_name);
+            gen_move_general(var_name, finalVar);
+            finalVar = realloc(finalVar, sizeof(char) * strlen(var_name));
+            strcpy(finalVar, var_name);
+        }
+
         return ERR_OK;
 
     } else if (MainSyntaxStatus == ERR_SYNTAX) {

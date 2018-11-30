@@ -205,7 +205,7 @@ int stat (Token *token) {
 
 				// Generovanie kódu
 				prepare_for_func(); // Presunie ukazovateľ na aktívny prvok zoznamu inštrukcií na začiatok za hlavičku a JUMP $main
-				gen_function_label(token->attribute);
+				gen_function_header(token->attribute);
 				// Koniec generovania kódu
 
 				// Nastaviť finalVar na NULL, kvôli návratovej hodnote funkcie
@@ -253,7 +253,14 @@ _____*/
 		else if (strcmp(token->attribute, "if") == 0) {													printf("if ");
 			GET_NEXT_TOKEN();
 
+			// Získaj unikátny label ELSE
+			char *label_else = get_and_set_unique_label(&label_table, "else");
+			char *label_if_done = get_and_set_unique_label(&label_table, "id_end");
+printf("\n\tLABEL: %s\n", label_else);
 			if (CallExpressionParser(token) == ERR_OK) {
+				// Generovanie kódu: JUMPIFEQ
+				gen_jumpifneq(label_else, finalVar);
+				// Koniec generovania kódu
 				if (strcmp(token->attribute, "then") == 0) {											printf("then ");
 					GET_NEXT_TOKEN();
 
@@ -264,6 +271,10 @@ _____*/
 
 						if (stat_list(token) == ERR_OK) {
 							if (strcmp(token->attribute, "else") == 0) {								printf("else ");
+								// Generovanie kódu: JUMP $if_end, LABEL $else
+								gen_jump(label_if_done);
+								gen_label(label_else);
+								// Koniec generovania kódu
 								GET_NEXT_TOKEN();
 
 								if (token->type == EOL) {												printf("eol\n");
@@ -271,6 +282,11 @@ _____*/
 
 									if (stat_list(token) == ERR_OK) {
 										if (strcmp(token->attribute, "end") == 0) {
+											// Generovanie kódu: LABEL $if_done
+											gen_label(label_if_done);
+											free(label_else); // Uvoľnenie pamäte
+											free(label_if_done); // Uvoľnenie pamäte
+											// Koniec generovania kódu
 											depth_index--;
 											if (depth_index == 0 || (in_def && depth_index == 1)) {
 												in_if_or_while = false;
@@ -290,9 +306,18 @@ _____*/
 	  |_________________________________________________|
 _____*/
 		else if (strcmp(token->attribute, "while") == 0) {												printf("while ");
+			// Generovanie kódu
+			char *label_while = get_and_set_unique_label(&label_table, "while");
+			char *compare_var = NULL;
+			gen_label(label_while);
+			// Koniec generovania kódu
 			GET_NEXT_TOKEN();
 
 			if (CallExpressionParser(token) == ERR_OK) {
+				// Záloha finalVar, kvôli porovnávaniu na konci
+				compare_var = malloc(sizeof(char) * strlen(finalVar));
+				strcpy(compare_var, finalVar);
+
 				if (strcmp(token->attribute, "do") == 0) {												printf("do ");
 					GET_NEXT_TOKEN();
 
@@ -303,6 +328,11 @@ _____*/
 
 						if (stat_list(token) == ERR_OK) {
 							if (strcmp(token->attribute, "end") == 0) {
+								// Generovanie kódu
+								gen_jumpifeq(label_while, compare_var);
+								free(label_while);
+								free(compare_var);
+								// Koniec generovania kódu
 								depth_index--;
 								if (depth_index == 0 || (in_def && depth_index == 1)) {
 									in_if_or_while = false;
