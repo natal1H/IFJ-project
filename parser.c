@@ -122,8 +122,13 @@ int stat_list (Token *token) {
 				actual_function_ptr = (main_global_node->data->function_table); // Aktuálne lokálna tabuľka je nová lokálna tabuľka
 				// Koniec sémantickej akcie
 
-				// Generovanie kódu - vygenerovať return
-				end_function();
+				// Generovanie kódu - vygenerovať návratovú hodnotu a return
+				// Skontrolovať finalVar
+				if (finalVar == NULL) // Vráti nil@nil
+				    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@nil", NULL, NULL);
+				else // Vráti premennú, v ktorej bol posledný výpočet
+				    gen_push_var(finalVar, T_UNDEFINED, true);
+				end_function(); // Vygeneruje return
 				// Koniec generovania kódu
 			}
 			if (in_if_or_while || in_def) {																printf("end ");
@@ -184,27 +189,24 @@ int stat (Token *token) {
 					return ERR_SEM_UNDEF;
 				}
 				// Vytvoriť lokálnu tabuľku symbolov
-				//tLocalTableNodePtr new_local_table;
 				tLocalTableNodePtr *new_local_table_ptr = malloc(sizeof(tLocalTableNodePtr));
-				//local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
 				local_table_init(new_local_table_ptr); // Inicializácia novej lokálnej tabuľky
-				tGlobalTableNodePtr function_global_node = get_function_node(global_table, token->attribute); // Vráti ukazovvateľ na uzol s token->attribute v GTS
-//variable_set_defined(&new_local_table, token->attribute);
-				//set_function_table(&function_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
+				tGlobalTableNodePtr function_global_node = get_function_node(global_table, token->attribute); // Vráti ukazovateľ na uzol s token->attribute v GTS
 				set_function_table(&function_global_node, new_local_table_ptr); // Naviazanie uzla v globálnej na novú lokálnu
 				// Bude nasledovať definícia funkcie - preto treba zmeniť ukazovateľ na aktuálnu lokálnu TS z MAIN na tabuľku novej funkcie
 				// Nastaviť actual_function_name (ID funkcie, v ktorej sa práve nachádza program) na token->attribute
 				actual_function_name = token->attribute;												printf("Actual function name: %s\n", actual_function_name);
 				// Nastaviť actual_function_table
-				//actual_function_ptr = &new_local_table; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
 				actual_function_ptr = new_local_table_ptr; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
-//local_table_print(*actual_function_ptr);
 				// Koniec sémantickej kontroly
 
 				// Generovanie kódu
 				prepare_for_func(); // Presunie ukazovateľ na aktívny prvok zoznamu inštrukcií na začiatok za hlavičku a JUMP $main
 				gen_function_label(token->attribute);
 				// Koniec generovania kódu
+
+				// Nastaviť finalVar na NULL, kvôli návratovej hodnote funkcie
+				finalVar = NULL;
 
 				GET_NEXT_TOKEN();
 
@@ -579,11 +581,15 @@ ____*/
 */
 	else if (token->type == ASSIGN) {																	printf("= "); printf("\n\tID COPY: %s\n", id_copy);
 		// Sémantická akcia
-		/* Definovať premennú */																		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
-		variable_set_defined(actual_function_ptr, id_copy);
-        // Generovanie kódu
-        gen_defvar(id_copy);																			printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
-        
+		// Pozrieť, či je premenná už definovaná
+        if (get_variable_node(*actual_function_ptr, id_copy) == NULL) {
+            // Premenná ešte nebola definovaná
+            /* Definovať premennú */																		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
+            variable_set_defined(actual_function_ptr, id_copy);
+            // Generovanie kódu
+            gen_defvar(id_copy);																			printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+        }
+
 		GET_NEXT_TOKEN();
 
 		return def_value(token);
@@ -690,6 +696,8 @@ ____________*/
             retVal = CallExpressionParser(token);											            printf("\n\t\tId copy: %s\n", id_copy);
             /* Sémantická akcia: */															            printf("Type final: %d\n", typeFinal);
             variable_set_type(*actual_function_ptr, id_copy, typeFinal);
+            // Vygenerovanie priradenia výslednej premennej z parsera výrazov do id_copy
+            gen_move_var(id_copy, finalVar);
         }
 	}
 	else if (token->type == LEFT_ROUND_BRACKET) {														printf("expr ");

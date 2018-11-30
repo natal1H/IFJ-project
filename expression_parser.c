@@ -1260,13 +1260,10 @@ void CleanSyntaxTable(){
 }
 
 int CallExpressionParser(Token *token) {
-    printf("\n---ACTUAL FUNCTION TABLE---------\n");
-    //local_table_print(*actual_function_ptr);
-    printf("\n------------\n");
-        
+
     // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
     //typeFinal = T_UNDEFINED; // TODO: Môže byť? ak to odkomentujem, robí to chybu, ale teraz to funguje???
-        
+    finalVar = token->attribute;
         
     //Ulozenie adresy ktoru dostanem pre zapis posledneho tokenu
     Token *SaveMyToken = token;
