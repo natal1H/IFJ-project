@@ -131,6 +131,12 @@
     // Práca s reťazcami
     int gen_concat(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var);
 
+    // Skoky
+    void gen_jump(char *label);
+    void gen_jumpifneq(char *label, char *var);
+
+    void gen_label(char *label);
+
     int gen_defvar(char *var_name);
     int gen_move_var(char *var_name, char *symbol);
 

@@ -253,10 +253,14 @@ _____*/
 		else if (strcmp(token->attribute, "if") == 0) {													printf("if ");
 			GET_NEXT_TOKEN();
 
-			char *label = get_and_set_unique_label(&label_table, "else");
-			//set_and_post_instr()
-
+			// Získaj unikátny label ELSE
+			char *label_else = get_and_set_unique_label(&label_table, "else");
+			char *label_if_done = get_and_set_unique_label(&label_table, "id_end");
+printf("\n\tLABEL: %s\n", label_else);
 			if (CallExpressionParser(token) == ERR_OK) {
+				// Generovanie kódu: JUMPIFEQ
+				gen_jumpifneq(label_else, finalVar);
+				// Koniec generovania kódu
 				if (strcmp(token->attribute, "then") == 0) {											printf("then ");
 					GET_NEXT_TOKEN();
 
@@ -267,6 +271,10 @@ _____*/
 
 						if (stat_list(token) == ERR_OK) {
 							if (strcmp(token->attribute, "else") == 0) {								printf("else ");
+								// Generovanie kódu: JUMP $if_end, LABEL $else
+								gen_jump(label_if_done);
+								gen_label(label_else);
+								// Koniec generovania kódu
 								GET_NEXT_TOKEN();
 
 								if (token->type == EOL) {												printf("eol\n");
@@ -274,6 +282,11 @@ _____*/
 
 									if (stat_list(token) == ERR_OK) {
 										if (strcmp(token->attribute, "end") == 0) {
+											// Generovanie kódu: LABEL $if_done
+											gen_label(label_if_done);
+											free(label_else); // Uvoľnenie pamäte
+											free(label_if_done); // Uvoľnenie pamäte
+											// Koniec generovania kódu
 											depth_index--;
 											if (depth_index == 0 || (in_def && depth_index == 1)) {
 												in_if_or_while = false;
