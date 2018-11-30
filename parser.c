@@ -184,16 +184,20 @@ int stat (Token *token) {
 					return ERR_SEM_UNDEF;
 				}
 				// Vytvoriť lokálnu tabuľku symbolov
-				tLocalTableNodePtr new_local_table;
-				local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
+				//tLocalTableNodePtr new_local_table;
+				tLocalTableNodePtr *new_local_table_ptr = malloc(sizeof(tLocalTableNodePtr));
+				//local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
+				local_table_init(new_local_table_ptr); // Inicializácia novej lokálnej tabuľky
 				tGlobalTableNodePtr function_global_node = get_function_node(global_table, token->attribute); // Vráti ukazovvateľ na uzol s token->attribute v GTS
 //variable_set_defined(&new_local_table, token->attribute);
-				set_function_table(&function_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
+				//set_function_table(&function_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
+				set_function_table(&function_global_node, new_local_table_ptr); // Naviazanie uzla v globálnej na novú lokálnu
 				// Bude nasledovať definícia funkcie - preto treba zmeniť ukazovateľ na aktuálnu lokálnu TS z MAIN na tabuľku novej funkcie
 				// Nastaviť actual_function_name (ID funkcie, v ktorej sa práve nachádza program) na token->attribute
 				actual_function_name = token->attribute;												printf("Actual function name: %s\n", actual_function_name);
 				// Nastaviť actual_function_table
-				actual_function_ptr = &new_local_table; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
+				//actual_function_ptr = &new_local_table; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
+				actual_function_ptr = new_local_table_ptr; // Aktuálne lokálna tabuľka je nová lokálna tabuľka
 //local_table_print(*actual_function_ptr);
 				// Koniec sémantickej kontroly
 
@@ -338,6 +342,7 @@ int params (Token *token) {
 		function_set_number_params(global_table, actual_function_name, 1); 									printf("\nAktuálny počet parametrov funkcie: %d\n", function_get_number_params(global_table, actual_function_name));
 		variable_set_defined(actual_function_ptr, token->attribute); /* Vloženie param do loc. TS funkcie*/ printf("\n\n"); printf("\n\n");
 		variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
+		function_add_param_id_to_list(global_table, actual_function_name, token->attribute);
 		// Koniec sémantickej akcie
 
 		// Vložiť prvý parameter na zásobník parametrov
@@ -369,6 +374,7 @@ int params_next (Token *token) {
 			function_increase_number_params(global_table, actual_function_name); /* Inc. počet params */	printf("\nAktuálny počet parametrov funkcie: %d\n", function_get_number_params(global_table, actual_function_name));
 			variable_set_defined(actual_function_ptr, token->attribute); /* Vloženie param do loc. TS funkcie*/ printf("\n\n"); printf("\n\n");
 			variable_set_type(*actual_function_ptr, token->attribute, T_PARAM);
+			function_add_param_id_to_list(global_table, actual_function_name, token->attribute);
 			// Koniec sémantickej akcie
 
 			// Pridanie parametra na zásobník
@@ -504,6 +510,9 @@ int after_id (Token *token) {
 			return ERR_SEM_UNDEF;
 		}
 		expected_params = function_get_number_params(global_table, func_id_copy); /* Získaj počet params funkcie*/ printf("\nExpected number params: %d\n", expected_params);
+
+		// Nastavenie ukazovateľa na aktívny prvok zoznamu parametrov na first
+		function_param_list_set_first_active(global_table, func_id_copy);
 		// Koniec sémantickej kontroly
 
 		GET_NEXT_TOKEN();
@@ -543,7 +552,10 @@ ____*/
 		withBrackets = false;
 
      	expected_params = function_get_number_params(global_table, func_id_copy); /* Získaj počet params funkcie*/ printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
-		
+
+		// Nastavenie ukazovateľa na aktívny prvok zoznamu parametrov na first
+		function_param_list_set_first_active(global_table, func_id_copy);
+
 		return arg(token);
 	}
 	//----------------------------------------------
@@ -696,10 +708,23 @@ int value (Token *token) {
   | Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID |
   |__________________________________________________________________|
 */
-																										printf("\n- argument %s\n", token->attribute);
+	// Sémantická akcia
+    // Získať lokálnu tabuľku volanej funkcie
+    tGlobalTableNodePtr called_function_node = get_function_node(global_table, func_id_copy); // Vráti ukazovvateľ na uzol s func_id_copy v GTS
+    tLocalTableNodePtr * called_function_table_ptr = (called_function_node->data->function_table); // Ukazovateľ na lokálnu tabuľku funkcie func_id_copy
+
+	// Získať identifikátor parametra prislúchajúci argumentu
+	char *actual_parameter = function_param_list_get_active(global_table, func_id_copy);
+	function_param_list_next(global_table, func_id_copy); // Posunúť aktívny na ďalší
+    // Koniec sémantickej akcie
+
+	printf("\n- argument %s pre funkciu %s prislúcha parametru %s\n", token->attribute, func_id_copy,actual_parameter);
  	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {								printf("nil ");
  		// Vygenerovanie PUSHS nil@nil
  		gen_push_var("nil", T_NIL, false);
+
+ 		// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+		variable_set_type(*called_function_table_ptr, actual_parameter, T_NIL);
 
 		GET_NEXT_TOKEN();
 		return ERR_OK;
@@ -708,18 +733,30 @@ int value (Token *token) {
 		case INTEGER:																					printf("integer ");
 			// Vygenerovanie PUSHS int@
 			gen_push_var(token->attribute, T_INT, false);
+
+			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+			variable_set_type(*called_function_table_ptr, actual_parameter, T_INT);
+
 			GET_NEXT_TOKEN();
 			return ERR_OK;
 		break;
 		case FLOAT:																						printf("float ");
 			// Vygenerovanie PUSHS float@
 			gen_push_var(token->attribute, T_FLOAT, false);
+
+			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+			variable_set_type(*called_function_table_ptr, actual_parameter, T_FLOAT);
+
 			GET_NEXT_TOKEN();
 			return ERR_OK;
 		break;
  		case STRING:																					printf("string ");
 			// Vygenerovanie PUSHS string@
 			gen_push_var(token->attribute, T_STRING, false);
+
+			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+			variable_set_type(*called_function_table_ptr, actual_parameter, T_STRING);
+
  			GET_NEXT_TOKEN();
 			return ERR_OK;
 		break;
@@ -734,6 +771,10 @@ int value (Token *token) {
 			}
 			// Vygenerovanie PUSHS LF@%
 			gen_push_var(token->attribute, T_UNDEFINED, true);
+
+			// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
+			variable_set_type(*called_function_table_ptr, actual_parameter, var_node->data->type);
+
 			GET_NEXT_TOKEN();
 
 			return ERR_OK;

@@ -1,6 +1,64 @@
 #include "symtable.h"
 #include "main.h"
 
+// Funkcie pre zoznam parametrov
+
+void ParamListInit(TParamList *L) {
+    L->act = NULL;
+    L->first = NULL;
+}
+
+void ParamListInsertLast(TParamList *L, char *id) {
+    // Alokácia miesta
+    TParamListItem *newItem = (TParamListItem *) malloc(sizeof(TParamListItem));
+    if (newItem == NULL) return ;
+    newItem->param_id = malloc(sizeof(char) * strlen(id));
+    if (newItem->param_id == NULL) return ;
+    strcpy(newItem->param_id, id); // Nastavenie id parametra
+    newItem->next = NULL;
+
+    // Pridanie na koniec zoznamu
+    if (L->first == NULL) {
+        L->first = newItem;
+        L->last = newItem;
+    }
+    else {
+        TParamListItem *tmp = L->last; // ukazuje na posledný prvok
+        tmp->next = newItem;
+        L->last = newItem;
+    }
+}
+
+void ParamListFirst(TParamList *L) {
+    if (L != NULL)
+        L->act = L->first;
+}
+
+void ParamListNext(TParamList *L) {
+    if (L != NULL)
+        if (L->act != NULL)
+            L->act = L->act->next;
+}
+
+char *ParamListGetActive(TParamList *L) {
+    if (L != NULL)
+        if (L->act != NULL)
+            return L->act->param_id;
+}
+
+void ParamListDispose(TParamList *L) {
+    if (L == NULL) return ;
+    TParamListItem *tmp = L->first;
+    while (tmp != NULL) {
+        TParamListItem *toDelete = tmp;
+        tmp = tmp->next;
+
+        free(toDelete->param_id);
+        free(toDelete);
+    }
+    free(L);
+}
+
 // Funkcie pre globálnu TS
 void global_table_init(tGlobalTableNodePtr *rootPtr) {
     (*rootPtr) = NULL;
@@ -33,10 +91,18 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
                 return ERR_INTERNAL;
             }
 
+            // Alokuj miesto pre paramList
+            newPtr->data->paramList = (TParamList *) malloc(sizeof(TParamList));
+            if (newPtr->data->paramList == NULL) {
+                // Chyba
+                return  ERR_INTERNAL;
+            }
+
             // Uložiť obsah data
             newPtr->data->defined = data->defined;
             newPtr->data->function_table = data->function_table;
             newPtr->data->params = data->params;
+            newPtr->data->paramList = data->paramList;
 
             (*rootPtr) = newPtr;
         }
@@ -56,6 +122,7 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
             (*rootPtr)->data->defined = data->defined;
             (*rootPtr)->data->function_table = data->function_table;
             (*rootPtr)->data->params = data->params;
+            (*rootPtr)->data->paramList = data->paramList;
         }
     }
 
@@ -96,11 +163,14 @@ void global_table_replace_by_rightmost(tGlobalTableNodePtr ptrReplaced, tGlobalT
         ptrReplaced->id = realloc(ptrReplaced->id, sizeof(char) * strlen( (*rootPtr)->id) ); // reallocovaie miesta
         strcpy(ptrReplaced->id, (*rootPtr)->id);
 
+        free(ptrReplaced->data->paramList); // Free, lebo po priradení by sa stratila tá pamäť a nastal by leak
+
         ptrReplaced->data = (*rootPtr)->data;
 
         tGlobalTableNodePtr temp = (*rootPtr);
         (*rootPtr) = (*rootPtr)->lPtr;
 
+        temp->data->paramList = NULL;
         free(temp->data);
         free(temp);
     }
@@ -134,6 +204,7 @@ void global_table_delete(tGlobalTableNodePtr *rootPtr, char *id) {
             (*rootPtr) = (*rootPtr)->lPtr;
 
             // Vymazanie uzlu
+            ParamListDispose(temp->data->paramList);
             free(temp->data);
             free(temp->id);
             free(temp);
@@ -144,6 +215,7 @@ void global_table_delete(tGlobalTableNodePtr *rootPtr, char *id) {
             (*rootPtr) = (*rootPtr)->rPtr;
 
             // Vymazanie uzlu
+            ParamListDispose(temp->data->paramList);
             free(temp->data);
             free(temp->id);
             free(temp);
@@ -159,6 +231,9 @@ void global_table_dispose(tGlobalTableNodePtr *rootPtr) {
     if ((*rootPtr) != NULL) {
         global_table_dispose( &(*rootPtr)->lPtr );
         global_table_dispose( &(*rootPtr)->rPtr );
+
+        // Uvoľni ParamList
+        ParamListDispose((*rootPtr)->data->paramList);
 
         // Uvoľni dáta
         free((*rootPtr)->data);
@@ -208,6 +283,37 @@ void global_table_print(tGlobalTableNodePtr TempTree) {
 }
 
 // Špeciálne
+
+void function_add_param_id_to_list(tGlobalTableNodePtr rootPtr, char *function_id, char *param_id) {
+    tDataNodeGlobal *data;
+    bool found = global_table_search(rootPtr, function_id, &data);
+    if (found) {
+        ParamListInsertLast(data->paramList, param_id);
+    }
+}
+
+void function_param_list_set_first_active(tGlobalTableNodePtr rootPtr, char *function_id) {
+    tDataNodeGlobal *data;
+    bool found = global_table_search(rootPtr, function_id, &data);
+    if (found) {
+        ParamListFirst(data->paramList);
+    }
+}
+void function_param_list_next(tGlobalTableNodePtr rootPtr, char *function_id) {
+    tDataNodeGlobal *data;
+    bool found = global_table_search(rootPtr, function_id, &data);
+    if (found) {
+        ParamListNext(data->paramList);
+    }
+}
+char *function_param_list_get_active(tGlobalTableNodePtr rootPtr, char *function_id) {
+    tDataNodeGlobal *data;
+    bool found = global_table_search(rootPtr, function_id, &data);
+    if (found) {
+        return ParamListGetActive(data->paramList);
+    }
+}
+
 int function_get_number_params(tGlobalTableNodePtr rootPtr, char *function_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -249,6 +355,10 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
         data->defined = true;
         data->function_table = NULL;
         data->params = 0;
+        // Alokovanie miesta pre data->paramList
+        data->paramList = malloc(sizeof(TParamList));
+        if (data->paramList == NULL) return ERR_INTERNAL;
+        ParamListInit(data->paramList); // Inicializácia zoznamu parametrov
 
         if (global_table_insert(&(*rootPtr), id, data) == ERR_INTERNAL) {
             // Chyba
@@ -256,7 +366,6 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
         }
 
         free(data);
-
     }
     else {
         bool found = global_table_search((*rootPtr), id, &data);
@@ -272,6 +381,10 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
             data->defined = true;
             data->function_table = NULL;
             data->params = 0;
+            // Alokovanie miesta pre data->paramList
+            data->paramList = malloc(sizeof(TParamList));
+            if (data->paramList == NULL) return ERR_INTERNAL;
+            ParamListInit(data->paramList); // Inicializácia zoznamu parametrov
 
             if (global_table_insert(&(*rootPtr), id, data) == ERR_INTERNAL) {
                 // Chyba
