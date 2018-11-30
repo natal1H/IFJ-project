@@ -149,6 +149,9 @@ int stat_list (Token *token) {
 
 				return stat_list(token);
 			}
+			else if (check_if_function_already_defined(global_table, func_id_copy)) { // TODO: dočasný fix, absolútne netuším, prečo sa to tak správa
+				return stat_list(token);
+			}
 			
 		}
 	}
@@ -686,7 +689,11 @@ ____*/
 			// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
 			func_id_copy = (char *) realloc(func_id_copy, sizeof(char) * strlen(token->attribute));
 			strcpy(func_id_copy, token->attribute);
-            
+
+			// Nastavenie ukazovateľa na aktívny prvok zoznamu parametrov na first
+			function_param_list_set_first_active(global_table, func_id_copy);
+			// Koniec sémantickej kontroly
+
             GET_NEXT_TOKEN();
 
 			//------------------------------
