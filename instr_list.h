@@ -75,6 +75,7 @@
     void listFirst(tListOfInstr *L);
     void listNext(tListOfInstr *L);
     void listLast(tListOfInstr *L);
+    tListItem *listGetActivePtr(tListOfInstr *L);
     tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *addr3);
     void tInstr_print_single_instruction(tInstr *I);
     void list_print_instructions(tListOfInstr *L);

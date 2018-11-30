@@ -166,6 +166,14 @@ tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *ad
     return i;
 }
 
+tListItem *listGetActivePtr(tListOfInstr *L) {
+    if (L != NULL) {
+        return L->active;
+    }
+    else
+        return NULL;
+}
+
 void tInstr_print_single_instruction(tInstr *I) {
     if (I == NULL) {
         return;

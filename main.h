@@ -19,6 +19,6 @@
     char *actual_function_name; // ID funkcie, v ktorej sa práve program nachádza
     char *id_copy; // Reťazec na zálohu ID aj po načítaní ďalšich tokenov
     char *func_id_copy; // Retazec na zalohu ID funkcie ktora sa priraduje do premennej
-
+    int is_in_while;
 
 #endif

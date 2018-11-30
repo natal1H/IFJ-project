@@ -441,7 +441,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -449,14 +455,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -489,22 +495,27 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
-
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
                 if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -537,7 +548,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -545,14 +562,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -585,7 +602,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -593,14 +616,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -636,7 +659,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -644,14 +673,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -683,7 +712,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -691,14 +726,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -708,12 +743,30 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie LT
                 char *var_name_lt = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
                 variable_set_defined(actual_function_ptr, var_name_lt);
-                gen_defvar(var_name_lt);
+                //gen_defvar(var_name_lt);
+
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name_lt, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name_lt, &instr_list); // DEFVAR LF@%param_id
+                }
+
                 gen_lt(var_name_lt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
                 variable_set_defined(actual_function_ptr, var_name_eq);
-                gen_defvar(var_name_eq);
+                //gen_defvar(var_name_eq);
+
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name_eq, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name_eq, &instr_list); // DEFVAR LF@%param_id
+                }
+
                 gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie OR medzi porovnaní
                 gen_or(var_name, var_name_lt, var_name_eq);
@@ -740,7 +793,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
                 variable_set_type(*actual_function_ptr, var_name, typeFinal);
                 // Vygenerovanie novej premennej v kóde
-                gen_defvar(var_name);
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+                }
 
                 // Generovanie kódu
                 // Zistiť či treba konverziu INT2FLOAT
@@ -748,14 +807,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -783,7 +842,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name);
+            if (is_in_while > 0) {
+                // Je vo while, pridávať na zvlášť zoznam
+                gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+            }
+            else {
+                gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+            }
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
@@ -795,14 +860,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -812,12 +877,30 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie GT
                 char *var_name_gt = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
                 variable_set_defined(actual_function_ptr, var_name_gt);
-                gen_defvar(var_name_gt);
+                //gen_defvar(var_name_gt);
+
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name_gt, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name_gt, &instr_list); // DEFVAR LF@%param_id
+                }
+
                 gen_gt(var_name_gt, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" EQ
                 variable_set_defined(actual_function_ptr, var_name_eq);
-                gen_defvar(var_name_eq);
+                //gen_defvar(var_name_eq);
+
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name_eq, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name_eq, &instr_list); // DEFVAR LF@%param_id
+                }
+
                 gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie OR medzi porovnaní
                 gen_or(var_name, var_name_gt, var_name_eq);
@@ -841,7 +924,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name);
+            if (is_in_while > 0) {
+                // Je vo while, pridávať na zvlášť zoznam
+                gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+            }
+            else {
+                gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+            }
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
@@ -853,14 +942,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -888,7 +977,13 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
             variable_set_type(*actual_function_ptr, var_name, typeFinal);
             // Vygenerovanie novej premennej v kóde
-            gen_defvar(var_name);
+            if (is_in_while > 0) {
+                // Je vo while, pridávať na zvlášť zoznam
+                gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+            }
+            else {
+                gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+            }
 
             if (compatibility_err_code == ERR_OK) {
                 typeFinal = T_BOOLEAN;
@@ -900,14 +995,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                     // Treba konverziu jednej z hodnôt
                     char *converted_name;
                     if (token1 == T_INT) {
-                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID1, &converted_name, is_in_while);
 
                         // Nahradiť token_ID1 za converted_name a token1 za T_FLOAT
                         token1 = T_FLOAT;
                         token_ID1 = converted_name;
                     }
                     else {
-                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name);
+                        convert_int_2_float(actual_function_ptr, token_ID2, &converted_name, is_in_while);
 
                         // Nahradiť token_ID2 za converted_name a token2 za T_FLOAT
                         token2 = T_FLOAT;
@@ -917,7 +1012,16 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 // Vygenerovanie EQ
                 char *var_name_eq = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať "výsledok" LT
                 variable_set_defined(actual_function_ptr, var_name_eq);
-                gen_defvar(var_name_eq);
+                //gen_defvar(var_name_eq);
+
+                if (is_in_while > 0) {
+                    // Je vo while, pridávať na zvlášť zoznam
+                    gen_defvar(var_name_eq, &while_declaration_list); // DEFVAR LF@%param_id
+                }
+                else {
+                    gen_defvar(var_name_eq, &instr_list); // DEFVAR LF@%param_id
+                }
+
                 gen_eq(var_name_eq, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
                 // Vygenerovanie NOT
                 gen_not(var_name, var_name_eq);
@@ -1311,7 +1415,14 @@ int CallExpressionParser(Token *token) {
         // Ak bol do parseru výrazov poslaný iba jeden operand
         if (is_int(finalVar) || is_float(finalVar) || is_nil(finalVar) || is_string_literal(finalVar)) {
             char *var_name = expr_parser_create_unique_name(*actual_function_ptr);
-            gen_defvar(var_name);
+            //gen_defvar(var_name);
+            if (is_in_while > 0) {
+                // Je vo while, pridávať na zvlášť zoznam
+                gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id
+            }
+            else {
+                gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
+            }
             gen_move_general(var_name, finalVar);
             finalVar = realloc(finalVar, sizeof(char) * strlen(var_name));
             strcpy(finalVar, var_name);

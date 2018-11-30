@@ -287,7 +287,7 @@ int gen_concat(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is
 }
 
 
-int gen_defvar(char *var_name) {
+int gen_defvar(char *var_name, tListOfInstr *L) {
     if (var_name == NULL) // Chyba
         return ERR_INTERNAL;
 
@@ -297,7 +297,7 @@ int gen_defvar(char *var_name) {
         return ERR_INTERNAL;
 
     // Nastaviť správne aktuálnu inštrukciu a vložiť inštrukciu do zoznamu
-    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, var_complete, NULL, NULL);
+    set_and_post_instr(L, curr_instr, I_DEFVAR, var_complete, NULL, NULL);
 
     // Uvoľniť miesto, kde boli var_complete
     free(var_complete);
@@ -344,7 +344,7 @@ int gen_eq(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var
     return ret_val;
 }
 
-void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, char **converted_name) {
+void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, char **converted_name, int is_int_while) {
     *converted_name = expr_parser_create_unique_name(*actual_function_ptr); // Získam meno premennej, do ktorej sa bude ukladať konverzia
 
     // Vytvorenie premennej v loc. tabuľke symbolov
@@ -352,7 +352,13 @@ void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, 
     variable_set_type(*actual_function_ptr, *converted_name, T_FLOAT);
 
     // Vygenerovanie premennej, ktorá vznikne pri konverzii
-    gen_defvar(*converted_name);
+    if (is_in_while > 0) {
+        // Je vo while, pridávať na zvlášť zoznam
+        gen_defvar(*converted_name, &while_declaration_list); // DEFVAR LF@%param_id
+    }
+    else {
+        gen_defvar(*converted_name, &instr_list); // DEFVAR LF@%param_id
+    }
 
     // Pridať inštrukciu INT2FLOAT
     gen_int2float(*converted_name, symbol, is_variable(*actual_function_ptr, symbol));

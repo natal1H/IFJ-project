@@ -26,6 +26,13 @@ bool withBrackets = true;
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
 */
 int prog (Token *token) {
+
+	// Príprava na generovanie while
+	is_in_while = 0;
+	active_before_while = NULL;
+	//instr_beginning_while = NULL;
+	// Koniec prípravy na generovanie while
+
 	// Inicializácia zásobníka na parametre fukcie
 	ParamStackInit(&stackParam);
 
@@ -306,10 +313,22 @@ printf("\n\tLABEL: %s\n", label_else);
 	  |_________________________________________________|
 _____*/
 		else if (strcmp(token->attribute, "while") == 0) {												printf("while ");
+			// Nastavenie inštrukcie tesne pred while
+			if (is_in_while == 0) {
+				active_before_while = listGetActivePtr(&instr_list);
+			}
+
+			// Je v cykle, v cykle nemôžu byť žiadne deklarácie premenných
+			is_in_while += 1;
+			listInit(&while_declaration_list); // Inicializácia zoznamu deklarácií
+			listFirst(&while_declaration_list);
+
 			// Generovanie kódu
 			char *label_while = get_and_set_unique_label(&label_table, "while");
 			char *compare_var = NULL;
 			gen_label(label_while);
+
+
 			// Koniec generovania kódu
 			GET_NEXT_TOKEN();
 
@@ -333,6 +352,34 @@ _____*/
 								free(label_while);
 								free(compare_var);
 								// Koniec generovania kódu
+
+								// Vychádza z cyklu, zníž zanorenie
+								is_in_while -= 1;
+
+								// Vychádza zo všetkých cyklov
+								if (is_in_while == 0) {
+									// Dopísanie deklarácií pred LABEL $while
+									listFirst(&while_declaration_list);
+
+									tListItem *main_list_active_copy = (instr_list.active);
+									main_list_active_copy = (instr_list.active);
+
+									instr_list.active = active_before_while;
+
+									while (while_declaration_list.active != NULL) {
+										listInsertPostActive(&instr_list, while_declaration_list.active->Instruction);
+										//listNext(&instr_list);
+										listNext(&while_declaration_list);
+									}
+
+									instr_list.active = main_list_active_copy;
+
+									// Koniec cyklu, upratanie
+									listFree(&while_declaration_list);
+
+									active_before_while = NULL;
+								}
+
 								depth_index--;
 								if (depth_index == 0 || (in_def && depth_index == 1)) {
 									in_if_or_while = false;
@@ -431,7 +478,13 @@ int params_next (Token *token) {
 		while (!ParamStackEmpty(&stackParam)) {
 			// Kým nie je zásobník prázdny, POPS
 			char *param_id = ParamStackTop(&stackParam); // ID parametra
-			gen_defvar(param_id); // DEFVAR LF@%param_id
+			if (is_in_while > 0) {
+				// Je vo while, pridávať na zvlášť zoznam
+				gen_defvar(param_id, &while_declaration_list); // DEFVAR LF@%param_id
+			}
+			else {
+				gen_defvar(param_id, &instr_list); // DEFVAR LF@%param_id
+			}
 			gen_pop_var(param_id); // POPS LF@%param_id
 			ParamStackPop(&stackParam); // Odstráň parameter zo zásobníka
 		}
@@ -654,7 +707,14 @@ ____*/
             /* Definovať premennú */																		printf("\n\t---PRIDAVAM DO STROMU %s\n", id_copy);
             variable_set_defined(actual_function_ptr, id_copy);
             // Generovanie kódu
-            gen_defvar(id_copy);																			printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+            //gen_defvar(id_copy);																			printf("\n\t---Teraz by sa definovalo %s\n", id_copy);
+			if (is_in_while > 0) {
+				// Je vo while, pridávať na zvlášť zoznam
+				gen_defvar(id_copy, &while_declaration_list); // DEFVAR LF@%param_id
+			}
+			else {
+				gen_defvar(id_copy, &instr_list); // DEFVAR LF@%param_id
+			}
         }
 
 		GET_NEXT_TOKEN();

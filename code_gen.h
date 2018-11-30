@@ -34,6 +34,12 @@
     // Pomocná štruktúra - aktuálna inštrukcia
     tInstr *curr_instr;
 
+    // Generovanie while
+    tListOfInstr while_declaration_list; // Zoznam inštrukcií deklarácií, ktoré by inak boli vo while
+    tListItem *active_before_while; // Inštrukcia tesne pred začiatkom while
+    //tInstr *instr_beginning_while; // Inštrukcia, ktorou sa začína while
+
+
     // Zásobník parametrov a základné funkcie preň
     /** @struct Element zásobníka parametrov **/
     typedef struct tparam {
@@ -126,7 +132,7 @@
 
     // Inštrukcie na prevody
     int gen_int2float(char *var_name, char *symbol, bool is_var);
-    void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, char **converted_name);
+    void convert_int_2_float(tLocalTableNodePtr *actual_function_ptr, char *symbol, char **converted_name, int is_int_while);
 
     // Práca s reťazcami
     int gen_concat(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var);
@@ -138,7 +144,7 @@
 
     void gen_label(char *label);
 
-    int gen_defvar(char *var_name);
+    int gen_defvar(char *var_name, tListOfInstr *L);
     int gen_move_var(char *var_name, char *symbol);
     int gen_move_general(char *var_name, char *symbol);
 
