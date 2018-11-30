@@ -442,6 +442,17 @@ void end_function() {
     listLast(&instr_list);
 }
 
+void generate_built_in_function(char *function_id) {
+    if (strcmp(function_id, "inputs") == 0) gen_inputs();
+    else if (strcmp(function_id, "inputi") == 0) gen_inputi();
+    else if (strcmp(function_id, "inputf") == 0) gen_inputf();
+    else if (strcmp(function_id, "print") == 0) gen_print();
+    else if (strcmp(function_id, "length") == 0) gen_length();
+    else if (strcmp(function_id, "substr") == 0) gen_substr();
+    else if (strcmp(function_id, "ord") == 0) gen_ord();
+    else if (strcmp(function_id, "chr") == 0) gen_chr();
+}
+
 /** Generovanie vstavanej funkcie inputs **/
 void gen_inputs() {
     set_and_post_instr(&instr_list, curr_instr, I_COMENT, "Definícia funkcie inputs", NULL, NULL); // Komentár pred definíciou funkcie
@@ -452,7 +463,7 @@ void gen_inputs() {
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "string", NULL); // READ LF@%ret string
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavenj funkcie inputi **/
@@ -465,7 +476,7 @@ void gen_inputi() {
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "int", NULL); // READ LF@%ret int
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavanej funkcie inputf **/
@@ -478,7 +489,7 @@ void gen_inputf() {
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "float", NULL); // READ LF@%ret float
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavanej funkcie print **/
@@ -492,7 +503,7 @@ void gen_print() {
     set_and_post_instr(&instr_list, curr_instr, I_WRITE, "LF@%p1", NULL, NULL); // WRITE LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@%nil", NULL, NULL); // PUSHS nil@nil
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavanej funkcie length **/
@@ -507,7 +518,7 @@ void gen_length() {
     set_and_post_instr(&instr_list, curr_instr, I_STRLEN, "LF@%ret", "LF@%p1", NULL); // STRLEN LF@%ret LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavanej funkcie substr **/
@@ -554,7 +565,7 @@ void gen_substr() {
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$noerr", NULL, NULL); // LABEL $substr$noerr
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavanej funkcie ord **/
@@ -583,7 +594,7 @@ void gen_ord() {
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$ord$noerr", NULL, NULL); // LABEL $orr$noerr
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
 /** Generovanie vstavanej funkcie chr **/
@@ -598,5 +609,5 @@ void gen_chr() {
     set_and_post_instr(&instr_list, curr_instr, I_INT2CHAR, "LF@%ret", "LF@%p1", NULL); // INT2CHAR LF@%ret LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
-    set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
+    //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
