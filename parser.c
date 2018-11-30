@@ -205,7 +205,7 @@ int stat (Token *token) {
 
 				// Generovanie kódu
 				prepare_for_func(); // Presunie ukazovateľ na aktívny prvok zoznamu inštrukcií na začiatok za hlavičku a JUMP $main
-				gen_function_label(token->attribute);
+				gen_function_header(token->attribute);
 				// Koniec generovania kódu
 
 				// Nastaviť finalVar na NULL, kvôli návratovej hodnote funkcie
@@ -252,6 +252,9 @@ ________________*/
 _____*/
 		else if (strcmp(token->attribute, "if") == 0) {													printf("if ");
 			GET_NEXT_TOKEN();
+
+			char *label = get_and_set_unique_label(&label_table, "else");
+			//set_and_post_instr()
 
 			if (CallExpressionParser(token) == ERR_OK) {
 				if (strcmp(token->attribute, "then") == 0) {											printf("then ");

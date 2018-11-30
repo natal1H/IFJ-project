@@ -150,7 +150,7 @@
     int gen_call(char *function_name);
     void prepare_for_func();
     void end_function();
-    int gen_function_label(char *function_name);
+    int gen_function_header(char *function_name);
 
 
 

@@ -420,8 +420,10 @@ int gen_call(char *function_name) {
     return add_instruction_unary(I_CALL, function_name, FUNCTION_PREFIX);
 }
 
-int gen_function_label(char *function_name) {
-    return add_instruction_unary(I_LABEL, function_name, FUNCTION_PREFIX);
+int gen_function_header(char *function_name) {
+    int ret = add_instruction_unary(I_LABEL, function_name, FUNCTION_PREFIX);
+    set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL);
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL);
 }
 
 void prepare_for_func() {
@@ -436,7 +438,8 @@ void set_and_post_instr(tListOfInstr *L, tInstr *I, tInstruction_type type, char
 }
 
 void end_function() {
-    // RETURN a presune aktivitu na posledný prvok
+    // RETURN, POPFRAME a presune aktivitu na posledný prvok
+    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL);
     set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL);
 
     listLast(&instr_list);
@@ -462,7 +465,7 @@ void gen_inputs() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "string", NULL); // READ LF@%ret string
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -475,7 +478,7 @@ void gen_inputi() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "int", NULL); // READ LF@%ret int
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -488,7 +491,7 @@ void gen_inputf() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "float", NULL); // READ LF@%ret float
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -502,7 +505,7 @@ void gen_print() {
     set_and_post_instr(&instr_list, curr_instr, I_POPS, "LF@%p1", NULL, NULL); // POPS LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_WRITE, "LF@%p1", NULL, NULL); // WRITE LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@%nil", NULL, NULL); // PUSHS nil@nil
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -517,7 +520,7 @@ void gen_length() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_STRLEN, "LF@%ret", "LF@%p1", NULL); // STRLEN LF@%ret LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -564,7 +567,7 @@ void gen_substr() {
     set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%ret", "nil@nil", NULL); // MOVE LF@%ret nil@nil
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$noerr", NULL, NULL); // LABEL $substr$noerr
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -593,7 +596,7 @@ void gen_ord() {
     set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%ret", "nil@nil", NULL); // MOVE LF@%ret nil@nil
     set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$ord$noerr", NULL, NULL); // LABEL $orr$noerr
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }
 
@@ -608,6 +611,6 @@ void gen_chr() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_INT2CHAR, "LF@%ret", "LF@%p1", NULL); // INT2CHAR LF@%ret LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
-    set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
+    //set_and_post_instr(&instr_list, curr_instr, I_POPFRAME, NULL, NULL, NULL); // POPFRAME
     //set_and_post_instr(&instr_list, curr_instr, I_RETURN, NULL, NULL, NULL); // RETURN
 }

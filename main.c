@@ -37,20 +37,16 @@ int main() {
     local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
     set_function_table(&main_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
 
-
-    //variable_set_defined(&new_local_table, "var@main");
-    //local_table_print(*(main_global_node->data->function_table));
-
     actual_function_ptr = (main_global_node->data->function_table); // Dôležité
 
 
     actual_function_name = MAIN; // Nastaviť actual_function_name na MAIN
 
-printf("Actual TREE\n");
-local_table_print(*actual_function_ptr);
-
     id_copy = NULL; // Netreba zatiaľ nijaké id zálohovať
     func_id_copy = NULL;
+
+    // Inicializácia lokálnej tabuľky s návestiami
+    local_table_init(&label_table);
 
     // Príprava generovania kódu
     code_gen_start();
@@ -75,6 +71,9 @@ local_table_print(*actual_function_ptr);
 
     // uvoľnenie id_copy
     free(id_copy);
+
+    // Uvoľnenie label_table
+    local_table_dispose(&label_table);
 
     // Výpis inštrukcií
     printf("\n-- Výsledný kód: \n");
