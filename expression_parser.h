@@ -232,19 +232,5 @@ int CallExpressionParser(Token *token);
  */
 void FreeBuffer(tDLList *ExprList);
 
-/**
- *  Pretypuje string na integer
- * @param x String na pretypovanie
- * @return Identicka hodnota ako integer
- */
-int string_to_integer(char* x);
-
-/**
-* Pretypuje integer na string
-* @param x Integerova hodnota na pretypovanie
-* @return Identicka hodnota v stringu
-*/
-char* integer_to_string(int x);
-
 
 #endif //EXPRESSION_PARSER_EXPRESSION_PARSER_H

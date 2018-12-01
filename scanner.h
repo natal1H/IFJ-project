@@ -8,8 +8,8 @@
     #include "stringlib.h"
     #include "error.h"
 
-    // Typ tokenu
-    //Cislovanie od 1
+
+    /** Typ tokenu **/
     typedef enum token_type {
         //Nazov tokenu       //ID_cislo
         NO_TYPE,             //0
@@ -37,25 +37,15 @@
         LEX_ERROR,           //22
     } Token_Type;
 
-    typedef enum keyword {
-        //Nazov tokenu  //ID_cislo
-        KEYWORD_DEF,    //0
-        KEYWORD_DO,     //1
-        KEYWORD_ELSE,   //2
-        KEYWORD_END,    //3
-        KEYWORD_IF,     //4
-        KEYWORD_NOT,    //5
-        KEYWORD_NIL,    //6
-        KEYWORD_THEN,   //7
-        KEYWORD_WHILE,  //8
-    } Keyword;
-
+    /**
+     * @struct Token
+     */
     typedef struct token {
-        Token_Type type;
-        char *attribute;
+        Token_Type type; // Typ tokenu
+        char *attribute; // Atribút tokenu
     } Token;
 
-    // Stavy konečného automatu
+    /** Stavy konečného automatu **/
     typedef enum state {
         // Počiatočný stav
         START,
@@ -108,13 +98,80 @@
     // Reťazec, do ktorého sa bude načítavať
     TString *read_string;
 
+    /**
+     * @brief Inicializácia tokenu
+     *
+     * @return Ukazovateľ na inicializovaný token
+     */
     Token *token_initialize();
+
+    /**
+     * @brief Uvoľnenie tokenu
+     *
+     * @param token Ukazovateľ na token
+     */
     void token_free(Token *token);
+
+    /**
+     * @brief Zistenie, či je string kľúčové slovo
+     *
+     * @param str Reťazec
+     * @return True ak je kľúčové slovo, inak false
+     */
     bool is_keyword(char *str);
-    Keyword get_keyword_type(char *str);
+
+    /**
+     * @brief Nastavenie typu a atribútu tokenu
+     *
+     * @param token Ukazovateľ na token
+     * @param type Nový typ tokenu
+     * @param attribute Nový atribút tokenu
+     * @return Chybový kód
+     */
     int token_set_type_attribute(Token *token, Token_Type type, char *attribute);
+
+    /**
+     * @brief Pomocná debugovacia funkica na výpis tokenu
+     *
+     * @param token Ukazovateľ na token
+     */
     void print_token(Token *token);
+
+    /**
+     * @brief Vráti správny tvar float literálu, ktorý sa už môže priamo zapísať do inštrukcií
+     *
+     * @param floatStr Float reťazec
+     * @return Správny formát float reťazca
+     */
+    char *get_correct_float_format(char *floatStr);
+
+    /**
+     * @brief Získanie ďalšieho tokenu zo stdin
+     *
+     * @param token Ukazovateľ na token, kde sa uloží výsledok
+     * @return Chybový kód
+     */
     int get_next_token(Token *token);
+
+    /**
+     * @brief Inicializácia scannera
+     *
+     * @return Chybový kód
+     */
     int scanner_initialize();
+
+    /**
+    *  Pretypuje string na integer
+    * @param x String na pretypovanie
+    * @return Identicka hodnota ako integer
+    */
+    int string_to_integer(char* x);
+
+    /**
+    * Pretypuje integer na string
+    * @param x Integerova hodnota na pretypovanie
+    * @return Identicka hodnota v stringu
+    */
+    char* integer_to_string(int x);
 
 #endif
