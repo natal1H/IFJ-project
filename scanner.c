@@ -401,8 +401,6 @@ int get_next_token(Token *token) {
 			case Q_BLOCK_COMMENT_BEGIN_1:
 				if (c == (int) 'e') {
 					state = Q_BLOCK_COMMENT_BEGIN_2;
-
-					tstring_append_char(read_string, c);
 				}
 				else state = F_LEX_ERROR;
 			break;
@@ -411,8 +409,6 @@ int get_next_token(Token *token) {
 			case Q_BLOCK_COMMENT_BEGIN_2:
 				if (c == (int) 'g') {
 					state = Q_BLOCK_COMMENT_BEGIN_3;
-
-					tstring_append_char(read_string, c);
 				}
 				else state = F_LEX_ERROR;
 			break;
@@ -421,8 +417,6 @@ int get_next_token(Token *token) {
 			case Q_BLOCK_COMMENT_BEGIN_3:
 				if (c == (int) 'i') {
 					state = Q_BLOCK_COMMENT_BEGIN_4;
-
-					tstring_append_char(read_string, c);
 				}
 				else state = F_LEX_ERROR; 
 			break;
@@ -431,8 +425,6 @@ int get_next_token(Token *token) {
 			case Q_BLOCK_COMMENT_BEGIN_4:
 				if (c == (int) 'n') {
 					state = Q_BLOCK_COMMENT_BEGIN_5;
-
-					tstring_append_char(read_string, c);
 				}
 				else state = F_LEX_ERROR; 
 			break;
@@ -442,69 +434,60 @@ int get_next_token(Token *token) {
 				if (c == (int) ' ' || c == (int) '\t' || c == (int) '\n') {
 					state = Q_BLOCK_COMMENT_CONTENT;
 					if (c == (int) '\n') newLine = true;
-
-					tstring_append_char(read_string, c);
 				}
 				else state = F_LEX_ERROR; 
 			break;
 
-			// Stav pre obsah blokov0ho komentára
+			// Stav pre obsah blokového komentára
 			case Q_BLOCK_COMMENT_CONTENT:
 				if (c == (int) '\n') {
 					newLine = true;
-					
-					tstring_append_char(read_string, c);
 				}
 				else if (newLine == true && c == (int) '=') {
+					state = Q_BLOCK_COMMENT_END_1;
 					newLine = false;
-					tstring_append_char(read_string, c);
-				
-					if (c == (int) 'e') {
-						state = Q_BLOCK_COMMENT_END_1;
-
-						tstring_append_char(read_string, c);
-					}
 				}
 				else {
 					newLine = false;
-
-					tstring_append_char(read_string, c);
 				}
 			break;
 			
-			// "=e"
-			case Q_BLOCK_COMMENT_END_1:
-				if (c == (int) 'n') {
-					state = Q_BLOCK_COMMENT_END_2;
 
-					tstring_append_char(read_string, c);
+			case Q_BLOCK_COMMENT_END_1:
+				if (c == (int) 'e') {
+					state = Q_BLOCK_COMMENT_END_2;
 				}
 				else state = Q_BLOCK_COMMENT_CONTENT;
 			break;
 
-			// "=en"
-			case Q_BLOCK_COMMENT_END_2:
-				if (c == (int) 'd') {
-					state = Q_BLOCK_COMMENT_END_3;
 
-					tstring_append_char(read_string, c);
+			// "=e"
+			case Q_BLOCK_COMMENT_END_2:
+				if (c == (int) 'n') {
+					state = Q_BLOCK_COMMENT_END_3;
+				}
+				else state = Q_BLOCK_COMMENT_CONTENT;
+			break;
+
+			// "=e"
+			case Q_BLOCK_COMMENT_END_3:
+				if (c == (int) 'd') {
+					state = Q_BLOCK_COMMENT_END_4;
 				}
 				else state = Q_BLOCK_COMMENT_CONTENT;
 			break;
 
 			// "=end"
-			case Q_BLOCK_COMMENT_END_3:
+			case Q_BLOCK_COMMENT_END_4:
 				if (c == (int) ' ' || c == (int) '\t') {
 					state = Q_BLOCK_COMMENT_POSTEND;
-					
-					tstring_append_char(read_string, c);
 				}
 				else if (c == (int) '\n') {
 					newLine = true;
 					state = START;
-
-					tstring_append_char(read_string, c);
 				}
+				else state = Q_BLOCK_COMMENT_CONTENT;
+			break;
 
 			//Stav pre obsah riadku, na ktorom sa nachádza "=end".
 			//Tento riadok je tiež súčasťou komentára.
@@ -512,10 +495,7 @@ int get_next_token(Token *token) {
 				if (c == (int) '\n') {
 					newLine = true;
 					state = START;
-
-					tstring_append_char(read_string, c);
 				}
-				else tstring_append_char(read_string, c);
 			break;
 
 
@@ -528,7 +508,7 @@ int get_next_token(Token *token) {
 					// F_ASSIGN -> Q_BLOCK_COMMENT_BEGIN_1
 					state = Q_BLOCK_COMMENT_BEGIN_1;
 
-					tstring_append_char(read_string, c);
+					tstring_clear_string(read_string);
 				}
 				else {
                     // TOKEN =
