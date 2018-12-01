@@ -906,15 +906,14 @@ int value (Token *token) {
 		return ERR_OK;
 	}
  	switch (token->type) {
-		case INTEGER:																					//printf("integer ");
+		case INTEGER: {                                                                                    //printf("integer ");
 			// Vygenerovanie PUSHS int@
 			gen_push_var(token->attribute, T_INT, false);
 
 			if (!is_built_in_function(func_id_copy)) {
 				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
 				variable_set_type(*called_function_table_ptr, actual_parameter, T_INT);
-			}
-			else if (strcmp(func_id_copy, "print") == 0) {
+			} else if (strcmp(func_id_copy, "print") == 0) {
 				// Generovanie kódu - vygenerovanie CALL funkcie
 				gen_call(func_id_copy);
 				// Koniec generovania kódu
@@ -922,16 +921,16 @@ int value (Token *token) {
 
 			GET_NEXT_TOKEN();
 			return ERR_OK;
-		break;
-		case FLOAT:																						//printf("float ");
+			break;
+		}
+		case FLOAT: {                                                                                    //printf("float ");
 			// Vygenerovanie PUSHS float@
 			gen_push_var(token->attribute, T_FLOAT, false);
 
 			if (!is_built_in_function(func_id_copy)) {
 				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
 				variable_set_type(*called_function_table_ptr, actual_parameter, T_FLOAT);
-			}
-			else if (strcmp(func_id_copy, "print") == 0) {
+			} else if (strcmp(func_id_copy, "print") == 0) {
 				// Generovanie kódu - vygenerovanie CALL funkcie
 				gen_call(func_id_copy);
 				// Koniec generovania kódu
@@ -939,8 +938,9 @@ int value (Token *token) {
 
 			GET_NEXT_TOKEN();
 			return ERR_OK;
-		break;
- 		case STRING:																					//printf("string ");
+			break;
+		}
+ 		case STRING: {                                                                                    //printf("string ");
 			// Vygenerovanie PUSHS string@
 			gen_push_var(token->attribute, T_STRING, false);
 
@@ -949,13 +949,14 @@ int value (Token *token) {
 				variable_set_type(*called_function_table_ptr, actual_parameter, T_STRING);
 			}
 
- 			GET_NEXT_TOKEN();
+			GET_NEXT_TOKEN();
 			return ERR_OK;
-		break;
- 		case IDENTIFIER:																				//printf("%s ", token->attribute);
+			break;
+		}
+ 		case IDENTIFIER: {                                                                                //printf("%s ", token->attribute);
 			// Sémantická kontrola
 			// Premenná musí byť už definovaná
-			tLocalTableNodePtr var_node = get_variable_node(*(actual_function_ptr) ,token->attribute);
+			tLocalTableNodePtr var_node = get_variable_node(*(actual_function_ptr), token->attribute);
 			if (var_node == NULL) {
 				// Neexistuje uzol s premennou -> nebola ešte definovaná - chyba
 				fprintf(stderr, "Chyba! Nedefinovaná premenná.\n");
@@ -967,8 +968,7 @@ int value (Token *token) {
 			if (!is_built_in_function(func_id_copy)) {
 				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
 				variable_set_type(*called_function_table_ptr, actual_parameter, var_node->data->type);
-			}
-			else if (strcmp(func_id_copy, "print") == 0) {
+			} else if (strcmp(func_id_copy, "print") == 0) {
 				// Generovanie kódu - vygenerovanie CALL funkcie
 				gen_call(func_id_copy);
 				// Koniec generovania kódu
@@ -977,8 +977,10 @@ int value (Token *token) {
 			GET_NEXT_TOKEN();
 
 			return ERR_OK;
-		break;
- 		default:
+			break;
+		}
+ 		default: {
 			return ERR_SYNTAX;
+		}
 	}
 }
