@@ -183,6 +183,8 @@ int get_next_token(Token *token) {
                 else if (c == (int) '"') {
                     // START -> Q_STRING
                     state = Q_STRING;
+
+                    tstring_append_char(read_string, '"'); // Úvodná úvodzovka stringu
                     newLine = false;
                 }
                 else if (c == (int) '=') {
@@ -397,6 +399,7 @@ int get_next_token(Token *token) {
                 else {
                     // Q_STRING -> F_STRING
                     //ungetc(c, stdin);
+                    tstring_append_char(read_string, '"');
                     token_set_type_attribute(token, STRING, read_string->string);
                     return ERR_OK;
                 }
@@ -631,10 +634,66 @@ int get_next_token(Token *token) {
         //Pokym nie je EOF suboru
     } while((c = getc(stdin)) != EOF);
 
-    if (c == EOF && state == F_EOL) { // Doplnenie posledného EOL pred koncom súboru
-        token_set_type_attribute(token, EOL, "");
-        return ERR_OK;
-    }
+    // Nech pozrie na koncový stav, ak je v F_nieco, nech vytvorí token s príslušným typom a do attribute nahrá zostatok v read_string
+    if (c == EOF) { //Ak koniec suboru
+        switch (state) {
+            case F_ID:
+                if (is_keyword(read_string->string)) {
+                    token_set_type_attribute(token, KEYWORD, read_string->string);
+                }
+                else {
+                    token_set_type_attribute(token, IDENTIFIER, read_string->string);
+                }
+                return ERR_OK;
+            case F_INT:
+                token_set_type_attribute(token, INTEGER, read_string->string);
+                return ERR_OK;
+            case F_FLOAT:
+                token_set_type_attribute(token, FLOAT, read_string->string);
+                return ERR_OK;
+            case F_STRING:
+                token_set_type_attribute(token, STRING, read_string->string);
+                return ERR_OK;
+            case F_ASSIGN:
+                token_set_type_attribute(token, ASSIGN, "");
+                return ERR_OK;
+            case F_ADDITION:
+                token_set_type_attribute(token, ADDITION, "");
+                return ERR_OK;
+            case F_MULTIPLICATION:
+                token_set_type_attribute(token, MULTIPLICATION, "");
+                return ERR_OK;
+            case F_SUBTRACTION:
+                token_set_type_attribute(token, SUBTRACTION, "");
+                return ERR_OK;
+            case F_DIVISION:
+                token_set_type_attribute(token, DIVISION, "");
+                return ERR_OK;
+            case F_LESS:
+                token_set_type_attribute(token, LESS, "");
+                return ERR_OK;
+            case F_GREATER:
+                token_set_type_attribute(token, GREATER, "");
+                return ERR_OK;
+            case F_EOL:
+                token_set_type_attribute(token, EOL, "");
+                return ERR_OK;
+            case F_COMMA:
+                token_set_type_attribute(token, COMMA, "");
+                return ERR_OK;
+            case F_LEX_ERROR:
+                // LEX ERROR
+                token_set_type_attribute(token, LEX_ERROR, "");
+                return ERR_SCANNER;
+            case F_LEFT_ROUND_BRACKET:
+                token_set_type_attribute(token, LEFT_ROUND_BRACKET, "");
+                return ERR_OK;
+            case F_RIGHT_ROUND_BRACKET:
+                token_set_type_attribute(token, RIGHT_ROUND_BRACKET, "");
+                return ERR_OK;
+        }
+    } //(c == EOF)
+
 
     token->type = TYPE_EOF;
     token->attribute = NULL;

@@ -106,23 +106,17 @@ bool is_variable(tLocalTableNodePtr current_function_root, char *str) {
     return get_variable_node(current_function_root, str) != NULL;
 }
 
-// TODO: najprv prerobiť vrátenie string v scannery aby to vrátilo ako \"txt\", lebo inak neni šanca to rozoznať od symbolu iba z pohľadu na reťazec
 bool is_string_literal(char *str) {
-    int N = strlen(str); // Dĺžka reťazca
+    // Pozrieť či prvý a posledný znak je "
+    if (str[0] == '"' && str[strlen(str)-1] == '"') return true;
+    else return false;
+}
 
-    // Kontrola, či je dĺžka aspoň 2 - prázdny reťazec je ""
-    if (N < 2) return false;
-
-    // Kontrola, či sa začína na "
-    if (str[0] != '"') return false;
-
-    for (int i = 1; i < N; i+i) {
-
-    }
-
-    //
-
-    return true;
+char *get_string_without_quotation_marks(char *string_literal) {
+    char *new_string = malloc(sizeof(char) * (strlen(string_literal) - 2));
+    if (new_string == NULL) return NULL;
+    strncpy(new_string, string_literal, strlen(string_literal)-1);
+    return new_string;
 }
 
 char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {

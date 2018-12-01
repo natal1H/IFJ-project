@@ -887,7 +887,7 @@ int value (Token *token) {
 	function_param_list_next(global_table, func_id_copy); // Posunúť aktívny na ďalší
     // Koniec sémantickej akcie
 
-	printf("\n- argument %s pre funkciu %s prislúcha parametru %s\n", token->attribute, func_id_copy,actual_parameter);
+	//printf("\n- argument %s pre funkciu %s prislúcha parametru %s\n", token->attribute, func_id_copy,actual_parameter);
  	if (token->type == KEYWORD && strcmp(token->attribute, "nil") == 0) {								//printf("nil ");
  		// Vygenerovanie PUSHS nil@nil
  		gen_push_var("nil", T_NIL, false);

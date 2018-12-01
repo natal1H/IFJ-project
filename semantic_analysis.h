@@ -72,7 +72,6 @@
      */
     bool is_variable(tLocalTableNodePtr current_function_root, char *str);
 
-    // TODO
     /**
      * @brief Zistí, či je reťazec reťazcový literál (začína sa " a končí " )
      *
@@ -80,6 +79,13 @@
      * @return True ak môže byť reťazcový literál, false ak nemôže
      */
     bool is_string_literal(char *str);
+
+    /**
+     * @brief Vráti string bez úvodných a koncových "
+     * @param string_literal Reťazcový literál
+     * @return Reťazec
+     */
+    char *get_string_without_quotation_marks(char *string_literal);
 
     /**
      * @brief Vytvára unikátne meno pre premennú
