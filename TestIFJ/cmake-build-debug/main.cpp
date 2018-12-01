@@ -55,7 +55,7 @@ void ErrorStatus(const string &s){
     }
 }
 
-
+//source: https://stackoverflow.com/questions/30627168/c-delete-all-lines-in-a-txt-file-up-until-a-certain-keyword-is-reached
 void Remove_All_Lines_Until_IFJCODE(){
     int counter = 0;
 
