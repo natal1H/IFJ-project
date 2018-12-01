@@ -1176,26 +1176,36 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                                       //Priklad 1+2+3
                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0)&&
-                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1)&&
+                                      (syntax_table[STRING][COUNTER_OF_TOKEN])  == 0)
 
                                      || //alebo
 
                                       //Priklad 1+2+3+4
                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1)&&
-                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0))
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0)&&
+                                      (syntax_table[STRING][COUNTER_OF_TOKEN])  == 0)
 
                                      || //alebo
 
                                       //Priklad string+string+string
-                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2 == 0)&&
-                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 1))
+                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2 == 0) &&
+                                       ((syntax_table[SUBTRACTION][COUNTER_OF_TOKEN]   +
+                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN]+
+                                         syntax_table[DIVISION][COUNTER_OF_TOKEN])   == 0) &&
+                                       ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN]) == 0)&&
+                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2    == 1))
 
                                      || //alebo
 
                                       //Priklad string+string+string+string
-                                     (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2 == 1)&&
-                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 0))
+                                     (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2  == 1) &&
+                                      ((syntax_table[SUBTRACTION][COUNTER_OF_TOKEN]   +
+                                        syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN]+
+                                        syntax_table[DIVISION][COUNTER_OF_TOKEN])    == 0) &&
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN]) == 0)&&
+                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2  == 0))
                                      )
                    )
 
