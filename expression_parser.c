@@ -1147,10 +1147,9 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
               syntax_table[FLOAT][COUNTER_OF_TOKEN]) != 0) ||
 
             //Ak je vo vyraze string a pocet operandov je parny
-            //TODO Doplnit podmienku ze identifier je string!
-            ((syntax_table[STRING][COUNTER_OF_TOKEN] > 0)
-             && ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN]) == 0)
-             &&  (syntax_table[STRING][COUNTER_OF_TOKEN]%2) == 0) ||
+//            ((syntax_table[STRING][COUNTER_OF_TOKEN] > 0)
+//             && ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN]) == 0)
+//             &&  (syntax_table[STRING][COUNTER_OF_TOKEN]%2) == 0) ||
 
             //Maximalne jeden porovnavaci token
             (((syntax_table[LESS][COUNTER_OF_TOKEN] + syntax_table[LESS_OR_EQUALS][COUNTER_OF_TOKEN] +
@@ -1185,6 +1184,18 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1)&&
                                       ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0))
+
+                                     || //alebo
+
+                                      //Priklad string+string+string
+                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2 == 0)&&
+                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 1))
+
+                                     || //alebo
+
+                                      //Priklad string+string+string+string
+                                     (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2 == 1)&&
+                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 0))
                                      )
                    )
 
@@ -1198,15 +1209,16 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                             && //musi byt
 
                                     //Sucet operacii je neparny a sucet operandov je neparny
-                                   ((((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                             syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1) &&
-                                    ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
+                                   ((((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                 syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1) &&
+                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
 
                                    || //alebo
 
                                     //Sucet operacii je parny a sucet operandov je parny
-                                   (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                             syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0) &&
+                                   (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                   syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0) &&
                                    ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0)))
                    )
+
             )
 
 
