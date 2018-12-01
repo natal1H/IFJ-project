@@ -165,7 +165,7 @@ void PushStackTOKEN (tStackP *S, struct token ptr)
 {
     /* Při implementaci v poli může dojít k přetečení zásobníku. */
     if (S->top==MAXSTACK)
-        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+        fprintf(stderr, "Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
     else {
         S->top++;
         S->stack[S->top]=ptr;
@@ -179,7 +179,7 @@ struct token PopStackTOKEN (tStackP *S)
 {
     /* Operace nad prázdným zásobníkem způsobí chybu. */
     if (S->top==0)  {
-        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+        fprintf(stderr, "Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
 //        return(-1);
     }
     else {
@@ -216,7 +216,7 @@ void PushStackINT (tStackINT *S, long ptr)
 {
     /* Při implementaci v poli může dojít k přetečení zásobníku. */
     if (S->top==MAXSTACK)
-        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+        fprintf(stderr, "Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
     else {
         S->top++;
         S->stack[S->top]=ptr;
@@ -230,7 +230,7 @@ long PopStackINT (tStackINT *S)
 {
     /* Operace nad prázdným zásobníkem způsobí chybu. */
     if (S->top==0)  {
-        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+        fprintf(stderr, "Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
 //        return(-1);
     }
     else {
@@ -267,7 +267,7 @@ void PushStackSTRING (tStackCHAR *S, char* ptr)
 {
     /* Při implementaci v poli může dojít k přetečení zásobníku. */
     if (S->top==MAXSTACK)
-        printf("Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
+        fprintf(stderr, "Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
     else {
         S->top++;
         S->stack[S->top]=ptr;
@@ -281,7 +281,7 @@ char* PopStackSTRING (tStackCHAR *S)
 {
     /* Operace nad prázdným zásobníkem způsobí chybu. */
     if (S->top==0)  {
-        printf("Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
+        fprintf(stderr, "Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
 //        return(-1);
     }
     else {
@@ -1267,7 +1267,7 @@ int MainSyntaxCheck(tDLList *ExprList) {
         } else {
             return ErrorStatus; //ERR_SYNTAX return
         }
-        printf("ErrorStatus: %d\n", ErrorStatus);
+        //printf("ErrorStatus: %d\n", ErrorStatus);
         return ErrorStatus; //ERR_OK return
     }
 }
@@ -1398,48 +1398,3 @@ int CallExpressionParser(Token *token) {
 
     return -10; //TODO je mozne ze nastane?
 }
-
-
-
-/*
-int main(int argc, char *argv[]) {
-
-    freopen("input.txt","r",stdin);
-    int ScannerErrorCheck = 0;
-    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
-        return ScannerErrorCheck;
-    }
-
-    Token *token;
-    token = token_initialize();
-
-    ScannerErrorCheck = get_next_token(token);
-    if(ScannerErrorCheck != 0){
-        return ScannerErrorCheck;
-    }
-
-    CallExpressionParser(token);
-
-
-    print_token(token);
-    free(token);
-
-
-//----------------druhy-vstup----------------
-    freopen("input2.txt","r",stdin);
-    if ( (ScannerErrorCheck = scanner_initialize()) != 0 ) {
-        return ScannerErrorCheck;
-    }
-
-    token = token_initialize();
-
-    ScannerErrorCheck = get_next_token(token);
-    if(ScannerErrorCheck != 0){
-        return ScannerErrorCheck;
-    }
-
-    CallExpressionParser(token);
-
-    print_token(token);
-}
-*/

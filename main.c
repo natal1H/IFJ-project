@@ -2,9 +2,6 @@
 
 
 int main() {
-    printf("MAIN.c\n");
-    
-    
 
 //Odkomentovat ak sa projekt spusta v CLion
 //--------------CLion-------------------
@@ -28,7 +25,6 @@ int main() {
     // Inicializácia globálnej tabuľky symbolov (GTS)
     global_table_init(&global_table);
 
-
     // Vytvorenie tabuľky pre main
     function_set_defined(&global_table, MAIN); // Pridá uzol MAIN do GTS
     tGlobalTableNodePtr main_global_node = get_function_node(global_table, MAIN); // Vráti ukazovvateľ na uzol s MAIN v GTS
@@ -36,10 +32,7 @@ int main() {
     tLocalTableNodePtr new_local_table;
     local_table_init(&new_local_table); // Inicializácia novej lokálnej tabuľky
     set_function_table(&main_global_node, &new_local_table); // Naviazanie uzla v globálnej na novú lokálnu
-
-    actual_function_ptr = (main_global_node->data->function_table); // Dôležité
-
-
+    actual_function_ptr = (main_global_node->data->function_table); // Dôležité: nastavenie ukazovateľ na aktuálnu lokálnu TS
     actual_function_name = MAIN; // Nastaviť actual_function_name na MAIN
 
     id_copy = NULL; // Netreba zatiaľ nijaké id zálohovať
@@ -51,10 +44,11 @@ int main() {
     // Príprava generovania kódu
     code_gen_start();
 
+
     if (ret != ERR_SCANNER) {
 
-        int ret = prog(token);
-        printf("\nVýsledok: %d\n", ret);
+        ret = prog(token);
+        //printf("\nVýsledok: %d\n", ret);
     }
 
     // Upratanie po programe
@@ -76,65 +70,10 @@ int main() {
     local_table_dispose(&label_table);
 
     // Výpis inštrukcií
-    printf("\n-- Výsledný kód: \n");
     list_print_instructions(&instr_list);
 
     // Upratanie po generovaní kódu
     code_gen_end();
 
-    printf("\n"); // TODO: dať preč!!!, je to tu iba kvôli zozbrazovaniu v termináli
-
     return ret;
 }
-
-/*
-// TEST MAIN
-int main() {
-    printf("TEST MAIN.c\n");
-
-
-    // Inicializácia globálnej tabuľky symbolov (GTS)
-    BSTInit(&global_table);
-    // Vytvorenie tabuľky pre main
-    symbol_table_define_variable_or_function(&global_table, MAIN);
-    tBSTNodePtr main_global_node = symbol_table_get_variable_node(global_table, MAIN);
-    symbol_table_create_local_table(&main_global_node);
-
-    Print_tree(global_table);
-    if (check_if_function_already_defined(global_table, MAIN)) {
-        printf("MAIN defined\n");
-    }
-    else {
-        printf("Main not defined\n");
-    }
-
-    int ret = function_definition(&global_table, "new_function");
-    printf("ret: %d\n", ret);
-    Print_tree(global_table);
-
-    ret = function_definition(&global_table, MAIN);
-    printf("ret: %d\n", ret);
-    Print_tree(global_table);
-
-    ret = symbol_table_get_params(global_table, "new_function");
-    printf("param: %d\n", ret);
-    function_increase_number_param(global_table, "new_function");
-    ret = symbol_table_get_params(global_table, "new_function");
-    printf("param: %d\n", ret);
-
-    printf("TEST: %d\n", is_int("12"));
-    printf("TEST: %d\n", is_int("1s2"));
-    printf("TEST: %d\n", is_float("12"));
-    printf("TEST: %d\n", is_float("1.2"));
-    printf("TEST: %d\n", is_float("1,2"));
-    printf("TEST: %d\n", is_float("1e+"));
-
-
-    // Postupné uvoľnenie všetkých lokálnych tabuliek symbolov
-
-    // Uvoľnenie GTS
-    BSTDispose(&global_table);
-
-    return 0;
-}
- */
