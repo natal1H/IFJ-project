@@ -88,11 +88,12 @@
         Q_BLOCK_COMMENT_BEGIN_2, // =be
         Q_BLOCK_COMMENT_BEGIN_3, // =beg
         Q_BLOCK_COMMENT_BEGIN_4, // =begi
-        Q_BLOCK_COMMENT, // =begin
-        Q_BLOCK_COMMENT_END_1, // =
-        Q_BLOCK_COMMENT_END_2, // =e
-        Q_BLOCK_COMMENT_END_3, // =en
-        Q_BLOCK_COMMENT_END_4, // =end
+        Q_BLOCK_COMMENT_BEGIN_5, // =begin
+		Q_BLOCK_COMMENT_CONTENT, //obsah blokoveho komentara
+        Q_BLOCK_COMMENT_END_1, // =e
+        Q_BLOCK_COMMENT_END_2, // =en
+        Q_BLOCK_COMMENT_END_3, // =end
+        Q_BLOCK_COMMENT_POSTEND, //obsah komentaru v riadku za "=end"
 
         Q_NOT_EQUALS,
 

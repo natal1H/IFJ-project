@@ -123,7 +123,7 @@ void print_token(Token *token) {
 
 int get_next_token(Token *token) {
 
-    static bool eol_previously = false;
+    static bool newLine = true;
 
     tstring_clear_string(read_string); // str := '';
 
@@ -137,93 +137,90 @@ int get_next_token(Token *token) {
 
                 if (scanner_is_alpha(c) || c == (int) '_') {
                     // START -> F_ID
-
                     state = F_ID;
 
                     tstring_append_char(read_string, c); // str := symbol
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (scanner_is_number(c)) {
                     // START -> F_INT
-
                     state = F_INT;
 
                     tstring_append_char(read_string, c); // str := symbol
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '"') {
                     // START -> Q_STRING
                     state = Q_STRING;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '=') {
                     // START -> F_ASSIGN
                     state = F_ASSIGN;
 
                     tstring_append_char(read_string, c); // str := symbol
-                    eol_previously = false;
                 }
                 else if (c == (int) '+') {
                     // START -> F_ADDITION
                     token_set_type_attribute(token, ADDITION, "");
-                    eol_previously = false;
+                    newLine = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '*') {
                     // START -> F_MULTIPLICATION
                     token_set_type_attribute(token, MULTIPLICATION, "");
-                    eol_previously = false;
+                    newLine = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '-') {
                     // START -> F_SUBSTRACTION
                     state = F_SUBTRACTION;
                     tstring_append_char(read_string, c);
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '/') {
                     // START -> F_DIVISION
                     //token = token_initialize();
                     token_set_type_attribute(token, DIVISION, "");
-                    eol_previously = false;
+                    newLine = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '<') {
                     // START -> F_LESS
                     state = F_LESS;
                     tstring_append_char(read_string, c); // str := symbol
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '>') {
                     // START -> F_GREATER
                     state = F_GREATER;
                     tstring_append_char(read_string, c); // str := symbol
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '#') {
                     // START -> Q_LINE_COMMENT
                     state = Q_LINE_COMMENT;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '!') {
                     // START -> Q_NOT_EQUALS
                     state = Q_NOT_EQUALS;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '(') {
                     // START -> F_LEFT_ROUND_BRACKET
                     state = F_LEFT_ROUND_BRACKET;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) ')') {
                     // START -> F_RIGHT_ROUND_BRACKET
                     state = F_RIGHT_ROUND_BRACKET;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) '\n') {
                     // Ak bol ihneď predtým EOL, tak nech ďalší ignoruje
-                    if (!eol_previously) {
-                        eol_previously = true;
+                    if (!newLine) {
+                        newLine = true;
                         // START -> F_EOL
                         state = F_EOL;
                     }
@@ -232,23 +229,24 @@ int get_next_token(Token *token) {
                 else if (c == (int) ',') {
                     // START -> F_COMMA
                     state = F_COMMA;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 else if (c == (int) ' ' || c == (int) '\t') {
                     // START -> START
                     //state = START;
+					newLine = false;
                 }
                 else if (c == EOF) {
                     // Koniec súboru
                     token->type = TYPE_EOF;
                     token->attribute = NULL;
-                    eol_previously = false;
+                    newLine = false;
                     return EOF;
                 }
                 else {
                     // START -> F_LEX_ERROR
                     state = F_LEX_ERROR;
-                    eol_previously = false;
+                    newLine = false;
                 }
                 break; //case START:
 
@@ -399,19 +397,146 @@ int get_next_token(Token *token) {
                 }
                 break; //case Q_LINE_COMMENT:
 
+			// "=b"
+			case Q_BLOCK_COMMENT_BEGIN_1:
+				if (c == (int) 'e') {
+					state = Q_BLOCK_COMMENT_BEGIN_2;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = F_LEX_ERROR;
+			break;
+
+			// "=be"
+			case Q_BLOCK_COMMENT_BEGIN_2:
+				if (c == (int) 'g') {
+					state = Q_BLOCK_COMMENT_BEGIN_3;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = F_LEX_ERROR;
+			break;
+
+			// "=beg"
+			case Q_BLOCK_COMMENT_BEGIN_3:
+				if (c == (int) 'i') {
+					state = Q_BLOCK_COMMENT_BEGIN_4;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = F_LEX_ERROR; 
+			break;
+
+			// "=begi"
+			case Q_BLOCK_COMMENT_BEGIN_4:
+				if (c == (int) 'n') {
+					state = Q_BLOCK_COMMENT_BEGIN_5;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = F_LEX_ERROR; 
+			break;
+
+			// "=begin"
+			case Q_BLOCK_COMMENT_BEGIN_5:
+				if (c == (int) ' ' || c == (int) '\t' || c == (int) '\n') {
+					state = Q_BLOCK_COMMENT_CONTENT;
+					if (c == (int) '\n') newLine = true;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = F_LEX_ERROR; 
+			break;
+
+			// Stav pre obsah blokov0ho komentára
+			case Q_BLOCK_COMMENT_CONTENT:
+				if (c == (int) '\n') {
+					newLine = true;
+					
+					tstring_append_char(read_string, c);
+				}
+				else if (newLine == true && c == (int) '=') {
+					newLine = false;
+					tstring_append_char(read_string, c);
+				
+					if (c == (int) 'e') {
+						state = Q_BLOCK_COMMENT_END_1;
+
+						tstring_append_char(read_string, c);
+					}
+				}
+				else {
+					newLine = false;
+
+					tstring_append_char(read_string, c);
+				}
+			break;
+			
+			// "=e"
+			case Q_BLOCK_COMMENT_END_1:
+				if (c == (int) 'n') {
+					state = Q_BLOCK_COMMENT_END_2;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = Q_BLOCK_COMMENT_CONTENT;
+			break;
+
+			// "=en"
+			case Q_BLOCK_COMMENT_END_2:
+				if (c == (int) 'd') {
+					state = Q_BLOCK_COMMENT_END_3;
+
+					tstring_append_char(read_string, c);
+				}
+				else state = Q_BLOCK_COMMENT_CONTENT;
+			break;
+
+			// "=end"
+			case Q_BLOCK_COMMENT_END_3:
+				if (c == (int) ' ' || c == (int) '\t') {
+					state = Q_BLOCK_COMMENT_POSTEND;
+					
+					tstring_append_char(read_string, c);
+				}
+				else if (c == (int) '\n') {
+					newLine = true;
+					state = START;
+
+					tstring_append_char(read_string, c);
+				}
+
+			//Stav pre obsah riadku, na ktorom sa nachádza "=end".
+			//Tento riadok je tiež súčasťou komentára.
+			case Q_BLOCK_COMMENT_POSTEND:
+				if (c == (int) '\n') {
+					newLine = true;
+					state = START;
+
+					tstring_append_char(read_string, c);
+				}
+				else tstring_append_char(read_string, c);
+			break;
+
 
             case F_ASSIGN:
                 if (c == (int) '=') {
                     // F_ASSIGN -> F_EQUALS
                     state = F_EQUALS;
                 }
-                else {
+                else if (c == (int) 'b' && newLine){
+					// F_ASSIGN -> Q_BLOCK_COMMENT_BEGIN_1
+					state = Q_BLOCK_COMMENT_BEGIN_1;
+
+					tstring_append_char(read_string, c);
+				}
+				else {
                     // TOKEN =
                     ungetc(c, stdin);
                     token_set_type_attribute(token, ASSIGN, "");
                     return ERR_OK;
                 }
-                //break;case F_ASSIGN:
+                break; //case F_ASSIGN:
 
 
             case F_EQUALS:
@@ -592,7 +717,6 @@ int get_next_token(Token *token) {
     token->type = TYPE_EOF;
     token->attribute = NULL;
     return EOF;
-
 }
 
 /*
