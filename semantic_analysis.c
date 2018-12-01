@@ -56,15 +56,20 @@ bool is_int(char *str) {
 bool is_float(char *str) {
     // Predpokladá neprázdny reťazec
     int N = strlen(str);
-    int i = 0; // Index
+    int i = 2; // Index
 
-    // Celočíselná časť
+    if (N < 6) return false; // Najkratší správny zápis: 0x1p+0
+    if (str[0] != '0' || str[1] != 'x') return false; // Nemá 0x na začiatku
+
+    int dots = 0;
+
+    // časť pred p
     while (i < N) {
         // Hľadanie desatinnej časti
         if (str[i] == '.') {
-            break;
+            dots++;
         }
-        else if (str[i] == 'e' || str[i] == 'E') {
+        else if (str[i] == 'p') {
             break;
         }
         else if ( !(str[i] >= '0' && str[i] <= '9') ) {
@@ -73,26 +78,16 @@ bool is_float(char *str) {
         }
         i++;
     }
-    if (i == 0 || i == N - 1) {
-        // Nie je desatinná čast, je to INT, nie float
+    if (i == N - 1) {
+        // nie je exponentová časť
         return false;
     }
-
-    // kontrola, či je niečo za '.' alebo 'e'/'E'
-    if (str[i] == '.') {
-        for (i = i + 1; i < N; i++) {
-            if ( !(str[i] >= '0' && str[i] <= '9') ) return false;
-        }
-    }
-    else if (str[i] == 'e' || str[i] == 'E') {
-        i++;
-        if (str[i] == '+' || str[i] == '-')  {
-            i++;
-            if (i == N) return false;
-        }
-        for (i = i + 1; i < N; i++) {
-            if ( !(str[i] >= '0' && str[i] <= '9') ) return false;
-        }
+    if (dots > 1) return false; // viacero . v čísle
+    i++;
+    if (i == N || (str[i] != '+' && str[i] != '-') ) return false;
+    i++;
+    for (;i<N;i++) {
+        if (!(str[i] >= '0' && str[i] <= '9')) return false;
     }
 
     return true;
