@@ -1,3 +1,12 @@
+/**
+ * IFJ Projekt - Team 11
+ *
+ * @brief Hlavičkový súbor pre scanner
+ * @file scanner.h
+ *
+ * @author Natália Holková (xholko02)
+ */
+
 #ifndef _SCANNER_H
     #define _SCANNER_H
 
