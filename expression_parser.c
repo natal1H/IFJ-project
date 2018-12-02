@@ -66,7 +66,7 @@ long long syntax_table[22][24]= {
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,   }, //STRING,              //4
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //KEYWORD,             //5
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //ASSIGN,              //6
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //ADDITION,            //7
+        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //ADDITION,            //7
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //MULTIPLICATION,      //8
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //SUBTRACTION,         //9
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,   }, //DIVISION,            //10
@@ -123,7 +123,7 @@ int TransformTable[22] = {
         id_pTable,                 //1
         id_pTable,                 //2
         id_pTable,                 //3
-        no_operation_pTable,       //4
+        id_pTable,                 //4
         no_operation_pTable,       //5
         no_operation_pTable,       //6
         addition_pTable,           //7
@@ -1121,7 +1121,6 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
             } else if(ExprList->Act->Token.type == RIGHT_ROUND_BRACKET &&
                      (syntax_table[LEFT_ROUND_BRACKET][COUNTER_OF_TOKEN] >= syntax_table[RIGHT_ROUND_BRACKET][COUNTER_OF_TOKEN] ) ){
                          syntax_table[RIGHT_ROUND_BRACKET][COUNTER_OF_TOKEN] += 1;
-
                   } else if(ExprList->Act->Token.type == RIGHT_ROUND_BRACKET){
                          *ErrorStatus = true;
                   } else {
