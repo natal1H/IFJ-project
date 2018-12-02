@@ -866,7 +866,8 @@ ____________*/
 		retVal = CallExpressionParser(token);															//printf("\n\t\tId copy: %s\n", id_copy);
         // Sémantická akcia:
         variable_set_type(*actual_function_ptr, id_copy, typeFinal);
-	}
+	} else {retVal = ERR_SYNTAX;} //TODO TENTO RIADOK DOCASNA ZMENA - BUDE FUNGOVAT VZDY? Ak nie je najdene pravidlo potom vzdy ERR_SYNTAX
+
 	
 	return retVal;
 }
