@@ -407,15 +407,15 @@ tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id) {
         return NULL;
     }
     else {
-        if (strcmp(rootPtr->id,id) == 0) {
-            return rootPtr;
-        }
-        else {
-            if (strcmp(rootPtr->id, id) > 0) {
-                return (get_function_node( rootPtr->lPtr, id));
-            }
-            else {
-                return (get_function_node( rootPtr->rPtr, id));
+        if(id != NULL) {
+            if (strcmp(rootPtr->id, id) == 0) {
+                return rootPtr;
+            } else {
+                if (strcmp(rootPtr->id, id) > 0) {
+                    return (get_function_node(rootPtr->lPtr, id));
+                } else {
+                    return (get_function_node(rootPtr->rPtr, id));
+                }
             }
         }
     }
