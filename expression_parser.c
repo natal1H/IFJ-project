@@ -390,6 +390,14 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                 }
 
                 // Generovanie kódu
+                if (token1 == T_STRING && token2 == T_STRING) {
+                    // Generovanie CONCAT
+
+                    gen_concat(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
+
+                    return var_name;
+                }
+
                 // Zistiť či treba konverziu INT2FLOAT
                 if ((token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT)) {
                     // Treba konverziu jednej z hodnôt

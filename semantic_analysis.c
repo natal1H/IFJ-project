@@ -115,7 +115,7 @@ bool is_string_literal(char *str) {
 char *get_string_without_quotation_marks(char *string_literal) {
     char *new_string = malloc(sizeof(char) * (strlen(string_literal) - 2));
     if (new_string == NULL) return NULL;
-    strncpy(new_string, string_literal, strlen(string_literal)-1);
+    strncpy(new_string, string_literal+1, strlen(string_literal)-2);
     return new_string;
 }
 
@@ -171,8 +171,11 @@ int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
 }
 
 int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_ID, tDataType *type) {
-printf("\nGET TYPE\n");
-    if (is_int(token_ID)) {
+    if (is_string_literal(token_ID)) {
+        *type = T_STRING;
+        return ERR_OK;
+    }
+    else if (is_int(token_ID)) {
         *type = T_INT;
         return ERR_OK;
     }
@@ -181,7 +184,6 @@ printf("\nGET TYPE\n");
         return ERR_OK;
     }
     else if (is_variable(*current_function_root, token_ID)) {
-        printf("\n\tGet type: premenná\n");
         // Pozrieť sa do tabuľky symbolov a vrátiť typ
         *type = variable_get_type(*current_function_root, token_ID);
         if (*type != T_UNDEFINED) return ERR_OK;
@@ -191,11 +193,6 @@ printf("\nGET TYPE\n");
         *type = T_NIL;
         return ERR_OK;
     }
-    // TODO
-    //else if (is_string_literal(token_ID)) {
-    //    *type = T_STRING;
-    //    return ERR_OK;
-    //}
     else {
         // Sémantická chyba - nedefinovaná premenná
         return ERR_SEM_UNDEF;

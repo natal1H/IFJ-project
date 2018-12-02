@@ -274,15 +274,34 @@ int gen_int2float(char *var_name, char *symbol, bool is_var) {
 }
 
 int gen_concat(char *var_name, char *symbol1, tDataType symbol1_type, bool s1_is_var, char *symbol2, tDataType symbol2_type, bool s2_is_var) {
+
     // Nastavenie prefixov
     char *prefix1 = determine_prefix(symbol1_type, s1_is_var);
     char *prefix2 = determine_prefix(symbol2_type, s2_is_var);
 
-    int ret_val = add_instruction_ternal(I_CONCAT, var_name, symbol1, symbol2, prefix1, prefix2);
+    char *new_sym1, *new_sym2;
+    if (symbol1_type == T_STRING && !s1_is_var) {
+        // Treba dať preč úvodovky
+        new_sym1 = get_string_without_quotation_marks(symbol1);
+    }
+    else new_sym1 = symbol1;
+    if (symbol2_type == T_STRING && !s2_is_var) {
+        // Treba dať preč úvodovky
+        new_sym2 = get_string_without_quotation_marks(symbol2);
+    }
+    else new_sym2 = symbol2;
+
+    int ret_val = add_instruction_ternal(I_CONCAT, var_name, new_sym1, new_sym2, prefix1, prefix2);
 
     // Uvoľnenie prefixov
     free(prefix1);
     free(prefix2);
+
+    if (symbol1_type == T_STRING && !s1_is_var)
+        free(new_sym1);
+    if (symbol2_type == T_STRING && !s2_is_var)
+        free(new_sym2);
+
     return ret_val;
 }
 
@@ -403,7 +422,12 @@ int gen_move_general(char *var_name, char *symbol) {
     if (is_int(symbol)) return add_instruction_binary(I_MOVE, var_name, symbol, "int@");
     else if (is_float(symbol)) return add_instruction_binary(I_MOVE, var_name, symbol, "float@");
     else if (is_nil(symbol)) return add_instruction_binary(I_MOVE, var_name, symbol, "nil@");
-    else return add_instruction_binary(I_MOVE, var_name, symbol, "string@");
+    else {
+        char *new_symbol = get_string_without_quotation_marks(symbol);
+        int ret = add_instruction_binary(I_MOVE, var_name, new_symbol, "string@");
+        free(new_symbol);
+        return ret;
+    }
 }
 
 char *get_and_set_unique_label(tLocalTableNodePtr *label_table, char *prefix) {
