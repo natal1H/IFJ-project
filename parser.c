@@ -730,7 +730,7 @@ ____*/
 
 int def_value (Token *token) {
 
-	int retVal;
+	int retVal = 0;
 
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
   | Pravidlo 19: <def_value> -> <expr> |
