@@ -578,7 +578,7 @@ int arg_next (Token *token) {
 
 int after_id (Token *token) {
 
-	int retVal;
+	int retVal = 0;
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
   | Pravidlo 16: <after_id> -> ( <arg> ) |
   |______________________________________|
