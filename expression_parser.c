@@ -1141,9 +1141,9 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
             CouldBeTokenTheLastOne == false ||
 
             //Ak sa miesaju stringy a int/float
-            ((syntax_table[STRING][COUNTER_OF_TOKEN] != 0)
-             && (syntax_table[INTEGER][COUNTER_OF_TOKEN] +
-              syntax_table[FLOAT][COUNTER_OF_TOKEN]) != 0) ||
+//            ((syntax_table[STRING][COUNTER_OF_TOKEN] != 0)
+//             && (syntax_table[INTEGER][COUNTER_OF_TOKEN] +
+//              syntax_table[FLOAT][COUNTER_OF_TOKEN]) != 0) ||
 
             //Ak je vo vyraze string a pocet operandov je parny
 //            ((syntax_table[STRING][COUNTER_OF_TOKEN] > 0)
@@ -1175,37 +1175,18 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                                       //Priklad 1+2+3
                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0)&&
-                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1)&&
-                                      (syntax_table[STRING][COUNTER_OF_TOKEN])  == 0)
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] +
+                                      syntax_table[IDENTIFIER][COUNTER_OF_TOKEN] + syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 1))
 
                                      || //alebo
 
                                       //Priklad 1+2+3+4
                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +
                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1)&&
-                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0)&&
-                                      (syntax_table[STRING][COUNTER_OF_TOKEN])  == 0)
+                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] +
+                                      syntax_table[IDENTIFIER][COUNTER_OF_TOKEN] + syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 0)))
 
-                                     || //alebo
 
-                                      //Priklad string+string+string
-                                      (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2 == 0) &&
-                                       ((syntax_table[SUBTRACTION][COUNTER_OF_TOKEN]   +
-                                         syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN]+
-                                         syntax_table[DIVISION][COUNTER_OF_TOKEN])   == 0) &&
-                                       ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN]) == 0)&&
-                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2    == 1))
-
-                                     || //alebo
-
-                                      //Priklad string+string+string+string
-                                     (((syntax_table[ADDITION][COUNTER_OF_TOKEN])%2  == 1) &&
-                                      ((syntax_table[SUBTRACTION][COUNTER_OF_TOKEN]   +
-                                        syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN]+
-                                        syntax_table[DIVISION][COUNTER_OF_TOKEN])    == 0) &&
-                                      ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN]) == 0)&&
-                                      ((syntax_table[STRING][COUNTER_OF_TOKEN])%2  == 0))
-                                     )
                    )
 
                      || //alebo
@@ -1219,13 +1200,15 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
 
                                     //Sucet operacii je neparny a sucet operandov je neparny
                                    ((((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                 syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1) &&
-                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 1))
+                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN] +
+                                   syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 1))
 
                                    || //alebo
 
                                     //Sucet operacii je parny a sucet operandov je parny
                                    (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                   syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0) &&
-                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN])%2 == 0)))
+                                   ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN] +
+                                   syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 0)))
                    )
 
             )
