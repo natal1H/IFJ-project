@@ -959,6 +959,10 @@ int value (Token *token) {
 			if (!is_built_in_function(func_id_copy)) {
 				// Nastavenie typu parametra actual_parametre na korešpondujúci typ argumentu
 				variable_set_type(*called_function_table_ptr, actual_parameter, T_STRING);
+			} else if (strcmp(func_id_copy, "print") == 0) {
+				// Generovanie kódu - vygenerovanie CALL funkcie
+				gen_call(func_id_copy);
+				// Koniec generovania kódu
 			}
 
 			GET_NEXT_TOKEN();

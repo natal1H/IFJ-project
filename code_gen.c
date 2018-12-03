@@ -464,8 +464,11 @@ int gen_push_var(char *symbol, tDataType type, bool is_var) {
         ret = add_instruction_unary(I_PUSHS, symbol, "int@");
     else if (type == T_FLOAT)
         ret = add_instruction_unary(I_PUSHS, symbol, "float@");
-    else if (type == T_STRING)
-        ret = add_instruction_unary(I_PUSHS, symbol, "string@");
+    else if (type == T_STRING) {
+        char *new_symbol = get_string_without_quotation_marks(symbol);
+        ret = add_instruction_unary(I_PUSHS, new_symbol, "string@");
+        free(new_symbol);
+    }
     else if (type == T_NIL)
         ret = add_instruction_unary(I_PUSHS, symbol, "nil@");
 

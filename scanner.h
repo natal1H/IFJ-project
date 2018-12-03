@@ -102,6 +102,9 @@
         Q_FLOAT_3, // xe+ / xE+ / xe- / xE-
 
         Q_STRING,
+        Q_ESCAPE,
+        Q_STRING_HEX_1,
+        Q_STRING_HEX_2,
 
         F_LEX_ERROR // Lexikálna chyba
     } TState;

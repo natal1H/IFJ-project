@@ -152,6 +152,32 @@ char *get_correct_float_format(char *floatStr) {
     return correctFloat;
 }
 
+char *int_to_decadic_three(int n) {
+    char *str = malloc(sizeof(char) * 3);
+    if (str == NULL) return NULL;
+
+    if (n < 100) {
+        if (n < 10) {
+            // 1 cif
+            str[0] = '0';
+            str[1] = '0';
+            str[2] = n + (int) '0';
+        }
+        else {
+            // 2 cif
+            str[0] = '0';
+            char *n_str = integer_to_string(n);
+            strcpy(str + 1, n_str);
+            free(n_str);
+        }
+    }
+    else {
+        char *n_str = integer_to_string(n);
+        strcpy(str, n_str);
+        free(n_str);
+    }
+    return str;
+}
 
 int get_next_token(Token *token) {
 
@@ -393,8 +419,16 @@ int get_next_token(Token *token) {
 
             case Q_STRING:
                 if (c != (int) '"') {
-                    // Q_STRING -> Q_STRING
-                    tstring_append_char(read_string, c);
+
+                    if (c == (int) '\\' ) {
+                        // Q_STRING -> Q_ESCAPE
+                        state = Q_ESCAPE;
+                        tstring_append_char(read_string, c);
+                    }
+                    else {
+                        // Q_STRING -> Q_STRING
+                        tstring_append_char(read_string, c);
+                    }
                 }
                 else {
                     // Q_STRING -> F_STRING
@@ -404,6 +438,43 @@ int get_next_token(Token *token) {
                     return ERR_OK;
                 }
                 break; //case Q_STRING:
+
+            case Q_ESCAPE:
+                if (c == (int) 'n' || c == (int) 't' || c == (int) 's' || c == (int) '\\') {
+                    // Q_ESCAPE -> Q_STRING
+                    state = Q_STRING;
+
+                    // Vlož do tstring číselnú hodnotu c (\n \t \s \\) v tvar aaa (dekadické číslo)
+                    char *dec_str;
+                    if (c == (int) 'n') dec_str = int_to_decadic_three( (int) '\n' );
+                    else if (c == (int) 't') dec_str = int_to_decadic_three( (int) '\t' );
+                    else if (c == (int) 't') dec_str = int_to_decadic_three( (int) ' ' );
+                    else if (c == (int) 't') dec_str = int_to_decadic_three( (int) '\\' );
+                    tstring_add_line(read_string, dec_str);
+                    free(dec_str);
+                }
+//                else if (c == (int) 'x') {
+//                    // Q_ESCAPE -> Q_STRING_HEX_1
+//                    state = Q_STRING_HEX_1;
+
+//                }
+                else {
+                    // Q_ESCAPE -> F_LEX_ERROR
+                    state = F_LEX_ERROR;
+                }
+
+                break;
+
+//            case Q_STRING_HEX_1:
+//                if (scanner_is_number(c) || (c >= (int) 'a' && c <= (int) 'f') || (c >= (int) 'A' && c <= (int) 'F') {
+
+//                }
+
+                break;
+
+//            case Q_STRING_HEX_2:
+
+//                break;
 
             case F_SUBTRACTION:
                 // TOKEN -
