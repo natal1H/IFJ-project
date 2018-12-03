@@ -865,6 +865,17 @@ ____________*/
 	    }
         else {
             // Výraz začínajúci premennou
+
+            //Kontrola, ze PRVA premenna existuje, vzdy musi pred priradenim kamkolvek
+            //Ostatne premenne si osetruje vyrazovy parser
+            tDataType token1 = T_UNDEFINED;
+            if (get_type_from_token(actual_function_ptr, token->attribute, &token1) != ERR_OK) {
+                // Sémantická chyba - riešiť
+                fprintf(stderr, "Chyba! Nedefinovaná premenná \n");
+                return ERR_SEM_UNDEF;
+            }
+
+            //Ak premenna existuje, posielam vyrazovemu parseru
             retVal = CallExpressionParser(token);											            //printf("\n\t\tId copy: %s\n", id_copy);
             /* Sémantická akcia: */															            //printf("Type final: %d\n", typeFinal);
             variable_set_type(*actual_function_ptr, id_copy, typeFinal);
