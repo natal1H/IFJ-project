@@ -726,7 +726,7 @@ ____*/
 		GET_NEXT_TOKEN();
 
 		return def_value(token);
-	}
+	} else { retVal = ERR_SYNTAX; } //Nie je najdene pravidlo automaticky ERR_SYNTAX
 	
 	return retVal;
 }
