@@ -224,9 +224,16 @@ int get_next_token(Token *token) {
                     tstring_append_char(read_string, c); // str := symbol
                     newLine = false;
                 }
-                else if (scanner_is_number(c)) {
+                else if (scanner_is_number(c) && c != (int) '0') {
                     // START -> F_INT
                     state = F_INT;
+
+                    tstring_append_char(read_string, c); // str := symbol
+                    newLine = false;
+                }
+                else if (c == (int) '0') {
+                    // START -> F_INT_0
+                    state = F_INT_0;
 
                     tstring_append_char(read_string, c); // str := symbol
                     newLine = false;
@@ -373,6 +380,34 @@ int get_next_token(Token *token) {
                 }
                 break; //case F_INT:
 
+            case F_INT_0:
+                if (scanner_is_number(c) && c != (int) '0') {
+                    // F_INT_0 -> F_INT
+                    state = F_INT;
+                    tstring_append_char(read_string, c);
+                }
+                else if (c == (int) '.') {
+                    // F_INT_0 -> Q_FLOAT_1
+                    state = Q_FLOAT_1;
+                    tstring_append_char(read_string, c);
+                }
+                else if (c == (int) 'e' || c == (int) 'E') {
+                    // F_INT_0 -> Q_FLOAT_2
+                    state = Q_FLOAT_2;
+                    tstring_append_char(read_string, c);
+                }
+                else if (c == (int) '0') {
+                    // F_INT_0 -> F_LEX_ERROR
+                    // Nemôže sa začínať viacerými nulami
+                    state = F_LEX_ERROR;
+                }
+                else {
+                    ungetc(c, stdin);
+                    token_set_type_attribute(token, INTEGER, read_string->string);
+                    return ERR_OK;
+                }
+                break; //case F_INT_0:
+
             case F_MULTIPLICATION:
                 ungetc(c, stdin);
                 token_set_type_attribute(token, MULTIPLICATION, "");
@@ -404,9 +439,14 @@ int get_next_token(Token *token) {
                 break; //case Q_FLOAT_1:
 
             case Q_FLOAT_2: // xe / xE
-                if (scanner_is_number(c)) {
-                    // Q_FLOAT_2 -> F_FLOAT
-                    state = F_FLOAT;
+                if (scanner_is_number(c) && c != (int) '0') {
+                    // Q_FLOAT_2 -> F_FLOAT_WITH_E
+                    state = F_FLOAT_WITH_E;
+                    tstring_append_char(read_string, c);
+                }
+                else if (c == (int) '0') {
+                    // Q_FLOAT_2 -> F_FLOAT_WITH_E_0
+                    state = F_FLOAT_WITH_E_0;
                     tstring_append_char(read_string, c);
                 }
                 else if (c == (int) '+' || c == (int) '-') {
@@ -421,9 +461,9 @@ int get_next_token(Token *token) {
                 break; //case Q_FLOAT_2:
 
             case Q_FLOAT_3: // xe+ / xE+ / xe- / xE-
-                if (scanner_is_number(c)) {
-                    // Q_FLOAT_3 -> F_FLOAT
-                    state = F_FLOAT;
+                if (scanner_is_number(c) && c != (int) '0') {
+                    // Q_FLOAT_3 -> F_FLOAT_WITH_E
+                    state = F_FLOAT_WITH_E;
                     tstring_append_char(read_string, c);
                 }
                 else {
@@ -454,6 +494,36 @@ int get_next_token(Token *token) {
                     return ERR_OK;
                 }
                 break; //case F_FLOAT:
+
+            case F_FLOAT_WITH_E:
+                if (scanner_is_number(c)) {
+                    // F_FLOAT_WITH_E -> F_FLOAT_WITH_E
+                    tstring_append_char(read_string, c);
+                }
+                else {
+                    // TOKEN FLOAT
+                    ungetc(c, stdin);
+                    // Získaj správny tvar FLOAT
+                    char *correctFloat = get_correct_float_format(read_string->string);
+                    tstring_clear_string(read_string);
+                    tstring_add_line(read_string, correctFloat);
+
+                    token_set_type_attribute(token, FLOAT, read_string->string);
+                    return ERR_OK;
+                }
+                break; //case F_FLOAT_WITH_E:
+
+            case F_FLOAT_WITH_E_0:
+                ungetc(c, stdin);
+                // Získaj správny tvar FLOAT
+                char *correctFloat = get_correct_float_format(read_string->string);
+                tstring_clear_string(read_string);
+                tstring_add_line(read_string, correctFloat);
+
+                token_set_type_attribute(token, FLOAT, read_string->string);
+                return ERR_OK;
+                break; //case F_FLOAT_WITH_E_0:
+
 
             case Q_STRING:
                 if (c != (int) '"') {
@@ -884,6 +954,15 @@ int get_next_token(Token *token) {
             case F_RIGHT_ROUND_BRACKET:
                 token_set_type_attribute(token, RIGHT_ROUND_BRACKET, "");
                 return ERR_OK;
+            case F_INT_0:
+                token_set_type_attribute(token, INTEGER, read_string->string);
+                return  ERR_OK;
+            case F_FLOAT_WITH_E:
+                token_set_type_attribute(token, FLOAT, read_string->string);
+                return  ERR_OK;
+            case F_FLOAT_WITH_E_0:
+                token_set_type_attribute(token, FLOAT, read_string->string);
+                return  ERR_OK;
             case START:
             case Q_LINE_COMMENT:
             case Q_BLOCK_COMMENT_BEGIN_1:
@@ -905,6 +984,9 @@ int get_next_token(Token *token) {
             case Q_ESCAPE:
             case Q_STRING_HEX_1:
             case Q_STRING_HEX_2:
+                // Nemalo by sa to zastaviť v nekoncom stave - chyba
+                token_set_type_attribute(token, LEX_ERROR, "");
+                return ERR_SCANNER;
                 break;
 
         }

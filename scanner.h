@@ -62,7 +62,10 @@
         // Koncové stavy
         F_ID,
         F_INT,
+        F_INT_0,
         F_FLOAT,
+        F_FLOAT_WITH_E,
+        F_FLOAT_WITH_E_0,
         F_STRING,
         F_ASSIGN, // =
         F_ADDITION, // +
