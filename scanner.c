@@ -963,8 +963,14 @@ int get_next_token(Token *token) {
             case F_FLOAT_WITH_E_0:
                 token_set_type_attribute(token, FLOAT, read_string->string);
                 return  ERR_OK;
+
             case START:
+            case Q_BLOCK_COMMENT_POSTEND:
             case Q_LINE_COMMENT:
+                token->type = TYPE_EOF;
+                token->attribute = NULL;
+                return EOF;
+
             case Q_BLOCK_COMMENT_BEGIN_1:
             case Q_BLOCK_COMMENT_BEGIN_2:
             case Q_BLOCK_COMMENT_BEGIN_3:
@@ -975,7 +981,6 @@ int get_next_token(Token *token) {
             case Q_BLOCK_COMMENT_END_2:
             case Q_BLOCK_COMMENT_END_3:
             case Q_BLOCK_COMMENT_END_4:
-            case Q_BLOCK_COMMENT_POSTEND:
             case Q_NOT_EQUALS:
             case Q_FLOAT_1:
             case Q_FLOAT_2:
