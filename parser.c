@@ -670,7 +670,7 @@ ____*/
 	//Volanie funkcie s argumentami bez zatvoriek 
 	//-------------------------------------------
 	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
-		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy));
+		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy)+END_OF_STRING);
 		strcpy(func_id_copy, id_copy);
 		withBrackets = false;
 
@@ -892,6 +892,9 @@ int value (Token *token) {
 	// Sémantická akcia
     // Získať lokálnu tabuľku volanej funkcie
     tGlobalTableNodePtr called_function_node = get_function_node(global_table, func_id_copy); // Vráti ukazovvateľ na uzol s func_id_copy v GTS
+    if(called_function_node == NULL) { // Fix ak je riadok "a b = vyraz" inak segfault pretoze called_function_node je NULL
+        return ERR_SYNTAX;
+    }
     tLocalTableNodePtr * called_function_table_ptr = (called_function_node->data->function_table); // Ukazovateľ na lokálnu tabuľku funkcie func_id_copy
 
 	// Získať identifikátor parametra prislúchajúci argumentu
