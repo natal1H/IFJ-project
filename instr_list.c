@@ -193,6 +193,10 @@ void tInstr_print_single_instruction(tInstr *I) {
 
     // Vypíš opcode
     switch (I->instType) {
+        case I_UNDEFINED:
+        case I_HEADER:
+        case I_COMENT:
+            break;
         case I_MOVE:
             printf("%s", "MOVE");
             break;

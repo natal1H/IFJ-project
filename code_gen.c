@@ -487,6 +487,7 @@ int gen_function_header(char *function_name) {
     int ret = add_instruction_unary(I_LABEL, function_name, FUNCTION_PREFIX);
     set_and_post_instr(&instr_list, curr_instr, I_CREATEFRAME, NULL, NULL, NULL);
     set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL);
+    return ret;
 }
 
 void prepare_for_func() {

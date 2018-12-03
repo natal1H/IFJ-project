@@ -95,43 +95,10 @@ void PushStackTOKEN (tStackP *S, struct token ptr);
 struct token PopStackTOKEN (tStackP *S);
 
 /**
- * Zisti ci je tokenovy zasobnik prazdny
- * @param S Zasobnik
- * @return Ak je zasobnik prazdny vrati true inak false
- */
-bool IsStackEmptyTOKEN (tStackP *S);
-
-
-
-/**
  * Inicializacia integeroveho zasobnika
  * @param S Zasobnik
  */
 void InitStackINT (tStackINT *S);
-
-/**
- * Prida integerovu hodnotu do zasobnika
- * @param S integerovy zasobnik
- * @param ptr integer
- */
-void PushStackINT (tStackINT *S, long ptr);
-
-
-/**
- * Odstrani integer na vrchu zasobnika a vrati integerovu hodnotu zo zasobnika
- * @param S Integerovi zasobnik
- * @return integer
- */
-long PopStackINT (tStackINT *S);
-
-
-/**
- * Zistenie ci je integerovy zasobnik prazdny
- * @param S Zasobnik
- * @return Ak je zasobnik prazdny vrati true inak false
- */
-bool IsStackEmptyINT (tStackINT *S);
-
 
 /**
  * Inicializuje stringovi zasobnik
@@ -152,14 +119,6 @@ void PushStackSTRING (tStackCHAR *S, char* ptr);
  * @return
  */
 char* PopStackSTRING (tStackCHAR *S);
-
-/**
- * Zisti ci je zasobnik prazdny
- * @param S Zasobnik
- * @return True ak prazdny False ak nie je prazdny
- */
-bool IsStackEmptySTRING (tStackINT *S);
-
 
 
 /**

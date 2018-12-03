@@ -225,10 +225,10 @@ int stat (Token *token) {
 
 				if (token->type == LEFT_ROUND_BRACKET) {												//printf("( ");
 					GET_NEXT_TOKEN();
-/*______________/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+                /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
 				  | Pravidlo 10: <params> -> epsilon |
 				  |__________________________________|
-________________*/
+                 */
 					if (token->type == RIGHT_ROUND_BRACKET) {											//printf(") ");
 						GET_NEXT_TOKEN();	
 					}
@@ -260,10 +260,10 @@ ________________*/
 				}
 			}
 		}
-/*__/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
 	  | Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END |
 	  |_____________________________________________________________________|
-_____*/
+     */
 		else if (strcmp(token->attribute, "if") == 0) {													//printf("if ");
 			GET_NEXT_TOKEN();
 
@@ -314,10 +314,10 @@ _____*/
 				}
 			}
 		}
-/*__/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
 	  | Pravidlo 5: WHILE <expr> DO EOL <stat_list> END |
 	  |_________________________________________________|
-_____*/
+     */
 		else if (strcmp(token->attribute, "while") == 0) {												//printf("while ");
 			// Nastavenie inštrukcie tesne pred while
 			if (is_in_while == 0) {
@@ -635,10 +635,10 @@ int after_id (Token *token) {
 
 		GET_NEXT_TOKEN();
 
-/*__/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
   	  | Pravidlo 13: <arg> -> epsilon |
   	  |_______________________________|
-____*/
+     */
 		if (token->type == RIGHT_ROUND_BRACKET) {														//printf(") ");
 			// Sémantická kontrola
 			if ((strcmp(func_id_copy, "print") != 0) && expected_params != 0) {
@@ -761,10 +761,10 @@ int def_value (Token *token) {
 	}
 
 	else if (token->type == IDENTIFIER) {																//printf("%s ", token->attribute);
-/*__/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
   	  | Pravidlo 20: <def_value> -> ID ( <arg> ) |
   	  |__________________________________________|
-____*/
+     */
 		// Sémantická akcia
 		// Pozriem sa, či sa nejedná o vstavanú funkciu
 		if (is_built_in_function(token->attribute)) {
@@ -804,10 +804,10 @@ ____*/
 				withBrackets = true;
 
 				GET_NEXT_TOKEN();	
-/*__________/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+            /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
   	  		  | Pravidlo 13: <arg> -> epsilon |
   			  |_______________________________|
-____________*/
+             */
 				if (token->type == RIGHT_ROUND_BRACKET) {												//printf(") ");
 					// Sémantická kontrola
 					if ((strcmp(func_id_copy, "print") != 0) && expected_params != 0) {

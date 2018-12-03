@@ -214,7 +214,6 @@ int get_next_token(Token *token) {
     char hex_chr2 = 0;
 
     do {
-        printf("C: %c, state: %d\n", (char) c, state);
         switch(state) {
             case START: // Starting point
 
@@ -247,27 +246,22 @@ int get_next_token(Token *token) {
                 }
                 else if (c == (int) '+') {
                     // START -> F_ADDITION
+                    state = F_ADDITION;
                     token_set_type_attribute(token, ADDITION, "");
                     newLine = false;
                     return ERR_OK;
                 }
                 else if (c == (int) '*') {
                     // START -> F_MULTIPLICATION
-                    token_set_type_attribute(token, MULTIPLICATION, "");
-                    newLine = false;
-                    return ERR_OK;
+                    state = F_MULTIPLICATION;
                 }
                 else if (c == (int) '-') {
                     // START -> F_SUBSTRACTION
                     state = F_SUBTRACTION;
-                    tstring_append_char(read_string, c);
-                    newLine = false;
                 }
                 else if (c == (int) '/') {
                     // START -> F_DIVISION
-                    token_set_type_attribute(token, DIVISION, "");
-                    newLine = false;
-                    return ERR_OK;
+                    state = F_DIVISION;
                 }
                 else if (c == (int) '<') {
                     // START -> F_LESS
@@ -379,6 +373,24 @@ int get_next_token(Token *token) {
                 }
                 break; //case F_INT:
 
+            case F_MULTIPLICATION:
+                ungetc(c, stdin);
+                token_set_type_attribute(token, MULTIPLICATION, "");
+                newLine = false;
+                return ERR_OK;
+
+            case F_ADDITION:
+                ungetc(c, stdin);
+                tstring_append_char(read_string, c);
+                newLine = false;
+                return ERR_OK;
+
+            case F_DIVISION:
+                ungetc(c, stdin);
+                token_set_type_attribute(token, DIVISION, "");
+                newLine = false;
+                return ERR_OK;
+
             case Q_FLOAT_1: // x.
                 if (scanner_is_number(c)) {
                     // Q_FLOAT_1 -> F_FLOAT
@@ -467,12 +479,16 @@ int get_next_token(Token *token) {
                 }
                 else {
                     // Q_STRING -> F_STRING
-                    //ungetc(c, stdin);
-                    tstring_append_char(read_string, '"');
-                    token_set_type_attribute(token, STRING, read_string->string);
-                    return ERR_OK;
+                    state = F_STRING;
                 }
                 break; //case Q_STRING:
+
+            case F_STRING:
+                ungetc(c, stdin);
+                tstring_append_char(read_string, '"');
+                token_set_type_attribute(token, STRING, read_string->string);
+                return ERR_OK;
+                break;
 
             case Q_ESCAPE:
                 if (c == (int) 'n' || c == (int) 't' || c == (int) 's' || c == (int) '\\') {
@@ -840,6 +856,18 @@ int get_next_token(Token *token) {
             case F_GREATER:
                 token_set_type_attribute(token, GREATER, "");
                 return ERR_OK;
+            case F_EQUALS:
+                token_set_type_attribute(token, EQUALS, "");
+                return ERR_OK;
+            case F_NOT_EQUALS:
+                token_set_type_attribute(token, NOT_EQUALS, "");
+                return ERR_OK;
+            case F_LESS_OR_EQUALS:
+                token_set_type_attribute(token, LESS_OR_EQUALS, "");
+                return ERR_OK;
+            case F_GREATER_OR_EQUALS:
+                token_set_type_attribute(token, GREATER_OR_EQUALS, "");
+                return ERR_OK;
             case F_EOL:
                 token_set_type_attribute(token, EOL, "");
                 return ERR_OK;
@@ -856,6 +884,29 @@ int get_next_token(Token *token) {
             case F_RIGHT_ROUND_BRACKET:
                 token_set_type_attribute(token, RIGHT_ROUND_BRACKET, "");
                 return ERR_OK;
+            case START:
+            case Q_LINE_COMMENT:
+            case Q_BLOCK_COMMENT_BEGIN_1:
+            case Q_BLOCK_COMMENT_BEGIN_2:
+            case Q_BLOCK_COMMENT_BEGIN_3:
+            case Q_BLOCK_COMMENT_BEGIN_4:
+            case Q_BLOCK_COMMENT_BEGIN_5:
+            case Q_BLOCK_COMMENT_CONTENT:
+            case Q_BLOCK_COMMENT_END_1:
+            case Q_BLOCK_COMMENT_END_2:
+            case Q_BLOCK_COMMENT_END_3:
+            case Q_BLOCK_COMMENT_END_4:
+            case Q_BLOCK_COMMENT_POSTEND:
+            case Q_NOT_EQUALS:
+            case Q_FLOAT_1:
+            case Q_FLOAT_2:
+            case Q_FLOAT_3:
+            case Q_STRING:
+            case Q_ESCAPE:
+            case Q_STRING_HEX_1:
+            case Q_STRING_HEX_2:
+                break;
+
         }
     } //(c == EOF)
 

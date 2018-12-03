@@ -186,6 +186,10 @@ struct token PopStackTOKEN (tStackP *S)
     else {
         return (S->stack[S->top--]);
     }
+
+
+    Token *t = token_initialize();
+    return *t;
 }
 
 bool IsStackEmptyTOKEN (tStackP *S)
@@ -208,43 +212,6 @@ void InitStackINT (tStackINT *S)
 **/
 {
     S->top = 0;
-}
-
-void PushStackINT (tStackINT *S, long ptr)
-/*   ------
-** Vloží hodnotu na vrchol zásobníku.
-**/
-{
-    /* Při implementaci v poli může dojít k přetečení zásobníku. */
-    if (S->top==MAXSTACK)
-        fprintf(stderr, "Chyba: Došlo k přetečení zásobníku s ukazateli!\n");
-    else {
-        S->top++;
-        S->stack[S->top]=ptr;
-    }
-}
-
-long PopStackINT (tStackINT *S)
-/*         --------
-** Odstraní prvek z vrcholu zásobníku a současně vrátí jeho hodnotu.
-**/
-{
-    /* Operace nad prázdným zásobníkem způsobí chybu. */
-    if (S->top==0)  {
-        fprintf(stderr, "Chyba: Došlo k podtečení zásobníku s ukazateli!\n");
-//        return(-1);
-    }
-    else {
-        return (S->stack[S->top--]);
-    }
-}
-
-bool IsStackEmptyINT (tStackINT *S)
-/*   -------
-** Je-li zásobník prázdný, vrátí hodnotu true.
-**/
-{
-    return(S->top==0);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -288,14 +255,8 @@ char* PopStackSTRING (tStackCHAR *S)
     else {
         return (S->stack[S->top--]);
     }
-}
 
-bool IsStackEmptySTRING (tStackINT *S)
-/*   -------
-** Je-li zásobník prázdný, vrátí hodnotu true.
-**/
-{
-    return(S->top==0);
+    return NULL;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -989,6 +950,8 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
         default:{}
     }
+
+    return NULL;
 }
 
 /**
@@ -1046,7 +1009,7 @@ char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *sta
  */
 tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, int last_operation) {
 
-    bool UvolnovanieZasobnika = false;
+    //bool UvolnovanieZasobnika = false;
     Token tmp;              //Pomocny token
     tmp.type = EOL;         //Koniec zasobnika ako EOL
     PushStackTOKEN(stack, tmp);  //Informuje o konci zasobnika
@@ -1075,7 +1038,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
 
                         tmp = PopStackTOKEN(stack); //Zisti hodnotu na vrchole zasobnika
                         PushStackTOKEN(stack, tmp); //Ale hodnotu ponechaj ulozenu na zasobniku
-                        UvolnovanieZasobnika = true;
+                        //UvolnovanieZasobnika = true;
 
 //                      if(precedenceTable[TransformTable[tmp.type]][TransformTable[ExprList->Act->Token.type]] == '<') {
 //                          PushStackTOKEN(stack, ExprList->Act->Token);
@@ -1090,7 +1053,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
                         PushStackTOKEN(stack, ExprList->Act->Token);
                     }
                 }
-                UvolnovanieZasobnika = false;
+                //UvolnovanieZasobnika = false;
                 ExprList->Act = ExprList->Act->next; //Dalsi Token
     }
 
@@ -1275,9 +1238,7 @@ int MainSyntaxCheck(tDLList *ExprList) {
             InitStackTOKEN(stackOutput);
 
             //Vysledok daneho vyrazu TODO Zmenit
-            char* vysledok = 0;
-            vysledok = EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, stackOutputCHAR, last_operation, ErrorStatusPtr);
-//            printf("Vysledok: %s\n", vysledok);
+            EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, stackOutputCHAR, last_operation, ErrorStatusPtr);
 
             free(stack);
             free(stackOutput);

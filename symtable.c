@@ -41,9 +41,15 @@ void ParamListNext(TParamList *L) {
 }
 
 char *ParamListGetActive(TParamList *L) {
-    if (L != NULL)
+    if (L != NULL) {
         if (L->act != NULL)
             return L->act->param_id;
+        else
+            return NULL;
+    }
+    else {
+        return NULL;
+    }
 }
 
 void ParamListDispose(TParamList *L) {
@@ -312,6 +318,8 @@ char *function_param_list_get_active(tGlobalTableNodePtr rootPtr, char *function
     if (found) {
         return ParamListGetActive(data->paramList);
     }
+    else
+        return NULL;
 }
 
 int function_get_number_params(tGlobalTableNodePtr rootPtr, char *function_id) {
@@ -419,6 +427,8 @@ tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id) {
             }
         }
     }
+
+    return NULL;
 }
 
 void set_function_table(tGlobalTableNodePtr *function_node_ptr, tLocalTableNodePtr *local_table_ptr) {
