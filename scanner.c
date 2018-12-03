@@ -152,6 +152,28 @@ char *get_correct_float_format(char *floatStr) {
     return correctFloat;
 }
 
+int hex_chr_to_decadic_int(char c1, char c2) {
+    int ret = 0;
+    if (c2 == 0) {
+        // Iba jeden znak
+        if (scanner_is_number(c1)) ret = (int) c1 - (int) '0';
+        else if (c1 >= (int) 'a' && c1 <= (int) 'f') ret = (int) c1 - (int) 'a' + 10;
+        else if (c1 >= (int) 'A' && c1 <= (int) 'F') ret = (int) c1 - (int) 'A' + 10;
+    }
+    else {
+        // c1
+        if (scanner_is_number(c1)) ret = ((int) c1 - (int) '0') * 16;
+        else if (c1 >= (int) 'a' && c1 <= (int) 'f') ret = ((int) c1 - (int) 'a' + 10) * 16;
+        else if (c1 >= (int) 'A' && c1 <= (int) 'F') ret = ((int) c1 - (int) 'A' + 10) * 16;
+        // c2
+        if (scanner_is_number(c2)) ret += (int) c2 - (int) '0';
+        else if (c2 >= (int) 'a' && c2 <= (int) 'f') ret += (int) c2 - (int) 'a' + 10;
+        else if (c2 >= (int) 'A' && c2 <= (int) 'F') ret += (int) c2 - (int) 'A' + 10;
+    }
+
+    return ret;
+}
+
 char *int_to_decadic_three(int n) {
     char *str = malloc(sizeof(char) * 3);
     if (str == NULL) return NULL;
@@ -188,7 +210,11 @@ int get_next_token(Token *token) {
     TState state = START; // Nastavenie počiatočného stavu v DKA
     int c = getc(stdin);
 
+    char hex_chr1 = 0;
+    char hex_chr2 = 0;
+
     do {
+        printf("C: %c, state: %d\n", (char) c, state);
         switch(state) {
             case START: // Starting point
 
@@ -427,8 +453,17 @@ int get_next_token(Token *token) {
                     }
                     else {
                         // Q_STRING -> Q_STRING
-                        tstring_append_char(read_string, c);
+                        if (c == (int) ' ') {
+                            // medzeru treba zapísať jej kódom
+                            tstring_add_line(read_string, "\\032"); // Kód medzery
+                        }
+                        else
+                            tstring_append_char(read_string, c);
                     }
+                }
+                else if (c == (int) '\n') {
+                    // Q_STRING -> F_LEX_ERROR
+                    state = F_LEX_ERROR;
                 }
                 else {
                     // Q_STRING -> F_STRING
@@ -453,11 +488,15 @@ int get_next_token(Token *token) {
                     tstring_add_line(read_string, dec_str);
                     free(dec_str);
                 }
-//                else if (c == (int) 'x') {
-//                    // Q_ESCAPE -> Q_STRING_HEX_1
-//                    state = Q_STRING_HEX_1;
+                else if (c == (int) 'x') {
+                    // Q_ESCAPE -> Q_STRING_HEX_1
+                    state = Q_STRING_HEX_1;
 
-//                }
+                }
+                else if (c == (int) '\n') {
+                    // Q_STRING_ESCAPE -> F_LEX_ERROR
+                    state = F_LEX_ERROR;
+                }
                 else {
                     // Q_ESCAPE -> F_LEX_ERROR
                     state = F_LEX_ERROR;
@@ -465,16 +504,71 @@ int get_next_token(Token *token) {
 
                 break;
 
-//            case Q_STRING_HEX_1:
-//                if (scanner_is_number(c) || (c >= (int) 'a' && c <= (int) 'f') || (c >= (int) 'A' && c <= (int) 'F') {
+            case Q_STRING_HEX_1:
+                if (scanner_is_number(c) || (c >= (int) 'a' && c <= (int) 'f') || (c >= (int) 'A' && c <= (int) 'F') ) {
+                    // Q_STRING_HEX_1 -> Q_STRING_HEX_2
+                    state = Q_STRING_HEX_2;
 
-//                }
+                    hex_chr1 = c;
+                }
+                else if (c == (int) '\n') {
+                    // Q_STRING_HEX_1 -> F_LEX_ERROR
+                    state = F_LEX_ERROR;
+                }
+                else {
+                    // Q_STRING_HEX_1 -> F_LEX_ERROR
+                    state = F_LEX_ERROR;
+                }
 
                 break;
 
-//            case Q_STRING_HEX_2:
+            case Q_STRING_HEX_2:
+                if (scanner_is_number(c) || (c >= (int) 'a' && c <= (int) 'f') || (c >= (int) 'A' && c <= (int) 'F') ) {
+                    // Q_STRING_HEX_2 -> Q_STRING
+                    state = Q_STRING;
 
-//                break;
+                    hex_chr2 = c;
+
+                    // Prevod hex hodnoty na dekadickú a pridanie do string
+                    // Prevod hex hodnoty na dekadickú a pridanie do string (iba jeden znak)
+                    int decadic_number = hex_chr_to_decadic_int(hex_chr1, hex_chr2);
+
+                    // Kontrola či nie je > 255
+                    if (decadic_number > 255) state = F_LEX_ERROR;
+
+                    char *decadic_str = int_to_decadic_three(decadic_number);
+                    tstring_add_line(read_string, decadic_str);
+                    free(decadic_str);
+
+                }
+                else if (c == (int) '\n') {
+                    // Q_STRING_HEX_2 -> F_LEX_ERROR
+                    state = F_LEX_ERROR;
+                }
+                else {
+                    // Q_STRING_HEX_2 -> Q_STRING
+                    state = Q_STRING;
+
+                    // Prevod hex hodnoty na dekadickú a pridanie do string (iba jeden znak)
+                    int decadic_number = hex_chr_to_decadic_int(hex_chr1, hex_chr2);
+
+                    // Kontrola či nie je > 255
+                    if (decadic_number > 255) state = F_LEX_ERROR;
+
+                    char *decadic_str = int_to_decadic_three(decadic_number);
+                    tstring_add_line(read_string, decadic_str);
+                    free(decadic_str);
+
+                    // Už normálny znak
+                    if (c == (int) ' ') {
+                        // medzeru treba zapísať jej kódom
+                        tstring_add_line(read_string, "\\032"); // Kód medzery
+                    }
+                    else
+                        tstring_append_char(read_string, c);
+                }
+
+                break;
 
             case F_SUBTRACTION:
                 // TOKEN -
