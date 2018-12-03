@@ -1374,7 +1374,17 @@ int CallExpressionParser(Token *token) {
         // Ak bol do parseru výrazov poslaný iba jeden operand
         if (is_int(finalVar) || is_float(finalVar) || is_nil(finalVar) || is_string_literal(finalVar)) {
             char *var_name = expr_parser_create_unique_name(*actual_function_ptr);
-            //gen_defvar(var_name);
+
+            // nastavenie typeFinal
+            if (is_int(finalVar))
+                typeFinal = T_INT;
+            else if (is_float(finalVar))
+                typeFinal = T_FLOAT;
+            else if (is_nil(finalVar))
+                typeFinal = T_NIL;
+            else if (is_string_literal(finalVar))
+                typeFinal = T_STRING;
+
             if (is_in_while > 0) {
                 // Je vo while, pridávať na zvlášť zoznam
                 gen_defvar(var_name, &while_declaration_list); // DEFVAR LF@%param_id

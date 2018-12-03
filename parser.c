@@ -161,6 +161,9 @@ int stat_list (Token *token) {
 			}
 			
 		}
+		else {
+			return statRetVal;
+		}
 	}
 	else if (token->type == TYPE_EOF) {
 		if (depth_index == 0) {																			//printf("eof\n");
@@ -241,13 +244,17 @@ ________________*/
 						depth_index++;
 						in_def = true;
 
-						if (stat_list(token) == ERR_OK) {
+						int stat_list_ret = stat_list(token);
+						if (stat_list_ret == ERR_OK) {
 							if (token->type == KEYWORD && strcmp(token->attribute, "end") == 0){
 								depth_index--;
 								in_def = false;
 
 								return ERR_OK;
 							}
+						}
+						else {
+							return stat_list_ret;
 						}
 					}
 				}
@@ -402,7 +409,8 @@ _____*/
 		strcpy(id_copy, token->attribute);
 		GET_NEXT_TOKEN();
 
-		return after_id(token);
+		int after_id_ret = after_id(token);
+		return after_id_ret;
 	}
 
 	return ERR_SYNTAX;
@@ -746,6 +754,9 @@ int def_value (Token *token) {
 			// Generovanie kódu
 			// Presun výsledku výrazu do premennej (MOVE id_copy finalVar)
 			gen_move_var(id_copy, finalVar);
+		}
+		else {
+			return retVal;
 		}
 	}
 

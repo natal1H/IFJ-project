@@ -202,9 +202,9 @@ int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_I
 
 tDataType aritmetic_get_final_type(tDataType token1, tDataType token2) {
     if (token1 == T_INT && token2 == T_INT) return T_INT;
+    if (token1 == T_FLOAT && token2 == T_FLOAT) return T_FLOAT;
     else if ( (token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT) ) return T_FLOAT;
     else if ( (token1 == T_STRING && token2 == T_STRING)) return T_STRING;
-    //else if ( (token1 == T_INT && token2 == T_NIL)) return T_NIL;
     else return T_UNDEFINED;
 }
 
