@@ -113,7 +113,7 @@ bool is_string_literal(char *str) {
 }
 
 char *get_string_without_quotation_marks(char *string_literal) {
-    char *new_string = malloc(sizeof(char) * (strlen(string_literal) - 2));
+    char *new_string = malloc(sizeof(char) * (strlen(string_literal) - 2)+END_OF_STRING);
     if (new_string == NULL) return NULL;
     strncpy(new_string, string_literal+1, strlen(string_literal)-2);
     return new_string;

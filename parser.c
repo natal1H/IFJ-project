@@ -616,7 +616,7 @@ int after_id (Token *token) {
 	// Volanie funkcie so zatvorkami 
 	//------------------------------
 	if (token->type == LEFT_ROUND_BRACKET) {															//printf("( ");
-		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy));
+		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy)+END_OF_STRING);
 		strcpy(func_id_copy, id_copy);
 
 		withBrackets = true;
