@@ -148,7 +148,7 @@ int stat_list (Token *token) {
 			}
 		}
 	}
-	else if (token->type == IDENTIFIER) {
+	else if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {
 		statRetVal = stat(token);
 		if (statRetVal == ERR_OK) {
 			if (token->type == EOL) {																	//printf("eol\n");
@@ -194,7 +194,7 @@ int stat (Token *token) {
 		if (strcmp(token->attribute, "def") == 0) {														//rintf("def ");
 			GET_NEXT_TOKEN();
 
-			if (token->type == IDENTIFIER) {															//printf("%s ", token->attribute);
+			if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {															//printf("%s ", token->attribute);
 
 				// Sémantická kontrola - nebola už definovaná funkcia s takýmto názvom?
 				if (function_definition(&global_table, token->attribute) != ERR_OK) {
@@ -402,7 +402,7 @@ int stat (Token *token) {
   | Pravidlo 6: ID <after_id> |
   |___________________________|
 */
-	else if (token->type == IDENTIFIER) {																//printf("%s ", token->attribute);
+	else if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {																//printf("%s ", token->attribute);
 
 		// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
 		id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute)+END_OF_STRING);
@@ -760,7 +760,7 @@ int def_value (Token *token) {
 		}
 	}
 
-	else if (token->type == IDENTIFIER) {																//printf("%s ", token->attribute);
+	else if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {																//printf("%s ", token->attribute);
     /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
   	  | Pravidlo 20: <def_value> -> ID ( <arg> ) |
   	  |__________________________________________|
