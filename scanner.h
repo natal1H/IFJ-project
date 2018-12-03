@@ -5,6 +5,7 @@
  * @file scanner.h
  *
  * @author Natália Holková (xholko02)
+ * @author Albert Szöllösi (xszoll02)
  */
 
 #ifndef _SCANNER_H

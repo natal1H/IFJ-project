@@ -1,3 +1,16 @@
+/**
+ * IFJ Projekt - Team 11
+ *
+ * @brief Hlavičkový súbor pre main
+ * @file main.h
+ *
+ * Na tomto projekte sa podielali:
+ * @author Natália Holková (xholko02)
+ * @author Matej Novák (xnovak2f)
+ * @author Filip Bali (xbalif00)
+ * @author Albert Szöllösi (xszoll02)
+ */
+
 #ifndef  _MAIN_H
     #define _MAIN_H
 
@@ -19,6 +32,6 @@
     char *actual_function_name; // ID funkcie, v ktorej sa práve program nachádza
     char *id_copy; // Reťazec na zálohu ID aj po načítaní ďalšich tokenov
     char *func_id_copy; // Retazec na zalohu ID funkcie ktora sa priraduje do premennej
-    int is_in_while;
+    int is_in_while; // Kontrola, či je aktuálne vo while - kvôli prípadným deklaráciám premenných
 
 #endif

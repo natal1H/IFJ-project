@@ -1,3 +1,13 @@
+/**
+ * IFJ Projekt - Team 11
+ *
+ * @brief Súbor na lexikálnu analýzu
+ * @file scanner.c
+ *
+ * @author Natália Holková (xholko02)
+ * @author Albert Szöllösi (xszoll02)
+ */
+
 #include "scanner.h"
 #include "main.h"
 
@@ -16,6 +26,7 @@ int scanner_initialize() {
     }
 }
 
+/** Inicializácia tokenu */
 Token *token_initialize() {
     // Alokuj miesto pre štruktúru token
     Token *token = (Token *) malloc(sizeof(Token));
@@ -29,11 +40,13 @@ Token *token_initialize() {
     return token;
 }
 
+/** Uvoľnenie tokenu */
 void token_free(Token *token) {
     free(token->attribute);
     free(token);
 }
 
+/**  Zistenie, či je string kľúčové slovo */
 bool is_keyword(char *str) {
     if (strcmp(str, "def") == 0)
         return true;
@@ -57,6 +70,7 @@ bool is_keyword(char *str) {
         return false;
 }
 
+/** Nastavenie typu a atribútu tokenu */
 int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
     // Token nesmie byť neinicializovaný
     if (token == NULL) {

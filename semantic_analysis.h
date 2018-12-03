@@ -142,9 +142,20 @@
 
     /**
     * @brief Nastaví správny počet parametrov pre danú vstavanú funkciu
+     *
     * @param rootPtr Koreň globálnej tabuľky symbolov
     * @param function_id
     */
     void built_in_function_set_param(tGlobalTableNodePtr rootPtr, char *function_id);
+
+    /**
+     * @brief
+     *
+     * @param function_id
+     * @param number_of_param
+     * @param type
+     * @return
+     */
+    int built_in_function_check_arg(char *function_id, int number_of_param, tDataType type);
 
 #endif
