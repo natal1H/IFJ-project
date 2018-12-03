@@ -42,8 +42,9 @@
         RIGHT_ROUND_BRACKET, //18
         COMMA,               //19
         EOL,                 //20
-        TYPE_EOF,            //21
-        LEX_ERROR,           //22
+        FUNCTION_ONLY_ID,    //21
+        TYPE_EOF,            //22
+        LEX_ERROR,           //23
     } Token_Type;
 
     /**
@@ -61,6 +62,7 @@
 
         // Koncové stavy
         F_ID,
+        F_FUNCTION_ONLY_ID,
         F_INT,
         F_INT_0,
         F_FLOAT,
@@ -84,6 +86,8 @@
         F_EOL, // \n
 
         // Prechodné stavy
+        Q_ID_UNDERSCORE,
+
         Q_LINE_COMMENT,
 
         Q_BLOCK_COMMENT_BEGIN_1, // =b

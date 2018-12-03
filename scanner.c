@@ -217,8 +217,17 @@ int get_next_token(Token *token) {
         switch(state) {
             case START: // Starting point
 
-                if (scanner_is_alpha(c) || c == (int) '_') {
+                if (c == (int) '_') {
+                    // START -> Q_ID_UNDERSCORE
+                    // ID sa začína _
+                    state = Q_ID_UNDERSCORE;
+
+                    tstring_append_char(read_string, c); // str := symbol
+                    newLine = false;
+                }
+                else if (c >= (int) 'a' && c <= (int) 'z') {
                     // START -> F_ID
+                    // ID sa začína malým písmenom
                     state = F_ID;
 
                     tstring_append_char(read_string, c); // str := symbol
@@ -335,10 +344,28 @@ int get_next_token(Token *token) {
                 }
                 break; //case START:
 
+            case Q_ID_UNDERSCORE:
+                if (scanner_is_alpha(c) || scanner_is_number(c) || c == (int) '_') {
+                    // Q_ID_UNDERSCORE -> F_ID
+                    state = F_ID;
+                    tstring_append_char(read_string, c);
+                }
+                else {
+                    // Q_ID_UNDERSCORE -> F_LEX_ERROR
+                    // Znak mimo povolených pre identifikátor, ktorý sa skladá iba z _ --> LEX ERROR
+                    state = F_LEX_ERROR;
+                }
+                break; //case Q_ID_UNDERSCORE:
+
             case F_ID:
                 if (scanner_is_alpha(c) || scanner_is_number(c) || c == (int) '_') {
                     // F_ID -> F_ID
                     tstring_append_char(read_string, c);
+                }
+                else if (c == (int) '?' || c == (int) '!') {
+                    // F_ID -> F_ONLY_FUNCTION_IF
+                    state = F_FUNCTION_ONLY_ID;
+                    tstring_append_char(read_string, c); // str := symbol
                 }
                 else {
                     // Znak mimo povolených pre identifikátor
@@ -357,6 +384,12 @@ int get_next_token(Token *token) {
                     return ERR_OK;
                 }
                 break; //case F_ID:
+
+            case F_FUNCTION_ONLY_ID:
+                // unget znak
+                ungetc(c, stdin);
+                token_set_type_attribute(token, FUNCTION_ONLY_ID, read_string->string);
+                return ERR_OK;
 
             case F_INT:
                 if (scanner_is_number(c)) {
@@ -899,6 +932,9 @@ int get_next_token(Token *token) {
             case F_INT:
                 token_set_type_attribute(token, INTEGER, read_string->string);
                 return ERR_OK;
+            case F_FUNCTION_ONLY_ID:
+                token_set_type_attribute(token, FUNCTION_ONLY_ID, read_string->string);
+                return ERR_OK;
             case F_FLOAT:
                 token_set_type_attribute(token, FLOAT, read_string->string);
                 return ERR_OK;
@@ -971,6 +1007,7 @@ int get_next_token(Token *token) {
                 token->attribute = NULL;
                 return EOF;
 
+            case Q_ID_UNDERSCORE:
             case Q_BLOCK_COMMENT_BEGIN_1:
             case Q_BLOCK_COMMENT_BEGIN_2:
             case Q_BLOCK_COMMENT_BEGIN_3:
