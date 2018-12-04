@@ -117,6 +117,7 @@
         int params; // Počet parametrov funkcie
         TParamList *paramList; // Zoznam identifikátorov parametrov
         tLocalTableNodePtr  *function_table; // Odkaz na lokálnu tabuľku symbolov funkcie
+        tDataType returnType; // Typ návratovej hodnoty
     } tDataNodeGlobal;
 
     /**
@@ -285,7 +286,26 @@
      */
     void set_function_table(tGlobalTableNodePtr *function_node_ptr, tLocalTableNodePtr *local_table_ptr);
 
-    // Lokálna
+    /**
+     * @brief Nastaví návratový typ funkcie
+     *
+     * @param rootPtr Koreň globálnej tabuľky symbolov
+     * @param id Názov funkcie
+     * @param returning_type Návratový typ na nastavenie
+     */
+    void set_fuction_return_type(tGlobalTableNodePtr rootPtr, char *id, tDataType returning_type);
+
+    /**
+     * @brief Vráti typ návratovej hodnoty funkcie
+     *
+     * @param rootPtr Koreň globálnej tabuľky symbolov
+     * @param id Názov funkcie
+     * @return Návratový typ funkcie
+     */
+    tDataType get_fuction_return_type(tGlobalTableNodePtr rootPtr, char *id);
+
+
+// Lokálna
     // Všeobecné funkcie
 
     /**

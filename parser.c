@@ -126,18 +126,23 @@ int stat_list (Token *token) {
 		}
 		else if (strcmp(token->attribute, "end") == 0) {
 			if (in_def && !in_if_or_while) {
+
+				// Generovanie kódu - vygenerovať návratovú hodnotu a return
+				// Skontrolovať finalVar
+				if (finalVar == NULL) // Vráti nil@nil
+				    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@nil", NULL, NULL);
+				else {// Vráti premennú, v ktorej bol posledný výpočet
+					gen_push_var(finalVar, T_UNDEFINED, true);
+					// Nastaviť returnValue na typ premennej, ktorá sa vracia
+					set_fuction_return_type(global_table, actual_function_name,typeFinal);
+				}
+
 				// Sémantická akcia - presunúť ukazovať na aktuálnu lokálnu tabuľku naspäť na MAIN
 				tGlobalTableNodePtr main_global_node = get_function_node(global_table, MAIN); // Vráti ukazovvateľ na uzol s MAIN v GTS
 				actual_function_name = MAIN;
 				actual_function_ptr = (main_global_node->data->function_table); // Aktuálne lokálna tabuľka je nová lokálna tabuľka
 				// Koniec sémantickej akcie
 
-				// Generovanie kódu - vygenerovať návratovú hodnotu a return
-				// Skontrolovať finalVar
-				if (finalVar == NULL) // Vráti nil@nil
-				    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "nil@nil", NULL, NULL);
-				else // Vráti premennú, v ktorej bol posledný výpočet
-				    gen_push_var(finalVar, T_UNDEFINED, true);
 				end_function(); // Vygeneruje return
 				// Koniec generovania kódu
 			}
@@ -844,6 +849,9 @@ int def_value (Token *token) {
 					gen_pop_var(id_copy);
 					// Koniec generovania kódu
 
+					// Nastavenie nového datového typu premennej
+					variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+
 
 					GET_NEXT_TOKEN();
 
@@ -857,6 +865,9 @@ int def_value (Token *token) {
 
 						// Vygenerovanie vrátenia návratovej hodnoty funkcie
 						gen_pop_var(id_copy);
+
+						// Nastavenie nového datového typu premennej
+						variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
 
 						return ERR_OK;
 					}
@@ -873,6 +884,9 @@ int def_value (Token *token) {
 	       		int argRet = arg(token);
 				// Vygenerovať POPVAR do premennej
 				gen_pop_var(id_copy);
+				// Nastavenie nového datového typu premennej
+				variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+
 	       		return argRet;
 			}
 			//----------------------------------------------
@@ -888,6 +902,9 @@ int def_value (Token *token) {
 					// Vygenerovať POPVAR do premennej
 					gen_pop_var(id_copy);
 					// Koniec generovania kódu
+
+					// Nastavenie nového datového typu premennej
+					variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
 
 					return ERR_OK;
 				}

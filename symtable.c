@@ -127,6 +127,7 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
             newPtr->data->function_table = data->function_table;
             newPtr->data->params = data->params;
             newPtr->data->paramList = data->paramList;
+            newPtr->data->returnType = data->returnType;
 
             (*rootPtr) = newPtr;
         }
@@ -147,6 +148,7 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
             (*rootPtr)->data->function_table = data->function_table;
             (*rootPtr)->data->params = data->params;
             (*rootPtr)->data->paramList = data->paramList;
+            (*rootPtr)->data->returnType = data->returnType;
         }
     }
 
@@ -397,6 +399,7 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
         data->defined = true;
         data->function_table = NULL;
         data->params = 0;
+        data->returnType = T_NIL;
         // Alokovanie miesta pre data->paramList
         data->paramList = malloc(sizeof(TParamList));
         if (data->paramList == NULL) return ERR_INTERNAL;
@@ -423,6 +426,7 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
             data->defined = true;
             data->function_table = NULL;
             data->params = 0;
+            data->returnType = T_NIL;
             // Alokovanie miesta pre data->paramList
             data->paramList = malloc(sizeof(TParamList));
             if (data->paramList == NULL) return ERR_INTERNAL;
@@ -470,6 +474,27 @@ tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id) {
 void set_function_table(tGlobalTableNodePtr *function_node_ptr, tLocalTableNodePtr *local_table_ptr) {
     (*function_node_ptr)->data->function_table = local_table_ptr;
 }
+
+/** Nastaví návratový typ funkcie **/
+void set_fuction_return_type(tGlobalTableNodePtr rootPtr, char *id, tDataType returning_type) {
+    tDataNodeGlobal *data;
+    bool found = global_table_search(rootPtr, id, &data);
+    if (found) {
+        data->returnType = returning_type;
+    }
+}
+
+
+/** Vráti typ návratovej hodnoty funkcie **/
+tDataType get_fuction_return_type(tGlobalTableNodePtr rootPtr, char *id) {
+    tDataNodeGlobal *data;
+    bool found = global_table_search(rootPtr, id, &data);
+    if (found) {
+        return data->returnType;
+    }
+    else return T_UNDEFINED;
+}
+
 
 // Funkcie pre lokálnu TS
 
