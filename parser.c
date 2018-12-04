@@ -58,6 +58,9 @@ int prog (Token *token) {
 	else if (token->type == IDENTIFIER) {
 		return stat_list(token);
 	}
+	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || (token->type == KEYWORD && (strcmp(token->attribute, "nil") == 0) || token->type == LEFT_ROUND_BRACKET) ) {
+		return stat_list(token);
+	}
 	else if (token->type == TYPE_EOF) {
 		return ERR_OK;
 	}
@@ -164,6 +167,9 @@ int stat_list (Token *token) {
 		else {
 			return statRetVal;
 		}
+	}
+	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || (token->type == KEYWORD && (strcmp(token->attribute, "nil") == 0) || token->type == LEFT_ROUND_BRACKET) ) {
+		return stat(token);
 	}
 	else if (token->type == TYPE_EOF) {
 		if (depth_index == 0) {																			//printf("eof\n");
@@ -411,6 +417,18 @@ int stat (Token *token) {
 
 		int after_id_ret = after_id(token);
 		return after_id_ret;
+	}
+
+	// TODO: dokomentovať
+	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || (token->type == KEYWORD && (strcmp(token->attribute, "nil") == 0) || token->type == LEFT_ROUND_BRACKET) ) {
+		// Zavolať parser výrazov
+		int retVal = CallExpressionParser(token);
+		if (retVal == ERR_OK) {
+			return ERR_OK;
+		}
+		else {
+			return retVal;
+		}
 	}
 
 	return ERR_SYNTAX;
