@@ -80,9 +80,33 @@
      */
     void ParamListInsertLast(TParamList *L, char *id);
 
+    /**
+     * @brief Nastavenie aktívneho prvku na prvý prvok
+     *
+     * @param L Ukazovateľ na zoznam parametrov
+     */
     void ParamListFirst(TParamList *L);
+
+    /**
+     * @brief Nastavenie aktívneho prvku na nasledujúci prvok
+     *
+     * @param L Ukazovateľ na zoznam parametrov
+     */
     void ParamListNext(TParamList *L);
+
+    /**
+     * @brief Vráti identifikátor aktívneho prvku
+     *
+     * @param L Ukazovateľ na zoznam
+     * @return Identifikátor aktívneho prvku
+     */
     char *ParamListGetActive(TParamList *L);
+
+    /**
+     * @brief Uvoľnenie zoznamu parametrov
+     *
+     * @param L Ukazovateľ na zoznam
+     */
     void ParamListDispose(TParamList *L);
 
     /**
@@ -186,8 +210,28 @@
      */
     void function_add_param_id_to_list(tGlobalTableNodePtr rootPtr, char *function_id, char *param_id);
 
+    /**
+     * @brief Nastavenie prvého prvku v zozname parametrov funkcie na aktívny
+     *
+     * @param rootPtr Ukazovateľ na globálnu tabuľku symbolov
+     * @param function_id Názov funkcie
+     */
     void function_param_list_set_first_active(tGlobalTableNodePtr rootPtr, char *function_id);
+
+    /**
+    * @brief Nastavenie aktívneho prvku v zozname parametrov funkcie na nasledujúci
+    *
+    * @param rootPtr Ukazovateľ na globálnu tabuľku symbolov
+    * @param function_id Názov funkcie
+    */
     void function_param_list_next(tGlobalTableNodePtr rootPtr, char *function_id);
+
+    /**
+     * @brief Vrátenie názvu aktívneho parametru funkcie
+     * @param rootPtr Ukazovateľ na globálnu tabuľku symbolov
+     * @param function_id Názov funkcie
+     * @return Identifikátor aktívneho parametra
+     */
     char *function_param_list_get_active(tGlobalTableNodePtr rootPtr, char *function_id);
 
     /**

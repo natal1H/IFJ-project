@@ -1,13 +1,23 @@
+/**
+ * IFJ - Projekt Team 11
+ *
+ * @brief Súbor tabuľky symbolov
+ *
+ * @author Natália Holková (xholko02)
+ */
+
 #include "symtable.h"
 #include "main.h"
 
 // Funkcie pre zoznam parametrov
 
+/** Inicializácia zoznamu parametrov **/
 void ParamListInit(TParamList *L) {
     L->act = NULL;
     L->first = NULL;
 }
 
+/** Vloženie parametru na koniec zoznamu **/
 void ParamListInsertLast(TParamList *L, char *id) {
     // Alokácia miesta
     TParamListItem *newItem = (TParamListItem *) malloc(sizeof(TParamListItem));
@@ -29,17 +39,21 @@ void ParamListInsertLast(TParamList *L, char *id) {
     }
 }
 
+/** Nastavenie aktívneho prvku na prvý prvok **/
 void ParamListFirst(TParamList *L) {
     if (L != NULL)
         L->act = L->first;
 }
 
+
+/** Nastavenie aktívneho prvku na nasledujúci prvok **/
 void ParamListNext(TParamList *L) {
     if (L != NULL)
         if (L->act != NULL)
             L->act = L->act->next;
 }
 
+/** Vráti identifikátor aktívneho prvku **/
 char *ParamListGetActive(TParamList *L) {
     if (L != NULL) {
         if (L->act != NULL)
@@ -52,6 +66,7 @@ char *ParamListGetActive(TParamList *L) {
     }
 }
 
+/** Uvoľnenie zoznamu parametrov **/
 void ParamListDispose(TParamList *L) {
     if (L == NULL) return ;
     TParamListItem *tmp = L->first;
@@ -66,10 +81,13 @@ void ParamListDispose(TParamList *L) {
 }
 
 // Funkcie pre globálnu TS
+
+/** Inicializácia globálnej tabuľky symbolov **/
 void global_table_init(tGlobalTableNodePtr *rootPtr) {
     (*rootPtr) = NULL;
 }
 
+/** Vloženie uzla (funkcie) do globálnej tabuľky symbolov **/
 int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal *data) {
     if ((*rootPtr) == NULL) {
         // Vytvorenie nového uzlu
@@ -135,6 +153,7 @@ int global_table_insert(tGlobalTableNodePtr *rootPtr, char *id, tDataNodeGlobal 
     return ERR_OK;
 }
 
+/** Vyhľadanie uzla (funkcie) v globálnej tabuľke symbolov podľa identifikátora **/
 bool global_table_search(tGlobalTableNodePtr rootPtr, char *id, tDataNodeGlobal **data) {
     if (rootPtr == NULL) {
         return false;
@@ -155,6 +174,7 @@ bool global_table_search(tGlobalTableNodePtr rootPtr, char *id, tDataNodeGlobal 
     }
 }
 
+/** Nahradenie uzla najpravejším **/
 void global_table_replace_by_rightmost(tGlobalTableNodePtr ptrReplaced, tGlobalTableNodePtr *rootPtr) {
     if ((*rootPtr) == NULL) {
         return ;
@@ -185,6 +205,7 @@ void global_table_replace_by_rightmost(tGlobalTableNodePtr ptrReplaced, tGlobalT
     }
 }
 
+/** Vymazanie uzla z globálnej tabuľky symbolov podľa identifikátora **/
 void global_table_delete(tGlobalTableNodePtr *rootPtr, char *id) {
     if ((*rootPtr) == NULL) {
         // Nie je čo vymazať
@@ -233,6 +254,7 @@ void global_table_delete(tGlobalTableNodePtr *rootPtr, char *id) {
     }
 }
 
+/** Vymazanie celej globálnej tabuľky symbolov **/
 void global_table_dispose(tGlobalTableNodePtr *rootPtr) {
     if ((*rootPtr) != NULL) {
         global_table_dispose( &(*rootPtr)->lPtr );
@@ -252,6 +274,7 @@ void global_table_dispose(tGlobalTableNodePtr *rootPtr) {
     }
 }
 
+/** Pomocná funkcia na výpis binárneho stromu **/
 void global_table_print_tmp(tGlobalTableNodePtr TempTree, char* sufix, char fromdir) {
     if (TempTree != NULL)
     {
@@ -277,6 +300,7 @@ void global_table_print_tmp(tGlobalTableNodePtr TempTree, char* sufix, char from
     }
 }
 
+/** Výpis štruktúry binárneho stromu **/
 void global_table_print(tGlobalTableNodePtr TempTree) {
     printf("Struktura binarniho stromu:\n");
     printf("\n");
@@ -290,6 +314,7 @@ void global_table_print(tGlobalTableNodePtr TempTree) {
 
 // Špeciálne
 
+/** Pridá identifikátor parametra do zoznamu parametrov funkcie **/
 void function_add_param_id_to_list(tGlobalTableNodePtr rootPtr, char *function_id, char *param_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -298,6 +323,7 @@ void function_add_param_id_to_list(tGlobalTableNodePtr rootPtr, char *function_i
     }
 }
 
+/** Nastavenie prvého prvku v zozname parametrov funkcie na aktívny **/
 void function_param_list_set_first_active(tGlobalTableNodePtr rootPtr, char *function_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -305,6 +331,8 @@ void function_param_list_set_first_active(tGlobalTableNodePtr rootPtr, char *fun
         ParamListFirst(data->paramList);
     }
 }
+
+/** Nastavenie aktívneho prvku v zozname parametrov funkcie na nasledujúci **/
 void function_param_list_next(tGlobalTableNodePtr rootPtr, char *function_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -312,6 +340,8 @@ void function_param_list_next(tGlobalTableNodePtr rootPtr, char *function_id) {
         ParamListNext(data->paramList);
     }
 }
+
+/** Vrátenie názvu aktívneho parametru funkcie **/
 char *function_param_list_get_active(tGlobalTableNodePtr rootPtr, char *function_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -322,6 +352,7 @@ char *function_param_list_get_active(tGlobalTableNodePtr rootPtr, char *function
         return NULL;
 }
 
+/** Funkcia na vrátenie počtu parametrov funkcie **/
 int function_get_number_params(tGlobalTableNodePtr rootPtr, char *function_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -333,6 +364,7 @@ int function_get_number_params(tGlobalTableNodePtr rootPtr, char *function_id) {
     }
 }
 
+/** Zvýšenie počtu parametrov funkcie o 1 **/
 void function_increase_number_params(tGlobalTableNodePtr rootPtr, char *function_id) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -341,6 +373,7 @@ void function_increase_number_params(tGlobalTableNodePtr rootPtr, char *function
     }
 }
 
+/** Nastavenie počtu parametrov funkcie na určitú hodnotu **/
 void function_set_number_params(tGlobalTableNodePtr rootPtr, char *function_id, int number) {
     tDataNodeGlobal *data;
     bool found = global_table_search(rootPtr, function_id, &data);
@@ -349,6 +382,7 @@ void function_set_number_params(tGlobalTableNodePtr rootPtr, char *function_id, 
     }
 }
 
+/** Nastavanie funkcie ako definovanej **/
 int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
     tDataNodeGlobal *data;
     if ((*rootPtr) == NULL) {
@@ -410,6 +444,7 @@ int function_set_defined(tGlobalTableNodePtr *rootPtr, char *id) {
     return ERR_OK;
 }
 
+/**  Získanie uzla s funkciou podľa identifikátora **/
 tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id) {
     if (rootPtr == NULL) {
         return NULL;
@@ -431,15 +466,19 @@ tGlobalTableNodePtr get_function_node(tGlobalTableNodePtr rootPtr, char *id) {
     return NULL;
 }
 
+/** Nastavanie odkazu na lokálnu tabuľku symbolov funkcie **/
 void set_function_table(tGlobalTableNodePtr *function_node_ptr, tLocalTableNodePtr *local_table_ptr) {
     (*function_node_ptr)->data->function_table = local_table_ptr;
 }
 
 // Funkcie pre lokálnu TS
+
+/** Inicializácia lokálnej tabuľky symbolov **/
 void local_table_init(tLocalTableNodePtr *rootPtr) {
     (*rootPtr) = NULL;
 }
 
+/** Vloženie uzla (premennej) do lokálnej tabuľky symbolov **/
 int local_table_insert(tLocalTableNodePtr *rootPtr, char *id, tDataNodeLocal *data) {
     if ((*rootPtr) == NULL) {
         // Vytvorenie nového uzlu
@@ -495,6 +534,7 @@ int local_table_insert(tLocalTableNodePtr *rootPtr, char *id, tDataNodeLocal *da
     return ERR_OK;
 }
 
+/** Vyhľadanie premennej v lokálnej tabuľke symbolov podľa identifikátora **/
 bool local_table_search(tLocalTableNodePtr rootPtr, char *id, tDataNodeLocal **data) {
     if (rootPtr == NULL) {
         return false;
@@ -515,6 +555,7 @@ bool local_table_search(tLocalTableNodePtr rootPtr, char *id, tDataNodeLocal **d
     }
 }
 
+/** Nahradenie uzla najpravejším **/
 void local_table_replace_by_rightmost(tLocalTableNodePtr ptrReplaced, tLocalTableNodePtr *rootPtr) {
     if ((*rootPtr) == NULL) {
         return ;
@@ -542,6 +583,7 @@ void local_table_replace_by_rightmost(tLocalTableNodePtr ptrReplaced, tLocalTabl
     }
 }
 
+/** Vymazanie premennej z lokálnej tabuľky symbolov podľa identifikátora **/
 void local_table_delete(tLocalTableNodePtr *rootPtr, char *id) {
     if ((*rootPtr) == NULL) {
         // Nie je čo vymazať
@@ -588,6 +630,7 @@ void local_table_delete(tLocalTableNodePtr *rootPtr, char *id) {
     }
 }
 
+/** Vymazanie celej lokálnej tabuľky symbolov **/
 void local_table_dispose(tLocalTableNodePtr *rootPtr) {
     if ((*rootPtr) != NULL) {
         local_table_dispose( &(*rootPtr)->lPtr );
@@ -604,6 +647,7 @@ void local_table_dispose(tLocalTableNodePtr *rootPtr) {
     }
 }
 
+/** Pomocná funkcia na vypísanie lokálnej tabuľky symbolov **/
 void local_table_print_tmp(tLocalTableNodePtr TempTree, char* sufix, char fromdir) {
     if (TempTree != NULL)
     {
@@ -629,6 +673,7 @@ void local_table_print_tmp(tLocalTableNodePtr TempTree, char* sufix, char fromdi
     }
 }
 
+/** Výpis lokálnej tabuľky symbolov **/
 void local_table_print(tLocalTableNodePtr TempTree) {
     printf("Struktura binarniho stromu:\n");
     printf("\n");
@@ -642,6 +687,7 @@ void local_table_print(tLocalTableNodePtr TempTree) {
 
 // Špeciálne
 
+/** Nastanie premennej na defined **/
 int variable_set_defined(tLocalTableNodePtr *rootPtr, char *id) {
     tDataNodeLocal *data;
     if ((*rootPtr) == NULL) {
@@ -691,6 +737,7 @@ int variable_set_defined(tLocalTableNodePtr *rootPtr, char *id) {
     return ERR_OK;
 }
 
+/** Nastavenie datového typu premennej **/
 void variable_set_type(tLocalTableNodePtr function_table, char *id, tDataType type) {
     tDataNodeLocal *data;
     bool found = local_table_search(function_table, id, &data);
@@ -704,6 +751,7 @@ void variable_set_type(tLocalTableNodePtr function_table, char *id, tDataType ty
     }
 }
 
+/** Vrátenie typu premennej **/
 tDataType variable_get_type(tLocalTableNodePtr function_table, char *id) {
     // Predpokladá, že existuje premenná
     tDataNodeLocal *data;
@@ -711,6 +759,7 @@ tDataType variable_get_type(tLocalTableNodePtr function_table, char *id) {
     return data->type;
 }
 
+/** Vrátenie celého uzla s premennou **/
 tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id) {
     if (rootPtr == NULL) {
         return NULL;
@@ -730,6 +779,7 @@ tLocalTableNodePtr get_variable_node(tLocalTableNodePtr rootPtr, char *id) {
     }
 }
 
+/** Vymazanie všetkých lokálnych tabuliek funkcií v globálnej tabuľke symbolov **/
 void symbol_table_dispose_all_local(tGlobalTableNodePtr *global_root) {
     if ((*global_root) != NULL) {
         symbol_table_dispose_all_local( &(*global_root)->lPtr );
