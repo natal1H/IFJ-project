@@ -525,7 +525,7 @@ int arg (Token *token) {
 		return retVal;
 	}
 	
-	expected_params--;																					//printf("\n- decreasing exp params of function %s\n", func_id_copy);
+	//expected_params--;																					//printf("\n- decreasing exp params of function %s\n", func_id_copy);
 
 	/* Sémantická kontrola */																			//printf("\n -expected number of params of function %s: %d\n", func_id_copy, expected_params);
 	// Kontrola počtu načítaných parametrov
@@ -557,10 +557,14 @@ int arg_next (Token *token) {
 */
 	if (token->type == COMMA) {																			//printf(", ");
 		GET_NEXT_TOKEN();
-		
-		if (value(token) == ERR_OK) {
-			expected_params--;																			//printf("\n- decreasing exp params of %s in arg_next\n", func_id_copy);
+
+		int retVal = value(token);
+		if (retVal == ERR_OK) {
+			//expected_params--;																			//printf("\n- decreasing exp params of %s in arg_next\n", func_id_copy);
 			return arg_next(token);
+		}
+		else {
+			return retVal;
 		}
 	}
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
@@ -780,6 +784,7 @@ int def_value (Token *token) {
 				prepare_for_func();
 				generate_built_in_function(token->attribute);
 				end_function();
+
 			}
 		}
 		// Koniec sémantickej akcie
@@ -817,7 +822,10 @@ int def_value (Token *token) {
 
 					// Generovanie kódu - vygenerovanie CALL funkcie
 					gen_call(func_id_copy);
+					// Vygenerovať POPVAR do premennej
+					gen_pop_var(id_copy);
 					// Koniec generovania kódu
+
 
 					GET_NEXT_TOKEN();
 
@@ -843,8 +851,11 @@ int def_value (Token *token) {
 			else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
 				withBrackets = false;	
 	       		expected_params = function_get_number_params(global_table, func_id_copy); /* Získaj počet params funkcie */ //printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
-		
-				return arg(token);
+
+	       		int argRet = arg(token);
+				// Vygenerovať POPVAR do premennej
+				gen_pop_var(id_copy);
+	       		return argRet;
 			}
 			//----------------------------------------------
 			//Volanie funkcie bez argumentov a bez zatvoriek
@@ -856,6 +867,8 @@ int def_value (Token *token) {
 				if (expected_params == 0) {
 					// Generovanie kódu - vygenerovanie CALL funkcie
 					gen_call(func_id_copy);
+					// Vygenerovať POPVAR do premennej
+					gen_pop_var(id_copy);
 					// Koniec generovania kódu
 
 					return ERR_OK;
@@ -901,6 +914,14 @@ int value (Token *token) {
   |__________________________________________________________________|
 */
 	// Sémantická akcia
+
+	expected_params--; // Zníženie počtu ešte zostávajúcich parametrov
+
+	if (expected_params < 0) {
+		// Chyba - nesprávny počet parametrov
+		return ERR_SEM_PARAM;
+	}
+
     // Získať lokálnu tabuľku volanej funkcie
     tGlobalTableNodePtr called_function_node = get_function_node(global_table, func_id_copy); // Vráti ukazovvateľ na uzol s func_id_copy v GTS
     if(called_function_node == NULL) { // Fix ak je riadok "a b = vyraz" inak segfault pretoze called_function_node je NULL
