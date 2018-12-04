@@ -809,6 +809,10 @@ int def_value (Token *token) {
 				end_function();
 
 			}
+
+			// Nastaviť správny nový typ premennej
+			//tDataType retType = built_in_function_get_return_type(token->attribute);
+			//variable_set_type(*actual_function_ptr, id_copy, retType );
 		}
 		// Koniec sémantickej akcie
 
@@ -850,8 +854,10 @@ int def_value (Token *token) {
 					// Koniec generovania kódu
 
 					// Nastavenie nového datového typu premennej
-					variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
-
+					if (!is_built_in_function(func_id_copy))
+						variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+					else
+						variable_set_type(*actual_function_ptr, id_copy, built_in_function_get_return_type(func_id_copy));
 
 					GET_NEXT_TOKEN();
 
@@ -867,7 +873,10 @@ int def_value (Token *token) {
 						gen_pop_var(id_copy);
 
 						// Nastavenie nového datového typu premennej
-						variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+						if (!is_built_in_function(func_id_copy))
+							variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+						else
+							variable_set_type(*actual_function_ptr, id_copy, built_in_function_get_return_type(func_id_copy));
 
 						return ERR_OK;
 					}
@@ -885,7 +894,10 @@ int def_value (Token *token) {
 				// Vygenerovať POPVAR do premennej
 				gen_pop_var(id_copy);
 				// Nastavenie nového datového typu premennej
-				variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+				if (!is_built_in_function(func_id_copy))
+					variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+				else
+					variable_set_type(*actual_function_ptr, id_copy, built_in_function_get_return_type(func_id_copy));
 
 	       		return argRet;
 			}
@@ -904,7 +916,10 @@ int def_value (Token *token) {
 					// Koniec generovania kódu
 
 					// Nastavenie nového datového typu premennej
-					variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+					if (!is_built_in_function(func_id_copy))
+						variable_set_type(*actual_function_ptr, id_copy, get_fuction_return_type(global_table, func_id_copy) );
+					else
+						variable_set_type(*actual_function_ptr, id_copy, built_in_function_get_return_type(func_id_copy));
 
 					return ERR_OK;
 				}

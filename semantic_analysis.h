@@ -156,4 +156,12 @@
      */
     int built_in_function_check_arg(char *function_id, int number_of_param, tDataType type);
 
+    /**
+     * @brief Vráti návratový typ vstavanej funkcie
+     *
+     * @param function_id Názov vstavanej funkcie
+     * @return Návratový typ vstavanej funkcie
+     */
+    tDataType built_in_function_get_return_type(char *function_id);
+
 #endif

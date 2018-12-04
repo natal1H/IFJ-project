@@ -303,3 +303,15 @@ int built_in_function_check_arg(char *function_id, int number_of_param, tDataTyp
     }
     return ERR_OK;
 }
+
+tDataType built_in_function_get_return_type(char *function_id) {
+    if (strcmp(function_id, "inputs") == 0) return T_STRING;
+    else if (strcmp(function_id, "inputi") == 0) return T_INT;
+    else if (strcmp(function_id, "inputf") == 0) return T_FLOAT;
+    else if (strcmp(function_id, "print") == 0) return T_NIL;
+    else if (strcmp(function_id, "length") == 0) return T_INT;
+    else if (strcmp(function_id, "substr") == 0) return T_STRING;
+    else if (strcmp(function_id, "ord") == 0) T_INT;
+    else if (strcmp(function_id, "chr") == 0) T_STRING;
+    else return T_UNDEFINED;
+}
