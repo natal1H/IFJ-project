@@ -48,7 +48,6 @@
      */
     bool is_int(char *str);
 
-    // TODO: upraviť aby bralo aj float v tvare 1.2e10
     /**
      * @brief Zistí, či môže byť string FLOAT
      * @param str Skúmaný reťazec
@@ -95,7 +94,6 @@
      */
     char *expr_parser_create_unique_name(tLocalTableNodePtr local_table);
 
-    // TODO: ošetriť rozoznanie string
     /**
      * @brief Uloží typ tokenu podľa reťazca, kotroluje zároveň sémantické chyby
      *

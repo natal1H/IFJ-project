@@ -14,6 +14,7 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
+    #include "error.h"
 
     #define TSTRING_INITIAL_SIZE 16 // Dĺžka reťazca na začiatku a zároveň prírastok pri rozširovaní
 

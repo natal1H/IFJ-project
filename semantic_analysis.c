@@ -1,24 +1,36 @@
+/**
+ * IFJ Projekt - Team 11
+ *
+ * @brief Súbor pre sémantické funkcie
+ * @file semantic_analysis.c
+ *
+ * @author Natália Holková (xholko02)
+ */
+
 #include "semantic_analysis.h"
 
+/** Pozrie, či funkcia už bola definovaná v globálnej tabuľke symbolov **/
 bool check_if_function_already_defined(tGlobalTableNodePtr global_table, char *function_id) {
-    tGlobalTableNodePtr func_node_ptr = get_function_node(global_table, function_id);
+    tGlobalTableNodePtr func_node_ptr = get_function_node(global_table, function_id); // Uzol funkcie v GTS (ak je)
     if (func_node_ptr == NULL) {
+        // Nebola ešte vytvorená
         return false;
     }
     else {
+        // Existuje uzol
         if (func_node_ptr->data != NULL) {
-            return func_node_ptr->data->defined;
+            return func_node_ptr->data->defined; // Definovaná
         }
         else {
-            return false;
+            return false; // Nedefinovaná
         }
     }
 }
 
+/** Vytvorí uzol pre funkciu v globálnej tabuľke symbolov **/
 int function_definition(tGlobalTableNodePtr *global_table_root, char *function_id) {
     if (check_if_function_already_defined(*global_table_root, function_id)) {
         // funkcia už bola definovaná - dochádzalo by k redefinícii - SEMANTIC ERROR
-        // TODO - radí sa toto medzi ERR_SEM_ELSE?
         fprintf(stderr, "Chyba! Redefinícia funkcie %s.\n", function_id);
         return ERR_SEM_ELSE;
     }
@@ -35,7 +47,9 @@ int function_definition(tGlobalTableNodePtr *global_table_root, char *function_i
     }
 }
 
-// Parser výrazov funkcie
+// Funkcie pre parser výrazov
+
+/** Zistí, či môže byť string INT **/
 bool is_int(char *str) {
     // Predpokladá neprázdny reťazec
 
@@ -44,6 +58,7 @@ bool is_int(char *str) {
         return false;
     }
 
+    // Prechod ciframi - kontrola či sú len číslice
     for (int i = 0; i < strlen(str); i++) {
         if ( !(str[i] >= '0' && str[i] <= '9') )
             return false;
@@ -52,7 +67,7 @@ bool is_int(char *str) {
     return true;
 }
 
-// TODO: prerobiť, aby bralo aj 1.2e10 (desatinná časť pred e)
+/** Zistí, či môže byť string FLOAT **/
 bool is_float(char *str) {
     // Predpokladá neprázdny reťazec
     int N = strlen(str);
@@ -93,6 +108,7 @@ bool is_float(char *str) {
     return true;
 }
 
+/** Zistí, či môže byť string NIL **/
 bool is_nil(char *str) {
     if (strlen(str) != 3) {
         return false;
@@ -102,35 +118,39 @@ bool is_nil(char *str) {
     }
 }
 
+/** Zistí, či môže byť reťazec premennou **/
 bool is_variable(tLocalTableNodePtr current_function_root, char *str) {
-    return get_variable_node(current_function_root, str) != NULL;
+    return get_variable_node(current_function_root, str) != NULL; // Uzol v aktuálnej LTS nesmie byť NULL (vtedy nie je premenná)
 }
 
+/** Zistí, či je reťazec reťazcový literál (začína sa " a končí " ) **/
 bool is_string_literal(char *str) {
     // Pozrieť či prvý a posledný znak je "
     if (str[0] == '"' && str[strlen(str)-1] == '"') return true;
     else return false;
 }
 
+/** Vráti string bez úvodných a koncových " **/
 char *get_string_without_quotation_marks(char *string_literal) {
-    char *new_string = malloc(sizeof(char) * (strlen(string_literal) - 2)+END_OF_STRING);
-    if (new_string == NULL) return NULL;
-    strncpy(new_string, string_literal+1, strlen(string_literal)-2);
+    char *new_string = malloc(sizeof(char) * (strlen(string_literal) - 2)+END_OF_STRING); // Alokovanie miesta pre string bez "
+    if (new_string == NULL) return NULL; // Chyba pri alokácii
+    strncpy(new_string, string_literal+1, strlen(string_literal)-2); // Skopírovanie reťazca medzi "
     return new_string;
 }
 
+/** Vytvára unikátne meno pre premennú **/
 char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
-    static int n = 1;
-    char prefix[] = "tmp";
+    static int n = 1; // Počítadlo, ktoré zaisťuje unikátnosť
+    char prefix[] = "var"; // Prefix premennej
     char *name = NULL;
     do {
-        char *n_str = integer_to_string(n);
+        char *n_str = integer_to_string(n); // Prevod na string
         name = realloc(name, sizeof(char) * (strlen(n_str) + strlen(prefix))+END_OF_STRING);
         if (name == NULL) {
             return NULL;
         }
         strcpy(name, prefix);
-        strcat(name, n_str);
+        strcat(name, n_str); // Vytvorenie celého mena
 
         n++;
 
@@ -139,7 +159,7 @@ char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
     return name;
 }
 
-
+/** Skúma kompatibilitu typov pri aritmetický operáciách **/
 int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
     if ( (type1 == T_INT && type2 == T_STRING) || (type1 == T_STRING && type2 == T_INT) ) {
         // INT op STRING -> chyba
@@ -170,6 +190,7 @@ int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
     }
 }
 
+/** Uloží typ tokenu podľa reťazca, kotroluje zároveň sémantické chyby **/
 int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_ID, tDataType *type) {
     if (is_string_literal(token_ID)) {
         *type = T_STRING;
@@ -200,16 +221,17 @@ int get_type_from_token(tLocalTableNodePtr *current_function_root, char *token_I
 
 }
 
+/** Vráti výsledný typ aritmetickej operácie **/
 tDataType aritmetic_get_final_type(tDataType token1, tDataType token2) {
     if (token1 == T_INT && token2 == T_INT) return T_INT;
     if (token1 == T_FLOAT && token2 == T_FLOAT) return T_FLOAT;
     else if ( (token1 == T_INT && token2 == T_FLOAT) || (token1 == T_FLOAT && token2 == T_INT) ) return T_FLOAT;
     else if ( (token1 == T_STRING && token2 == T_STRING)) return T_STRING;
-    else if (token1 == T_PARAM && token2 == T_PARAM) return T_PARAM;
+    else if (token1 == T_PARAM && token2 == T_PARAM) return T_PARAM; // TODO: upraviť prácu ak je niečo T_PARAM
     else return T_UNDEFINED;
 }
 
-// TODO: skontrolovať či mám všetky správne kombinácie
+/** Skúma kompatibilitu typov pri operáciách porovnania **/
 int comparison_check_compatibility(tDataType type1, tDataType type2) {
     if (type1 == T_INT && type2 == T_INT) {
         // Oba operandy INT - OK
@@ -237,7 +259,7 @@ int comparison_check_compatibility(tDataType type1, tDataType type2) {
     }
 }
 
-
+/** Podľa identifikátora funkcie zistí, či sa náhodou nejedná o vstavanú funkciu **/
 bool is_built_in_function(char *function_id) {
     if (strcmp(function_id, "inputs") == 0) return true;
     else if (strcmp(function_id, "inputi") == 0) return true;
@@ -250,6 +272,7 @@ bool is_built_in_function(char *function_id) {
     else return false;
 }
 
+/** Nastaví správny počet parametrov pre danú vstavanú funkciu **/
 void built_in_function_set_param(tGlobalTableNodePtr rootPtr, char *function_id) {
     int param = 0;
     if (strcmp(function_id, "inputs") == 0) param = 0;

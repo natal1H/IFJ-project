@@ -1,18 +1,34 @@
+/**
+ * IFJ Projekt - Team 11
+ *
+ * @brief Súbor pre prácu so inštrukciami a zoznamom inštrukcií
+ * @file instr_list.c
+ *
+ * @author Natália Holková (xholko02)
+ */
+
+// Použitie zoznamu na uloženie inštrukcií bolo inšpirované z http://www.fit.vutbr.cz/study/courses/IFJ/public/project/ z ukážky jednoduchého interpretu
+
 #include "instr_list.h"
 #include "error.h"
 #include "main.h"
 
 #include <stdio.h>
 
+/** Inicializácia zoznamu **/
 void listInit(tListOfInstr *L) {
+    // Nastavenie všetkých ukazovateľov na NULL
     L->first  = NULL;
     L->last   = NULL;
     L->active = NULL;
 }
 
+/** Uvoľnenie zoznamu inštrukcií **/
 void listFree(tListOfInstr *L) {
     if(L != NULL && L->first != NULL) {
         tListItem *ptr = NULL;
+
+        // Postupný prechod zoznamom až na koniec
         while (L->first != NULL) {
             ptr = L->first;
             L->first = L->first->nextItem;
@@ -20,26 +36,21 @@ void listFree(tListOfInstr *L) {
             // Uvolníme inštrukciu v ptr
             tInst_free_instruction(ptr->Instruction);
 
-            // uvolnime celu polozku
+            // Uvolnime celú položku
             free(ptr);
         }
     }
 }
 
+/** Vloženie inštrukcie do zoznamu za aktívny prvok **/
 void listInsertPostActive(tListOfInstr *L, tInstr *I) {
-    /*
-    if (L->active == NULL) {
-        // Chyba - nevie, kde pridať
-        return ;
-    }
-    */
-
+    // Vytvorenie nového prvku
     tListItem *newItem = NULL;
     newItem = malloc(sizeof (tListItem));
     newItem->Instruction = NULL;
     newItem->nextItem = NULL;
 
-    newItem->Instruction = tInstr_create(I->instType, I->addr1, I->addr2, I->addr3);
+    newItem->Instruction = tInstr_create(I->instType, I->addr1, I->addr2, I->addr3); // Vytvorenie novej inštrukcie podľa vzoru parametre
     if (newItem->Instruction == NULL) {
         // Chyba
         return ;
@@ -66,38 +77,23 @@ void listInsertPostActive(tListOfInstr *L, tInstr *I) {
     }
 }
 
-void listInsertLast(tListOfInstr *L, tInstr *I) {
-    tListItem *newItem;
-    newItem = malloc(sizeof (tListItem));
-
-    newItem->Instruction = tInstr_create(I->instType, I->addr1, I->addr2, I->addr3);
-    if (newItem->Instruction == NULL) {
-        // Chyba
-        return ;
-    }
-
-    newItem->nextItem = NULL;
-    if (L->first == NULL)
-        L->first = newItem;
-    else
-        L->last->nextItem=newItem;
-
-    L->last=newItem;
-}
-
+/** Nastavenie aktívneho prvku na prvý prvok **/
 void listFirst(tListOfInstr *L) {
     L->active = L->first;
 }
 
+/** Nastavenie aktívneho prvku na nasledujúci prvok **/
 void listNext(tListOfInstr *L) {
     if (L->active != NULL)
         L->active = L->active->nextItem;
 }
 
+/** Nastavenie aktívneho prvku na posledný prvok **/
 void listLast(tListOfInstr *L) {
     L->active = L->last;
 }
 
+/** Inicializácia inštrukcie **/
 tInstr *tInstr_init() {
     // Alokovanie miesta
     tInstr *i = (tInstr *) malloc(sizeof(tInstr));
@@ -116,6 +112,7 @@ tInstr *tInstr_init() {
     return i;
 }
 
+/** Vytvorenie inštrukcie **/
 tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *addr3) {
 
     // Alokovanie miesta
@@ -166,24 +163,28 @@ tInstr *tInstr_create(tInstruction_type type, char *addr1, char *addr2, char *ad
     return i;
 }
 
+/** Vrátenie ukazovateľa na aktívny prvok **/
 tListItem *listGetActivePtr(tListOfInstr *L) {
-    if (L != NULL) {
+    if (L != NULL) { // Neprázdny zoznam
         return L->active;
     }
     else
-        return NULL;
+        return NULL; // Prázdny zoznam
 }
 
+/** Výpis samotnej inštrukcie **/
 void tInstr_print_single_instruction(tInstr *I) {
     if (I == NULL) {
-        return;
+        return; // Chyba
     }
 
     if (I->instType == I_HEADER) {
+        // Header má trochu iný výpis, preto je samostatne
         printf(".IFJcode18");
         return ;
     }
     else if (I->instType == I_COMENT) {
+        // Jednoduchší výpis komentára takto
         printf("\n# %s", I->addr1);
         return ;
     }
@@ -193,10 +194,12 @@ void tInstr_print_single_instruction(tInstr *I) {
 
     // Vypíš opcode
     switch (I->instType) {
+        // Kvôli odstráneniu warnings pri preklade
         case I_UNDEFINED:
         case I_HEADER:
         case I_COMENT:
             break;
+
         case I_MOVE:
             printf("%s", "MOVE");
             break;
@@ -381,6 +384,7 @@ void tInstr_print_single_instruction(tInstr *I) {
 
 }
 
+/** Výpis všetkých inštrukcií v zozname **/
 void list_print_instructions(tListOfInstr *L) {
     if (L == NULL) {
         return ;
@@ -388,11 +392,13 @@ void list_print_instructions(tListOfInstr *L) {
 
     tListItem *temp = L->first;
     while (temp != NULL) {
+        // Postupný výpis inštrukcií
         tInstr_print_single_instruction(temp->Instruction);
         temp = temp->nextItem;
     }
 }
 
+/** Uvoľnenie inštrukcie **/
 void tInst_free_instruction(tInstr *I) {
     if (I != NULL) {
         free(I->addr1);
@@ -402,9 +408,10 @@ void tInst_free_instruction(tInstr *I) {
     }
 }
 
+/** Nastavenie inštrukcie **/
 int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, char *addr2, char *addr3) {
     if (instr == NULL) {
-        return -1; // TODO vhodný chybový kód dať
+        return ERR_INTERNAL;
     }
 
     // Nastavenie nového typu
@@ -415,18 +422,13 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         // Pozrieť či predtým niečo bolo na addr1
         if (instr->addr1 != NULL) {
             // uvoľniť a znovu alokovať
-            // TODO - lepšie použiť realloc?
             free(instr->addr1);
-            //instr->addr1 = realloc(instr->addr1, sizeof(char) * strlen(addr1));
         }
-        //else {
         instr->addr1 = malloc(sizeof(char) * strlen(addr1)+END_OF_STRING);
-//        instr->addr1 = NULL;
         if (instr->addr1 == NULL) {
             // Chyba - nepodarilo sa alokovať
-            return -1; // TODO vhodný chybový kód dať
+            return ERR_INTERNAL;
         }
-        //}
         strcpy(instr->addr1, addr1);
     }
     else {
@@ -440,17 +442,13 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         // Pozrieť či predtým niečo bolo na addr2
         if (instr->addr2 != NULL) {
             // uvoľniť a znovu alokovať
-            // TODO - lepšie použiť realloc?
             free(instr->addr2);
-            //instr->addr2 = realloc(instr->addr2, sizeof(char) * strlen(addr2));
         }
-        //else {
         instr->addr2 = malloc(sizeof(char) * strlen(addr2)+END_OF_STRING);
         if (instr->addr2 == NULL) {
             // Chyba - nepodarilo sa alokovať
-            return -1; // TODO vhodný chybový kód dať
+            return ERR_INTERNAL;
         }
-        //}
         strcpy(instr->addr2, addr2);
     }
     else {
@@ -464,17 +462,13 @@ int tInstr_set_instruction(tInstr *instr, tInstruction_type type, char *addr1, c
         // Pozrieť či predtým niečo bolo na addr3
         if (instr->addr3 != NULL) {
             // uvoľniť a znovu alokovať
-            // TODO - lepšie použiť realloc?
             free(instr->addr3);
-            //instr->addr3 = realloc(instr->addr3, sizeof(char) * strlen(addr3));
         }
-        //else {
         instr->addr3 = malloc(sizeof(char) * strlen(addr3)+END_OF_STRING);
         if (instr->addr3 == NULL) {
             // Chyba - nepodarilo sa alokovať
-            return -1; // TODO vhodný chybový kód dať
+            return ERR_INTERNAL;
         }
-        //}
         strcpy(instr->addr3, addr3);
     }
     else {

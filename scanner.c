@@ -14,6 +14,7 @@
 #define scanner_is_alpha(c) ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
 #define scanner_is_number(c) (c >= '0' && c <= '9')
 
+/** Inicializácia scannera **/
 int scanner_initialize() {
     // Inicializuj read_string, do ktorého sa budú pri načítaní tokenov ukladať znaky
     read_string = tstring_struct_initialize();
@@ -48,6 +49,7 @@ void token_free(Token *token) {
 
 /**  Zistenie, či je string kľúčové slovo */
 bool is_keyword(char *str) {
+    // Porovnávanie reťazcov s našimi kľúčovými slovami
     if (strcmp(str, "def") == 0)
         return true;
     else if (strcmp(str, "do") == 0)
@@ -74,7 +76,7 @@ bool is_keyword(char *str) {
 int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
     // Token nesmie byť neinicializovaný
     if (token == NULL) {
-        return -1; // TODO: return actual error code
+        return ERR_INTERNAL;
     }
     // Nastav token type
     token->type = type;
@@ -82,7 +84,7 @@ int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
     // Nastav attribute - treba alokovať miesto pre string
     token->attribute = (char *) malloc(sizeof(char) * strlen(attribute)+END_OF_STRING);
     if (token->attribute == NULL) {
-        return -1; // TODO: return actual error code
+        return ERR_INTERNAL;
     }
 
     // Skopírovať string do token->attribute
@@ -91,25 +93,24 @@ int token_set_type_attribute(Token *token, Token_Type type, char *attribute) {
     return 0;
 }
 
+/** Pomocná debugovacia funkica na výpis tokenu **/
 void print_token(Token *token) {
     printf("Token type: %d\n", token->type);
     printf("Token attribute: %s\n", token->attribute);
 }
 
+// TODO: Funkčné?
+/** Pretypuje string na integer **/
 char* integer_to_string(int x) {
     char* buffer = malloc(sizeof(char) * sizeof(int) * 4 + 1);
-    if (buffer)
-    {
+    if (buffer) {
         sprintf(buffer, "%d", x);
     }
-
-    char* tmp = "";
-
-    printf("%s", tmp);
 
     return buffer;
 }
 
+/** Pretypuje string na integer **/
 int string_to_integer(char* x) {
     char *ptr;
     long return_value = strtol(x, &ptr, 10); //Pretypovanie char -> int
@@ -117,6 +118,7 @@ int string_to_integer(char* x) {
     return return_value;
 }
 
+/** Vráti správny tvar float literálu, ktorý sa už môže priamo zapísať do inštrukcií **/
 char *get_correct_float_format(char *floatStr) {
     // Správny je tvar napr. float@0x1.2666p+0
 
@@ -166,6 +168,7 @@ char *get_correct_float_format(char *floatStr) {
     return correctFloat;
 }
 
+/** Dvojica hexa znakov na INT v desiatkovej sústave **/
 int hex_chr_to_decadic_int(char c1, char c2) {
     int ret = 0;
     if (c2 == 0) {
@@ -188,6 +191,7 @@ int hex_chr_to_decadic_int(char c1, char c2) {
     return ret;
 }
 
+/** Číslo na string ako trojčíslie **/
 char *int_to_decadic_three(int n) {
     char *str = malloc(sizeof(char) * 3);
     if (str == NULL) return NULL;
@@ -215,6 +219,7 @@ char *int_to_decadic_three(int n) {
     return str;
 }
 
+/** Získanie ďalšieho tokenu zo stdin **/
 int get_next_token(Token *token) {
 
     static bool newLine = true;

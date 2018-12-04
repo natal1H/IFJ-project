@@ -1,5 +1,17 @@
-#include "main.h"
+/**
+ * IFJ Projekt - Team 11
+ *
+ * @brief Hlavný súbor
+ * @file main.c
+ *
+ * Na tomto projekte sa podielali:
+ * @author Natália Holková (xholko02)
+ * @author Matej Novák (xnovak2f)
+ * @author Filip Bali (xbalif00)
+ * @author Albert Szöllösi (xszoll02)
+ */
 
+#include "main.h"
 
 int main() {
 
@@ -14,7 +26,7 @@ int main() {
     
 
     // inicializuj scanner najprv cez scanner_initialize()
-    if ( scanner_initialize() != 0 ) {
+    if ( scanner_initialize() != ERR_OK ) {
         // chyba pri inicializácii
         return ERR_INTERNAL;
     }
@@ -48,7 +60,7 @@ int main() {
     if (ret != ERR_SCANNER) {
 
         ret = prog(token);
-        //printf("\nVýsledok: %d\n", ret);
+        //printf("Výsledok: %d\n", ret); // Výpis iba pri testovaní
     }
 
     // Upratanie po programe

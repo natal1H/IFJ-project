@@ -196,4 +196,18 @@
     */
     char* integer_to_string(int x);
 
+    /**
+     * @brief Dvojica hexa znakov na INT v desiatkovej sústave
+     * @param c1 Prvý hexa znak
+     * @param c2 Druhý hexa znak
+     * @return Dekadický kód
+     */
+    int hex_chr_to_decadic_int(char c1, char c2);
+
+    /**
+     * @brief Číslo na string ako trojčíslie
+     * @param n Dekadické číslo
+     * @return Reťazec v tvare aaa, ked a je číslica
+     */
+    char *int_to_decadic_three(int n);
 #endif
