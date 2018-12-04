@@ -1354,7 +1354,7 @@ int CallExpressionParser(Token *token) {
                 gen_defvar(var_name, &instr_list); // DEFVAR LF@%param_id
             }
             gen_move_general(var_name, finalVar);
-            finalVar = realloc(finalVar, sizeof(char) * strlen(var_name));
+            finalVar = realloc(finalVar, sizeof(char) * strlen(var_name)+END_OF_STRING);
             strcpy(finalVar, var_name);
         }
 
