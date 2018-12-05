@@ -91,6 +91,7 @@
 
         Q_LINE_COMMENT,
 
+		Q_BLOCK_COMMENT_BEGIN_0,
         Q_BLOCK_COMMENT_BEGIN_1, // =b
         Q_BLOCK_COMMENT_BEGIN_2, // =be
         Q_BLOCK_COMMENT_BEGIN_3, // =beg
