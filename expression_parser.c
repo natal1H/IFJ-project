@@ -1319,7 +1319,14 @@ int CallExpressionParser(Token *token) {
     // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
     //typeFinal = T_UNDEFINED; // TODO: Môže byť? ak to odkomentujem, robí to chybu, ale teraz to funguje???
     finalVar = token->attribute;
-        
+
+    Token BufferToken;
+
+    if(expression == true) {
+        BufferToken = *token; //Sem dam plus
+        *token = expression_token;
+    }
+
     //Ulozenie adresy ktoru dostanem pre zapis posledneho tokenu
     Token *SaveMyToken = token;
 
@@ -1337,14 +1344,23 @@ int CallExpressionParser(Token *token) {
             ExprArray->Last = NULL;
 
 
+
     while   (token->type != EOL &&
-             token->type != TYPE_EOF &&
-             (token->type != KEYWORD && strcmp(token->attribute, "do") != 0 &&
-              token->type != KEYWORD && strcmp(token->attribute, "then") != 0)) {
+             token->type != TYPE_EOF //&&
+//            (token->type == KEYWORD && (!strcmp(token->attribute, "do")) != 0) &&
+//            (token->type == KEYWORD && (!strcmp(token->attribute, "then")) != 0)) {
+            ){
 
         LoadToBuffer(token, ExprArray);
 
-        ScannerErrorCheck =  get_next_token(token);
+        if(expression == false) {
+            ScannerErrorCheck = get_next_token(token);
+        } else if(expression == true) {
+            expression = false;
+            token = &BufferToken;
+        }
+
+
 
         if(ScannerErrorCheck == ERR_SCANNER && token->type != TYPE_EOF){
             return ScannerErrorCheck;

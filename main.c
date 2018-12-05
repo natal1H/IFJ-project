@@ -11,6 +11,7 @@
  * @author Albert Szöllösi (xszoll02)
  */
 
+
 #include "main.h"
 
 int main() {
@@ -20,7 +21,7 @@ int main() {
 //Subor input.txt sa musi nachadzat v cmake-build-debug v danej zlozke projektu
 //Cize cesta input.txt bude ak je projekt ulozeny v default zlozke CLionProjects:
 //   ../CLionProjects/<Nazov projektu>/cmake-build-debug/input.txt
-//freopen("input.txt","r",stdin);
+freopen("input.txt","r",stdin);
 //--------------------------------------
 
     // inicializuj scanner najprv cez scanner_initialize()
@@ -28,6 +29,8 @@ int main() {
         // chyba pri inicializácii
         return ERR_INTERNAL;
     }
+
+    expression = false;
 
     Token *token =  token_initialize();
     int ret = get_next_token(token);
