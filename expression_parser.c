@@ -65,7 +65,7 @@ long long syntax_table[22][25]= {
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,  1 }, //INTEGER,             //2
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,  1 }, //FLOAT,               //3
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,  1 }, //STRING,              //4
-        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //KEYWORD,             //5
+        {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  1  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  1 }, //KEYWORD,             //5
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //ASSIGN,              //6
         {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //ADDITION,            //7
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //MULTIPLICATION,      //8
@@ -75,9 +75,9 @@ long long syntax_table[22][25]= {
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //LESS_OR_EQUALS,      //12
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //GREATER,             //13
         {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //GREATER_OR_EQUALS,   //14
-        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //EQUALS,              //15
-        {    0   ,  1  ,  1  ,  1   ,   1  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //NOT_EQUALS,          //16
-        {    0   ,  1  ,  1  ,  1   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  1 }, //LEFT_ROUND_BRACKET,  //17
+        {    0   ,  1  ,  1  ,  1   ,   1  ,  1   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //EQUALS,              //15
+        {    0   ,  1  ,  1  ,  1   ,   1  ,  1   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //NOT_EQUALS,          //16
+        {    0   ,  1  ,  1  ,  1   ,   0  ,  1   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  1  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  1 }, //LEFT_ROUND_BRACKET,  //17
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  1  ,  0  ,  1  ,  0  ,  1  ,    0  , 0 , 1,  0 }, //RIGHT_ROUND_BRACKET, //18
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0 ,   0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    0  , 0 , 0,  0 }, //COMMA,               //19
         {    0   ,  0  ,  0  ,  0   ,   0  ,  0   ,  0   ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,  0  ,    1  , 0 , 1,  0 }, //EOL,                 //20
@@ -1117,6 +1117,11 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                 }
             }
 
+            //Len nil moze byt prijaty ako keyword
+            if(ExprList->Act->Token.type == KEYWORD && (strcmp(ExprList->Act->Token.attribute, "nil") != 0)){
+                    *ErrorStatus = ERR_SYNTAX;
+            }
+
 
             //Kontrola zatvoriek
             if(ExprList->Act->Token.type == LEFT_ROUND_BRACKET){
@@ -1210,14 +1215,14 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                                     //Sucet operacii je neparny a sucet operandov je neparny
                                    ((((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                 syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 1) &&
                                    ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN] +
-                                   syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 1))
+                                   syntax_table[STRING][COUNTER_OF_TOKEN] + syntax_table[KEYWORD][COUNTER_OF_TOKEN])%2 == 1))
 
                                    || //alebo
 
                                     //Sucet operacii je parny a sucet operandov je parny
                                    (((syntax_table[ADDITION][COUNTER_OF_TOKEN] + syntax_table[SUBTRACTION][COUNTER_OF_TOKEN] +                                                                                                                   syntax_table[MULTIPLICATION][COUNTER_OF_TOKEN] + syntax_table[DIVISION][COUNTER_OF_TOKEN])%2 == 0) &&
                                    ((syntax_table[INTEGER][COUNTER_OF_TOKEN] + syntax_table[FLOAT][COUNTER_OF_TOKEN] + syntax_table[IDENTIFIER][COUNTER_OF_TOKEN] +
-                                   syntax_table[STRING][COUNTER_OF_TOKEN])%2 == 0)))
+                                   syntax_table[STRING][COUNTER_OF_TOKEN] + syntax_table[KEYWORD][COUNTER_OF_TOKEN])%2 == 0)))
                    )
 
             )
@@ -1345,10 +1350,10 @@ int CallExpressionParser(Token *token) {
 
 
     while   (token->type != EOL &&
-             token->type != TYPE_EOF //&&
-//            (token->type == KEYWORD && (!strcmp(token->attribute, "do")) != 0) &&
-//            (token->type == KEYWORD && (!strcmp(token->attribute, "then")) != 0)) {
-            ){
+             token->type != TYPE_EOF &&
+            !(token->type == KEYWORD && (strcmp(token->attribute, "do") == 0)) &&
+            !(token->type == KEYWORD && (strcmp(token->attribute, "then") == 0)))
+            {
 
         LoadToBuffer(token, ExprArray);
 
