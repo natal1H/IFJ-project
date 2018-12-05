@@ -120,51 +120,10 @@ int string_to_integer(char* x) {
 
 /** Vráti správny tvar float literálu, ktorý sa už môže priamo zapísať do inštrukcií **/
 char *get_correct_float_format(char *floatStr) {
-    // Správny je tvar napr. float@0x1.2666p+0
-
     char *correctFloat = malloc(sizeof(char) * (strlen("0x") + strlen(floatStr)) + 2);
-    if (correctFloat == NULL) return NULL;
-    strcpy(correctFloat, "0x");
-
-    // Skopírovať časť od začiatku po e/E (ak je)
-    int i;
-    int N = strlen(floatStr);
-    for (i = 0; i < N; i++) {
-        if (floatStr[i] == 'e' || floatStr[i] == 'E') {
-            // Časť exponent - break - táto sa bude musieť trochu prerobiť
-            break;
-        }
-        correctFloat[i+2] = floatStr[i];
-    }
-
-    if (i == N) {
-        // Nebolo e/E na konci
-        strcat(correctFloat, "p+0");
-    }
-    else {
-        // Bolo e/E na konci
-        // Pozrieť, čo nasledovalo znamienko za e/E
-        int j = i + 1 + 2; // nastaviť správny index kde pokračovať
-        if (floatStr[i+1] != '+' && floatStr[i+1] != '-') {
-            // nenasledovalo +/-
-            strcat(correctFloat, "p+");
-            j++;
-        }
-        else {
-            // nasledovalo +/-
-            strcat(correctFloat, "p");
-            correctFloat[j] = floatStr[i+1];
-            i++;
-        }
-        i = i + 1;
-        // floatStr + i -> čisté číslo exponenta
-        int exp = string_to_integer(floatStr + i);
-        exp *= 4;
-        char *exp_str = integer_to_string(exp);
-        strcat(correctFloat, exp_str);
-        free(exp_str);
-    }
-
+    double my_double;
+    sscanf(floatStr, "%lf", &my_double);
+    sprintf(correctFloat, "%a", my_double);
     return correctFloat;
 }
 
@@ -545,6 +504,7 @@ int get_next_token(Token *token) {
                     // TOKEN FLOAT
                     ungetc(c, stdin);
                     // Získaj správny tvar FLOAT
+                    printf("READ STRING: %s\n", read_string->string);
                     char *correctFloat = get_correct_float_format(read_string->string);
                     tstring_clear_string(read_string);
                     tstring_add_line(read_string, correctFloat);
@@ -1038,6 +998,7 @@ int get_next_token(Token *token) {
                 return EOF;
 
             case Q_ID_UNDERSCORE:
+            case Q_BLOCK_COMMENT_BEGIN_0:
             case Q_BLOCK_COMMENT_BEGIN_1:
             case Q_BLOCK_COMMENT_BEGIN_2:
             case Q_BLOCK_COMMENT_BEGIN_3:
