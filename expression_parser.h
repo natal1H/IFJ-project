@@ -142,10 +142,10 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
 /**
  * Vypocita vyraz v postfixovej notacii
- * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture - TODO momentalne nepotebne
+ * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture
  * @param stackPostfix Zasobnik s ulozenou postfixou notaciou
  * @param stackTemp Pomocny zasobnik pre pretocenie poradia v postfixovom zasobniku
- * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia - TODO nepouzivane
+ * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia
  * @param stackOutputCHAR Vystupny zasobnik v ktorom je pocitana postfixova notacia v type char!
  * @param last_operation Posledna operacia - momentalne nepotrebne
  * @return Vracia vysledok v datovom type long
@@ -157,7 +157,7 @@ char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *sta
  * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture
  * @param stack Pomocny zasobnik kde sa vyhodnocuje priorita operatorov
  * @param stackOutput Vystupny zasobnik s postfixovou notaciou
- * @param last_operation Posledna vykonana operacia - TODO nepotrebne momentane
+ * @param last_operation Posledna vykonana operacia
  * @return Vracia zasobnik s postfixou notaciou
  */
 tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, int last_operation);
@@ -174,7 +174,6 @@ int FindRule(tDLList *ExprList, int *ErrorStatus);
  * Zastresuje syntakticku kontrolu
  * @param ExprList
  * @return Vrati true ak je vyraz syntakticky spravne inak false
- * @note TODO Spojenie s Rules
  */
 int MainSyntaxCheck(tDLList *ExprList);
 

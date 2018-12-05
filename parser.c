@@ -173,7 +173,7 @@ int stat_list (Token *token) {
 
 				return stat_list(token);
 			}
-			else if (check_if_function_already_defined(global_table, func_id_copy)) { // TODO: dočasný fix, absolútne netuším, prečo sa to tak správa
+			else if (check_if_function_already_defined(global_table, func_id_copy)) {
 				return stat_list(token);
 			}
 			
@@ -1068,7 +1068,7 @@ int def_value (Token *token) {
 		retVal = CallExpressionParser(token);															//printf("\n\t\tId copy: %s\n", id_copy);
         // Sémantická akcia:
         variable_set_type(*actual_function_ptr, id_copy, typeFinal);
-	} else {retVal = ERR_SYNTAX;} //TODO TENTO RIADOK DOCASNA ZMENA - BUDE FUNGOVAT VZDY? Ak nie je najdene pravidlo potom vzdy ERR_SYNTAX
+	} else {retVal = ERR_SYNTAX;}
 
 	
 	return retVal;

@@ -987,12 +987,12 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
 
 /**
  * Vypocita vyraz v postfixovej notacii
- * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture - TODO momentalne nepotebne
+ * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture
  * @param stackPostfix Zasobnik s ulozenou postfixou notaciou
  * @param stackTemp Pomocny zasobnik pre pretocenie poradia v postfixovom zasobniku
- * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia - TODO momentalne nepouzivane
+ * @param stackOutputINT Vystupny zasobnik v ktorom je pocitana postfixova notacia
  * @param stackOutputCHAR Vystupny zasobnik v ktorom je pocitana postfixova notacia v type char!
- * @param last_operation Posledna operacia - momentalne nepotrebne - TODO momentalne nepotrebne
+ * @param last_operation Posledna operacia
  * @return Vracia vysledok v datovom type long
  */
 char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *stackCHAR, tStackINT *stackOutputINT , tStackCHAR *stackOutputCHAR, int last_operation, int *ErrorStatus) {
@@ -1022,7 +1022,6 @@ char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *sta
                 }
                 else {
                     // Teraz by malo skončiť s vyčslovaním
-                    // TODO: TU NEJAK UKONČIŤ VYČíSLOVANIE! - update: už asi netreba
                 }
             }
     }
@@ -1035,7 +1034,7 @@ char* EvaluateFromPostfix(tDLList *ExprList, tStackP *stackPostfix, tStackP *sta
  * @param ExprList Obojsmerny pointrovy zoznam s jednotlivymi tokenmi ulozenych v strukture
  * @param stack Pomocny zasobnik kde sa vyhodnocuje priorita operatorov
  * @param stackOutput Vystupny zasobnik s postfixovou notaciou
- * @param last_operation Posledna vykonana operacia - TODO nepotrebne momentane
+ * @param last_operation Posledna vykonana operacia
  * @return Vracia zasobnik s postfixou notaciou
  */
 tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, int last_operation) {
@@ -1047,7 +1046,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
 
 //    ExprList->Act = ExprList->First;
 
-    while (ExprList->Act != NULL && ExprList->Act->Token.type != EOL) { //Pokym nie je koniec vyrazu(zoznamu) TODO Token.Next == NULL
+    while (ExprList->Act != NULL && ExprList->Act->Token.type != EOL) { //Pokym nie je koniec vyrazu(zoznamu)
 
                 tmp = PopStackTOKEN(stack); //Zisti hodnotu na vrchole zasobnika
                 PushStackTOKEN(stack, tmp); //Ale hodnotu ponechaj ulozenu na zasobniku
@@ -1105,7 +1104,7 @@ tStackP ParseToPostfix(tDLList *ExprList, tStackP *stack, tStackP *stackOutput, 
 int FindRule(tDLList *ExprList, int *ErrorStatus) {
 
 
-// TODO kontrola syntaxe
+
         bool CouldBeTokenTheLastOne = true;
         bool CouldBeTokenTheFristOne = true; //Osetri pravost, ze moze byt dany token prvy znak
 //        ExprList->Act = ExprList->Act->next;
@@ -1236,7 +1235,7 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
 
 int MainSyntaxCheck(tDLList *ExprList) {
     if (ExprList == NULL) {
-        return false; //Ziadny vyraz TODO osetrit specialny stav
+        return false; //Ziadny vyraz
     } else {
 
         //Inicializacia temporary
@@ -1250,7 +1249,7 @@ int MainSyntaxCheck(tDLList *ExprList) {
         ErrorStatus =  FindRule(ExprList, ErrorStatusPtr);
 
 
-        int static last_operation = no_operation_pTable; //TODO Nepouzivane
+        int static last_operation = no_operation_pTable;
 
         if(ErrorStatus == ERR_OK) { //Ak je error semanticku cast preskoc
 
@@ -1273,7 +1272,7 @@ int MainSyntaxCheck(tDLList *ExprList) {
             //Re-Inicializacia(Vycistenie) zasobnika
             InitStackTOKEN(stackOutput);
 
-            //Vysledok daneho vyrazu TODO Zmenit
+            //Vysledok daneho vyrazu
             EvaluateFromPostfix(ExprList, stack, stackOutput, stackOutputINT, stackOutputCHAR, last_operation, ErrorStatusPtr);
 
             free(stack);
@@ -1311,7 +1310,7 @@ void FreeBuffer(tDLList *ExprList){
  * Vynuluje hodnoty SyntaxTable ktore pocitaju pocet nacitanych jednotlivych tokenov 
  */
 void CleanSyntaxTable(){
-    //Cislo 22 je velkost tabulky TODO Nahradit skrz define
+    //Cislo 21 je velkost tabulky
     for(int i=0; i<=21; i++) {
         syntax_table[i][COUNTER_OF_TOKEN] = 0;
     }
@@ -1321,7 +1320,7 @@ void CleanSyntaxTable(){
 int CallExpressionParser(Token *token) {
 
     // Nastavenie typeFinal - typ vráteného výrazu - zatiaľ na undefined
-    //typeFinal = T_UNDEFINED; // TODO: Môže byť? ak to odkomentujem, robí to chybu, ale teraz to funguje???
+    //typeFinal = T_UNDEFINED;
     finalVar = token->attribute;
 
     Token BufferToken;
@@ -1437,5 +1436,5 @@ int CallExpressionParser(Token *token) {
 
     }
 
-    return -10; //TODO je mozne ze nastane?
+    return -10;
 }

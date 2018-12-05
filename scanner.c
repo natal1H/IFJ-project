@@ -20,7 +20,7 @@ int scanner_initialize() {
     read_string = tstring_struct_initialize();
 
     if (read_string == NULL) {
-        return -1; // TODO: return actual error code
+        return -1;
     }
     else {
         return 0;
@@ -99,7 +99,7 @@ void print_token(Token *token) {
     printf("Token attribute: %s\n", token->attribute);
 }
 
-// TODO: Funkčné?
+
 /** Pretypuje string na integer **/
 char* integer_to_string(int x) {
     char* buffer = malloc(sizeof(char) * sizeof(int) * 4 + 1);
