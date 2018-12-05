@@ -275,9 +275,16 @@ int get_next_token(Token *token) {
                 }
                 else if (c == (int) '=') {
                     // START -> F_ASSIGN
-                    state = F_ASSIGN;
 
-                    tstring_append_char(read_string, c); // str := symbol
+					if (newLine) {
+						state = Q_BLOCK_COMMENT_BEGIN_0;
+						newLine = false;
+					}
+                    else {
+						state = F_ASSIGN;
+
+	                    tstring_append_char(read_string, c); // str := symbol
+					}
                 }
                 else if (c == (int) '+') {
                     // START -> F_ADDITION
@@ -721,6 +728,15 @@ int get_next_token(Token *token) {
                 }
                 break; //case Q_LINE_COMMENT:
 
+			// "\n="
+			case Q_BLOCK_COMMENT_BEGIN_0:
+				
+                if (c == (int) 'b'){
+					// F_ASSIGN -> Q_BLOCK_COMMENT_BEGIN_1
+					state = Q_BLOCK_COMMENT_BEGIN_1;
+				} else state = F_LEX_ERROR;
+			break;
+
 			// "=b"
 			case Q_BLOCK_COMMENT_BEGIN_1:
 				if (c == (int) 'e') {
@@ -828,12 +844,6 @@ int get_next_token(Token *token) {
                     // F_ASSIGN -> F_EQUALS
                     state = F_EQUALS;
                 }
-                else if (c == (int) 'b' && newLine){
-					// F_ASSIGN -> Q_BLOCK_COMMENT_BEGIN_1
-					state = Q_BLOCK_COMMENT_BEGIN_1;
-
-					tstring_clear_string(read_string);
-				}
 				else {
                     // TOKEN =
                     ungetc(c, stdin);
