@@ -343,6 +343,7 @@ int stat (Token *token) {
 
 			// Generovanie kódu
 			char *label_while = get_and_set_unique_label(&label_table, "while");
+			char *label_while_end = get_and_set_unique_label(&label_table, "while_end");
 			char *compare_var = NULL;
 			gen_label(label_while);
 
@@ -355,6 +356,9 @@ int stat (Token *token) {
 				compare_var = malloc(sizeof(char) * strlen(finalVar));
 				strcpy(compare_var, finalVar);
 
+				// Tuto vygenerovať kontrolu splnenia podmienky
+				gen_jumpifneq(label_while_end, compare_var);
+
 				if (strcmp(token->attribute, "do") == 0) {												//printf("do ");
 					GET_NEXT_TOKEN();
 
@@ -366,7 +370,9 @@ int stat (Token *token) {
 						if (stat_list(token) == ERR_OK) {
 							if (strcmp(token->attribute, "end") == 0) {
 								// Generovanie kódu
-								gen_jumpifeq(label_while, compare_var);
+								//gen_jumpifeq(label_while, compare_var);
+								gen_jump(label_while);
+								gen_label(label_while_end);
 								free(label_while);
 								free(compare_var);
 								// Koniec generovania kódu
@@ -990,7 +996,7 @@ int value (Token *token) {
 
 	expected_params--; // Zníženie počtu ešte zostávajúcich parametrov
 
-	if (expected_params < 0) {
+	if (expected_params < 0 && (strcmp(func_id_copy, "print") != 0)) {
 		// Chyba - nesprávny počet parametrov
 		return ERR_SEM_PARAM;
 	}

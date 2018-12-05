@@ -579,7 +579,7 @@ int get_next_token(Token *token) {
                 break;
 
             case Q_STRING_ESCAPE:
-                if (c == (int) 'n' || c == (int) 't' || c == (int) 's' || c == (int) '\\') {
+                if (c == (int) 'n' || c == (int) 't' || c == (int) 's' || c == (int) '\\' || c == (int) '"') {
                     // Q_STRING_ESCAPE -> Q_STRING
                     state = Q_STRING;
 

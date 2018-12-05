@@ -1278,7 +1278,6 @@ int MainSyntaxCheck(tDLList *ExprList) {
         } else {
             return ErrorStatus; //ERR_SYNTAX return
         }
-        //printf("ErrorStatus: %d\n", ErrorStatus);
         return ErrorStatus; //ERR_OK return
     }
 }

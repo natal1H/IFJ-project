@@ -555,7 +555,7 @@ void gen_inputs() {
     set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "string", NULL); // READ LF@%ret string
-    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
 }
 
 /** Generovanie vstavenj funkcie inputi **/
@@ -566,7 +566,7 @@ void gen_inputi() {
     set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "int", NULL); // READ LF@%ret int
-    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
 }
 
 /** Generovanie vstavanej funkcie inputf **/
@@ -577,7 +577,7 @@ void gen_inputf() {
     set_and_post_instr(&instr_list, curr_instr, I_PUSHFRAME, NULL, NULL, NULL); // PUSHFRAME
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_READ, "LF@%ret", "float", NULL); // READ LF@%ret float
-    set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+    set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
 }
 
 /** Generovanie vstavanej funkcie print **/
