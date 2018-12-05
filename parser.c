@@ -416,7 +416,9 @@ int stat (Token *token) {
 */
 	else if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {																//printf("%s ", token->attribute);
 
-		// Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
+        expression_token = *token;
+
+        // Potrebujem zálohovať ID, lebo budem brať ďalšie tokeny
 		id_copy = (char *) realloc(id_copy, sizeof(char) * strlen(token->attribute)+END_OF_STRING);
 		strcpy(id_copy, token->attribute);
 		GET_NEXT_TOKEN();
@@ -756,6 +758,22 @@ int after_id (Token *token) {
 		GET_NEXT_TOKEN();
 
 		return def_value(token);
+
+    } else if (
+            token->type == ADDITION ||
+            token->type == SUBTRACTION ||
+            token->type == MULTIPLICATION ||
+            token->type == DIVISION ||
+            token->type == EQUALS ||
+            token->type == NOT_EQUALS ||
+            token->type == GREATER ||
+            token->type == GREATER_OR_EQUALS ||
+            token->type == LESS ||
+            token->type == LESS_OR_EQUALS
+            ) {
+        expression = true;
+        retVal = CallExpressionParser(token);
+
 	} else { retVal = ERR_SYNTAX; } //Nie je najdene pravidlo automaticky ERR_SYNTAX
 	
 	return retVal;
