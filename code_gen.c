@@ -635,18 +635,18 @@ void gen_substr() {
     set_and_post_instr(&instr_list, curr_instr, I_GT, "LF@%compare", "LF@%until", "LF@%length"); // GT LF@%compare LF@%until LF@%length
     set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$curb", "LF@%compare", "bool@true"); // JUMPIFNEQ $subst$curb LF@%compare bool@true
     set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%until", "LF@%length", NULL); // MOVE LF@%until LF@%length
-    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$curb", NULL, NULL); // LABEL $subst$curb
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$substr$curb", NULL, NULL); // LABEL $substr$curb
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%now", NULL, NULL); // DEFVAR LF@%now
     set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%now", "LF@%p2", NULL); // MOVE LF@%now LF@%p2
-    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$loop", NULL, NULL); // LABEL $subst$loop
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$substr$loop", NULL, NULL); // LABEL $subst$loop
     set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, "$substr$noerr", "LF@%now", "LF@%until"); // JUMPIFEQ $substr$noerr LF@%now LF@%until
     set_and_post_instr(&instr_list, curr_instr, I_GETCHAR, "LF@%substr", "LF@%p1", "LF@%now"); // GETCHAR LF@%substr LF@%p1 LF@%now
     set_and_post_instr(&instr_list, curr_instr, I_CONCAT, "LF@%ret", "LF@%ret", "LF@%substr"); // CONCAT LF@%ret LF@%ret LF@%substr
     set_and_post_instr(&instr_list, curr_instr, I_ADD, "LF@%now", "LF@%now", "int@1"); // ADD LF@%now LF@%now int@1
     set_and_post_instr(&instr_list, curr_instr, I_JUMP, "$substr$loop", NULL, NULL); // JUMP $substr$loop
-    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$err", NULL, NULL); // LABEL $substr$err
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$substr$err", NULL, NULL); // LABEL $substr$err
     set_and_post_instr(&instr_list, curr_instr, I_MOVE, "LF@%ret", "nil@nil", NULL); // MOVE LF@%ret nil@nil
-    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$subst$noerr", NULL, NULL); // LABEL $substr$noerr
+    set_and_post_instr(&instr_list, curr_instr, I_LABEL, "$substr$noerr", NULL, NULL); // LABEL $substr$noerr
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
 }
 
