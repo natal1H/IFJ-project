@@ -402,6 +402,23 @@ void gen_jumpifeq(char *label, char *var) {
     free(label_complete);
     free(var_complete);
 }
+
+void gen_jumpifneq_general(char *label, char *var1, char *var2_complete) {
+    char *label_complete = get_string_with_prefix(label, LABEL_PREFIX);
+    char *var1_complete = get_string_with_prefix(var1, VAR_PREFIX);
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFNEQ, label_complete, var1_complete, var2_complete);
+    free(label_complete);
+    free(var1_complete);
+}
+
+void gen_jumpifeq_general(char *label, char *var1, char *var2_complete) {
+    char *label_complete = get_string_with_prefix(label, LABEL_PREFIX);
+    char *var1_complete = get_string_with_prefix(var1, VAR_PREFIX);
+    set_and_post_instr(&instr_list, curr_instr, I_JUMPIFEQ, label_complete, var1_complete, var2_complete);
+    free(label_complete);
+    free(var1_complete);
+}
+
 void gen_label(char *label) {
     add_instruction_unary(I_LABEL, label, LABEL_PREFIX);
 }
@@ -415,7 +432,17 @@ int gen_not(char *var_name, char *symbol) {
 }
 
 int gen_move_var(char *var_name, char *symbol) {
-    return add_instruction_binary(I_MOVE, var_name, symbol, VAR_PREFIX);
+    if (is_int(symbol))
+        return add_instruction_binary(I_MOVE, var_name, symbol, "int@");
+    else if (is_float(symbol))
+        return add_instruction_binary(I_MOVE, var_name, symbol, "float@");
+    else if (is_string_literal(symbol))
+        return add_instruction_binary(I_MOVE, var_name, symbol, "string@");
+    else if (is_nil(symbol))
+        return add_instruction_binary(I_MOVE, var_name, symbol, "nil@");
+    else
+        return add_instruction_binary(I_MOVE, var_name, symbol, VAR_PREFIX);
+    //return add_instruction_binary(I_MOVE, var_name, symbol, VAR_PREFIX);
 }
 
 int gen_move_general(char *var_name, char *symbol) {
@@ -661,4 +688,97 @@ void gen_chr() {
     set_and_post_instr(&instr_list, curr_instr, I_DEFVAR, "LF@%ret", NULL, NULL); // DEFVAR LF@%ret
     set_and_post_instr(&instr_list, curr_instr, I_INT2CHAR, "LF@%ret", "LF@%p1", NULL); // INT2CHAR LF@%ret LF@%p1
     set_and_post_instr(&instr_list, curr_instr, I_PUSHS, "LF@%ret", NULL, NULL); // PUSHS LF@%ret
+}
+
+
+int gen_type(char *var1, char *var2) {
+    if (is_int(var2))
+        return add_instruction_binary(I_TYPE, var1, var2, "int@");
+    else if (is_float(var2))
+        return add_instruction_binary(I_TYPE, var1, var2, "float@");
+    else if (is_string_literal(var2))
+        return add_instruction_binary(I_TYPE, var1, var2, "string@");
+    else if (is_nil(var2))
+        return add_instruction_binary(I_TYPE, var1, var2, "nil@");
+    else
+        return add_instruction_binary(I_TYPE, var1, var2, VAR_PREFIX);
+}
+
+void automatic_conversion_generate(char *symbol1, char *symbol2, char **final_oper1, char **final_oper2) {
+    char *type_var1 = expr_parser_create_unique_name_with_prefix(*actual_function_ptr, "type"); // Získaj unikátne meno premenej na uchovanie typu
+    char *type_var2 = expr_parser_create_unique_name_with_prefix(*actual_function_ptr, "type"); // Získaj unikátne meno premenej na uchovanie typu
+    char *final_name1 = expr_parser_create_unique_name_with_prefix(*actual_function_ptr, "final_var");
+    char *final_name2 = expr_parser_create_unique_name_with_prefix(*actual_function_ptr, "final_var");
+    variable_set_defined(actual_function_ptr, type_var1); // Zapíš do tabuľky symbolov
+    variable_set_defined(actual_function_ptr, type_var2); // Zapíš do tabuľky symbolov
+    variable_set_defined(actual_function_ptr, final_name1); // Zapíš do tabuľky symbolov
+    variable_set_type(*actual_function_ptr, final_name1, T_PARAM);
+    variable_set_defined(actual_function_ptr, final_name2); // Zapíš do tabuľky symbolov
+    variable_set_type(*actual_function_ptr, final_name2, T_PARAM);
+    gen_defvar(type_var1, (is_in_while > 0 ? &while_declaration_list : &instr_list) ); // Deklaruj premennú na uchovanie typu prem 1
+    gen_defvar(type_var2, (is_in_while > 0 ? &while_declaration_list : &instr_list) ); // Deklaruj premennú na uchovanie typu prem 2
+    gen_defvar(final_name1, (is_in_while > 0 ? &while_declaration_list : &instr_list) ); // Deklaruj premennú na uchovanie typu prem 2
+    gen_defvar(final_name2, (is_in_while > 0 ? &while_declaration_list : &instr_list) ); // Deklaruj premennú na uchovanie typu prem 2
+    gen_type(type_var1, symbol1); // vygenerovanie TYPE var 1
+    gen_type(type_var2, symbol2); // vygenerovanie TYPE var 2
+
+    // Labels na skoky
+    char *type_float_label = get_and_set_unique_label(&label_table, "type_float");
+    char *type_move_label = get_and_set_unique_label(&label_table, "type_move");
+    char *type_end_label = get_and_set_unique_label(&label_table, "type_end");
+
+    char *label_covert_first = get_and_set_unique_label(&label_table, "convert_first_to_float");
+    char *label_covert_second = get_and_set_unique_label(&label_table, "convert_second_to_float");
+
+    // Prvý je INT
+    gen_jumpifneq_general(type_float_label, type_var1, "string@int"); // JUMPIFNEQ $type_float %type_var1 string@int
+
+        gen_jumpifeq_general(label_covert_first, type_var2, "string@float"); // INT a FLOAT -> skonvertuj prvé
+        gen_jump(type_move_label);
+
+    gen_label(type_float_label); // Label TYPE_FLOAT
+    // Prvý je FLOAT
+    gen_jumpifneq_general(type_end_label, type_var1, "string@float"); // JUMPIFNEQ $type_float %type_var1 string@float
+
+        gen_jumpifeq_general(label_covert_first, type_var2, "string@float"); // FLOAT a INT -> skonvertuj druhé
+        gen_jump(type_end_label);
+
+    // Skonvertuj prvý operand na float
+    gen_label(label_covert_first); // LABEL convert_first
+
+    gen_int2float(final_name1, symbol1, true);
+    gen_move_var(final_name2, symbol2);
+
+    gen_jump(type_end_label);
+
+    // Skonvertuj druhý operand na float
+    gen_label(label_covert_second); // LABEL convert_second
+
+    gen_int2float(final_name2, symbol2, true);
+    gen_move_var(final_name1, symbol1);
+
+    gen_jump(type_end_label);
+
+    // generovanie label MOVE both
+    gen_label(type_move_label);
+    gen_move_var(final_name1, symbol1);
+    gen_move_var(final_name2, symbol2);
+
+    // generovanie label type_end
+    gen_label(type_end_label);
+
+    // Uvoľnenie reťazcov
+    free(type_float_label);
+    free(type_move_label);
+    free(type_end_label);
+    free(label_covert_first);
+    free(label_covert_second);
+
+    *final_oper1 = final_name1;
+    *final_oper2 = final_name2;
+
+}
+
+void generate_dynamic_division(char *symbol1, char *symbol2, char *finalVar) {
+
 }

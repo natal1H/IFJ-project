@@ -58,7 +58,7 @@ int prog (Token *token) {
 	else if (token->type == IDENTIFIER) {
 		return stat_list(token);
 	}
-	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || (token->type == KEYWORD && (strcmp(token->attribute, "nil") == 0) || token->type == LEFT_ROUND_BRACKET) ) {
+	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || ((token->type == KEYWORD) && (strcmp(token->attribute, "nil") == 0)) || token->type == LEFT_ROUND_BRACKET) {
 		return stat_list(token);
 	}
 	else if (token->type == TYPE_EOF) {
@@ -173,7 +173,7 @@ int stat_list (Token *token) {
 			return statRetVal;
 		}
 	}
-	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || (token->type == KEYWORD && (strcmp(token->attribute, "nil") == 0) || token->type == LEFT_ROUND_BRACKET) ) {
+	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || ((token->type == KEYWORD) && (strcmp(token->attribute, "nil") == 0)) || token->type == LEFT_ROUND_BRACKET) {
 		return stat(token);
 	}
 	else if (token->type == TYPE_EOF) {
@@ -212,6 +212,7 @@ int stat (Token *token) {
 					// Funkcia bola predtým definovaná - došlo k redefinícii - sémantická chyba
 					return ERR_SEM_UNDEF;
 				}
+
 				// Vytvoriť lokálnu tabuľku symbolov
 				tLocalTableNodePtr *new_local_table_ptr = malloc(sizeof(tLocalTableNodePtr));
 				local_table_init(new_local_table_ptr); // Inicializácia novej lokálnej tabuľky
@@ -425,7 +426,7 @@ int stat (Token *token) {
 	}
 
 	// TODO: dokomentovať
-	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || (token->type == KEYWORD && (strcmp(token->attribute, "nil") == 0) || token->type == LEFT_ROUND_BRACKET) ) {
+	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || ((token->type == KEYWORD) && (strcmp(token->attribute, "nil") == 0)) || token->type == LEFT_ROUND_BRACKET) {
 		// Zavolať parser výrazov
 		int retVal = CallExpressionParser(token);
 		if (retVal == ERR_OK) {
@@ -631,9 +632,11 @@ int after_id (Token *token) {
 			built_in_function_set_param(global_table, id_copy);
 
 			// Vygenerovať definíciu pred main
+			if (in_def) returnPlaceCopy = listGetActivePtr(&instr_list);
 			prepare_for_func();
 			generate_built_in_function(id_copy);
 			end_function();
+			if (in_def) instr_list.active = returnPlaceCopy;
 		}
 	}
 	// Koniec sémantickej akcie
@@ -804,9 +807,11 @@ int def_value (Token *token) {
 				built_in_function_set_param(global_table, token->attribute);
 
 				// Vygenerovať definíciu pred main
+				if (in_def) returnPlaceCopy = listGetActivePtr(&instr_list);
 				prepare_for_func();
 				generate_built_in_function(token->attribute);
 				end_function();
+				if (in_def) instr_list.active = returnPlaceCopy;
 
 			}
 

@@ -35,11 +35,12 @@
     // Pomocná štruktúra - aktuálna inštrukcia
     tInstr *curr_instr;
 
+    // Kam sa vrátiť z funkcie
+    tListItem *returnPlaceCopy;
+
     // Generovanie while
     tListOfInstr while_declaration_list; // Zoznam inštrukcií deklarácií, ktoré by inak boli vo while
     tListItem *active_before_while; // Inštrukcia tesne pred začiatkom while
-    //tInstr *instr_beginning_while; // Inštrukcia, ktorou sa začína while
-
 
     // Zásobník parametrov a základné funkcie preň
     /** @struct Element zásobníka parametrov **/
@@ -301,6 +302,8 @@
      */
     void gen_jumpifneq(char *label, char *var);
 
+    void gen_jumpifneq_general(char *label, char *var1, char *var2_complete);
+
     /**
      * @brief Vygenerovanie podmieného skoku JUMPIFNEQ
      *
@@ -526,5 +529,15 @@
      * @return Chybový kód
      */
     void gen_chr();
+
+    int gen_type(char *var1, char *var2);
+
+    char * one_param_generate(char *param_symbol, char *symbol2, tDataType symbol2_type, char **final_oper1, char **final_oper2);
+
+    void gen_jumpifeq_general(char *label, char *var1, char *var2_complete);
+
+    void automatic_conversion_generate(char *symbol1, char *symbol2, char **final_oper1, char **final_oper2);
+
+    void generate_dynamic_division(char *symbol1, char *symbol2, char *finalVar);
 
 #endif

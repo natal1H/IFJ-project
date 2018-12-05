@@ -581,8 +581,8 @@ int get_next_token(Token *token) {
                 if (c != (int) '"') {
 
                     if (c == (int) '\\' ) {
-                        // Q_STRING -> Q_ESCAPE
-                        state = Q_ESCAPE;
+                        // Q_STRING -> Q_STRING_ESCAPE
+                        state = Q_STRING_ESCAPE;
                         tstring_append_char(read_string, c);
                     }
                     else {
@@ -612,22 +612,23 @@ int get_next_token(Token *token) {
                 return ERR_OK;
                 break;
 
-            case Q_ESCAPE:
+            case Q_STRING_ESCAPE:
                 if (c == (int) 'n' || c == (int) 't' || c == (int) 's' || c == (int) '\\') {
-                    // Q_ESCAPE -> Q_STRING
+                    // Q_STRING_ESCAPE -> Q_STRING
                     state = Q_STRING;
 
                     // Vlož do tstring číselnú hodnotu c (\n \t \s \\) v tvar aaa (dekadické číslo)
                     char *dec_str;
                     if (c == (int) 'n') dec_str = int_to_decadic_three( (int) '\n' );
                     else if (c == (int) 't') dec_str = int_to_decadic_three( (int) '\t' );
-                    else if (c == (int) 't') dec_str = int_to_decadic_three( (int) ' ' );
-                    else if (c == (int) 't') dec_str = int_to_decadic_three( (int) '\\' );
+                    else if (c == (int) ' ') dec_str = int_to_decadic_three( (int) ' ' );
+                    else if (c == (int) '\\') dec_str = int_to_decadic_three( (int) '\\' );
+                    else if (c == (int) '"') dec_str = int_to_decadic_three( (int) '"' );
                     tstring_add_line(read_string, dec_str);
                     free(dec_str);
                 }
                 else if (c == (int) 'x') {
-                    // Q_ESCAPE -> Q_STRING_HEX_1
+                    // Q_STRING_ESCAPE -> Q_STRING_HEX_1
                     state = Q_STRING_HEX_1;
 
                 }
@@ -636,7 +637,7 @@ int get_next_token(Token *token) {
                     state = F_LEX_ERROR;
                 }
                 else {
-                    // Q_ESCAPE -> F_LEX_ERROR
+                    // Q_STRING_ESCAPE -> F_LEX_ERROR
                     state = F_LEX_ERROR;
                 }
 
@@ -1042,7 +1043,7 @@ int get_next_token(Token *token) {
             case Q_FLOAT_2:
             case Q_FLOAT_3:
             case Q_STRING:
-            case Q_ESCAPE:
+            case Q_STRING_ESCAPE:
             case Q_STRING_HEX_1:
             case Q_STRING_HEX_2:
                 // Nemalo by sa to zastaviť v nekoncom stave - chyba

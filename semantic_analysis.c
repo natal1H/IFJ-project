@@ -159,6 +159,25 @@ char *expr_parser_create_unique_name(tLocalTableNodePtr local_table) {
     return name;
 }
 
+char *expr_parser_create_unique_name_with_prefix(tLocalTableNodePtr local_table, char *prefix) {
+    static int n = 1; // Počítadlo, ktoré zaisťuje unikátnosť
+    char *name = NULL;
+    do {
+        char *n_str = integer_to_string(n); // Prevod na string
+        name = realloc(name, sizeof(char) * (strlen(n_str) + strlen(prefix))+END_OF_STRING);
+        if (name == NULL) {
+            return NULL;
+        }
+        strcpy(name, prefix);
+        strcat(name, n_str); // Vytvorenie celého mena
+
+        n++;
+
+    } while (is_variable(local_table, name)); // Skontrolovať, či už neni premenná s takým názvom v tabuľke symbolov
+
+    return name;
+}
+
 /** Skúma kompatibilitu typov pri aritmetický operáciách **/
 int arithmetic_check_compatibility(tDataType type1, tDataType type2) {
     if ( (type1 == T_INT && type2 == T_STRING) || (type1 == T_STRING && type2 == T_INT) ) {
@@ -304,6 +323,7 @@ int built_in_function_check_arg(char *function_id, int number_of_param, tDataTyp
     return ERR_OK;
 }
 
+/** Vráti návratový typ vstavanej funkcie **/
 tDataType built_in_function_get_return_type(char *function_id) {
     if (strcmp(function_id, "inputs") == 0) return T_STRING;
     else if (strcmp(function_id, "inputi") == 0) return T_INT;
@@ -311,7 +331,8 @@ tDataType built_in_function_get_return_type(char *function_id) {
     else if (strcmp(function_id, "print") == 0) return T_NIL;
     else if (strcmp(function_id, "length") == 0) return T_INT;
     else if (strcmp(function_id, "substr") == 0) return T_STRING;
-    else if (strcmp(function_id, "ord") == 0) T_INT;
-    else if (strcmp(function_id, "chr") == 0) T_STRING;
+    else if (strcmp(function_id, "ord") == 0) return T_INT;
+    else if (strcmp(function_id, "chr") == 0) return T_STRING;
     else return T_UNDEFINED;
 }
+

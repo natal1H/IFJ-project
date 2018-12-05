@@ -95,6 +95,15 @@
     char *expr_parser_create_unique_name(tLocalTableNodePtr local_table);
 
     /**
+     * @brief Vytvára unikátne meno pre premennú
+     *
+     * @param local_table Lokálna tabuľka
+     * @param prefix Prefix identifikátora
+     * @return Reťazec s unikátny menom alebo NULL pri chybe pri alokovaní
+     */
+    char *expr_parser_create_unique_name_with_prefix(tLocalTableNodePtr local_table, char *prefix);
+
+    /**
      * @brief Uloží typ tokenu podľa reťazca, kotroluje zároveň sémantické chyby
      *
      * @param current_function_root Lokálna tabuľka symbolov
