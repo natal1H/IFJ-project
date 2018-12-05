@@ -1,14 +1,5 @@
 #include "parser.h"
 
-/*	
-	TODO:	Gramatika: - Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
-			   - <arg> pre print nesedi s gramatikou (v printe musia byt arumenty, nemoze byt epsilon)
-			   - pridat pravidlo <stat_list> -> epsilon
-			   - vymazat stav <value> (nahradeny <expr>)
-			   - pridat volanie funkcie bez zatvoriek
-*/
-
-
 #define GET_NEXT_TOKEN() if(get_next_token(token) == ERR_SCANNER) return ERR_SCANNER 
 
 int depth_index = 0;
@@ -16,7 +7,7 @@ bool in_if_or_while = false;
 bool in_def = false;
 bool withBrackets = true;
 
-/*
+/**
 	Funkcia pre stav <prog>.
 	
 	Program musí začínať kľúčovým slovom, identifikátorom alebo musí byť prázdny (EOF).
@@ -24,6 +15,9 @@ bool withBrackets = true;
 	prechádza sa do stavu <stat_list>.
 	V prípade, že prijatý token je EOF, preklad sa končí s návratovou hodnotou ERR_OK.
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
+
+	@params Token
+	@return Chybový kód
 */
 int prog (Token *token) {
 
@@ -71,21 +65,26 @@ int prog (Token *token) {
 
 
 
-/*
+/**
 	Funkcia pre stav <stat_list>.
 	
 	Statement list musí začínať kľúčovým slovom, identifikátorom alebo musí byť prázdny.
 	V prípade, že prijatý token je typu KEYWORD a má vhodný atribút alebo je typu IDENTIFIER
 	prechádza sa do stavu <stat>.
 	V ostatných prípadoch nastane syntax error a funkcia vracia hodnotu ERR_SYNTAX.
+
+	@params Token
+	@return Chybový kód
 */
 int stat_list (Token *token) {
 
 	int statRetVal = 0; //Uchovava navratovu hodnotu funkcie stat
 
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 2: <stat_list> -> <stat> EOL <stat_list> |
-  |___________________________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlá 2, 13 a 15: <stat_list> -> <stat> EOL <stat_list>                      |
+  |                      <if_stat_list> -> <nested_stat> EOL <if_stat_list>         |
+  |                      <nested_stat_list> -> <nested_stat> EOL <nested_stat_list> |
+  |_________________________________________________________________________________|
 */
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0  && !in_if_or_while && !in_def) {	//Definícia funkcie sa nemôže nachádzať v zložených príkazoch ani v tele inej funkcie
@@ -124,6 +123,11 @@ int stat_list (Token *token) {
 				}
 			}
 		}
+
+	/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+	  | Pravidlo 16: <nested_stat_list> -> epsilon |
+	  |____________________________________________|
+	*/
 		else if (strcmp(token->attribute, "end") == 0) {
 			if (in_def && !in_if_or_while) {
 
@@ -150,6 +154,11 @@ int stat_list (Token *token) {
 				return ERR_OK;
 			}
 		}
+
+	  /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+		| Pravidlo 14: <if_stat_list> -> epsilon |
+		|________________________________________|
+	  */
 		else if (strcmp(token->attribute, "else") == 0) {
 			if (in_if_or_while) {																		//printf("else ");
 				return ERR_OK;
@@ -176,6 +185,12 @@ int stat_list (Token *token) {
 	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || ((token->type == KEYWORD) && (strcmp(token->attribute, "nil") == 0)) || token->type == LEFT_ROUND_BRACKET) {
 		return stat(token);
 	}
+
+
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 3: <stat_list> -> epsilon |
+  |____________________________________|
+*/
 	else if (token->type == TYPE_EOF) {
 		if (depth_index == 0) {																			//printf("eof\n");
 			return ERR_OK;
@@ -191,15 +206,18 @@ int stat_list (Token *token) {
 
 
 
-/*
+/**
 	Funkcia pre stav <stat>.
 	
-	Statement musí začínať kľúčovým slovom alebo identifikátorom.
+	Statement musí začínať kľúčovým slovom, identifikátorom alebo literálom.
+
+	@params Token
+	@return Chybový kód
 */
 int stat (Token *token) {
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 3: <stat> -> DEF ID ( <params> ) EOL <stat_list> END |
-  |_______________________________________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 4: <stat> -> DEF ID ( <params> ) EOL <nested_stat_list> END |
+  |______________________________________________________________________|
 */
 
 int retVal = 0;
@@ -275,9 +293,10 @@ int retVal = 0;
 				}
 			}
 		}
-    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-	  | Pravidlo 4: IF <expr> THEN EOL <stat_list> ELSE EOL <stat_list> END |
-	  |_____________________________________________________________________|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+	  | Pravidlá 5 a 17: <stat> -> IF <expr> THEN EOL <if_stat_list> ELSE EOL <nested_stat_list> END        |
+	  |                  <nested_stat> -> IF <expr> THEN EOL <if_stat_list> ELSE EOL <nested_stat_list> END |
+	  |_____________________________________________________________________________________________________|
      */
 		else if (strcmp(token->attribute, "if") == 0) {													//printf("if ");
 			GET_NEXT_TOKEN();
@@ -330,9 +349,10 @@ int retVal = 0;
 			}
 			return retVal;
 		}
-    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-	  | Pravidlo 5: WHILE <expr> DO EOL <stat_list> END |
-	  |_________________________________________________|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+	  | Pravidlá 6 a 18: <stat> -> WHILE <expr> DO EOL <nested_stat_list> END        |
+	  |                  <nested_stat> -> WHILE <expr> DO EOL <nested_stat_list> END |
+	  |______________________________________________________________________________|
      */
 		else if (strcmp(token->attribute, "while") == 0) {												//printf("while ");
 			// Nastavenie inštrukcie tesne pred while
@@ -420,9 +440,10 @@ int retVal = 0;
 			}
 		}
 	}
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 6: ID <after_id> |
-  |___________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlá 7 a 19: <stat> -> ID <after_id>        |
+  |                  <nested_stat> -> ID <after_id> |
+  |_________________________________________________|
 */
 	else if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {																//printf("%s ", token->attribute);
 
@@ -437,7 +458,11 @@ int retVal = 0;
 		return after_id_ret;
 	}
 
-	// TODO: dokomentovať
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlá 8 a 20: <stat> -> <expression>        |
+  |					 <nested_stat> -> <expression> |
+  |________________________________________________|
+*/
 	else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || ((token->type == KEYWORD) && (strcmp(token->attribute, "nil") == 0)) || token->type == LEFT_ROUND_BRACKET) {
 		// Zavolať parser výrazov
 		int retVal = CallExpressionParser(token);
@@ -455,11 +480,18 @@ int retVal = 0;
 
 
 
+/**
+	Funkcia pre stav <params>.
 
+	Kontroluje správnosť zápisu prvého parametru pri definícii funkcie s parametrami.
+	Následne volá funkciu params_next.
 
+	@params Token
+	@return Chybový kód
+*/
 int params (Token *token) {
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 8: <params> -> ID <params_next> |
+  | Pravidlo 9: <params> -> ID <params_next> |
   |__________________________________________|
 */
 	if (token->type == IDENTIFIER) {																	//printf("%s ", token->attribute);
@@ -483,11 +515,19 @@ int params (Token *token) {
 
 
 
+/**
+	Funkcia pre stav <params_next>.
 
+	Kontroluje správnosť zápisu ďalších parametrov pri definícii funkcie.
+	Parametre musia byť oddelené čiarkou a zoznam parametrov musí byť ukončený pravou zátvorkou.
+
+	@params Token
+	@return Chybový kód
+*/
 
 int params_next (Token *token) {
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 10: <params_next> -> , ID <params_next> |
+  | Pravidlo 11: <params_next> -> , ID <params_next> |
   |__________________________________________________|
 */
 	if (token->type == COMMA) {																			//printf(", ");
@@ -511,7 +551,7 @@ int params_next (Token *token) {
 		}
 	}
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 11: <params_next> -> epsilon |
+  | Pravidlo 12: <params_next> -> epsilon |
   |_______________________________________|
 */
 	else if (token->type == RIGHT_ROUND_BRACKET) {														//printf(") ");
@@ -543,11 +583,20 @@ int params_next (Token *token) {
 
 
 
+/**
+Funkcia pre stavy <arg_with_brackets> a <arg_without_brackets>.
 
+Kontroluje správnosť zápisu prvého argumentu pri volaní funkcie s argumentmi.
+Následne volá funkciu arg_next.
+
+@params Token
+@return Chybový kód
+*/
 int arg (Token *token) {
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 12: <arg> -> <value> <arg_next> |
-  |__________________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlá 21 a 25: <arg_with_brackets> -> <value> <arg_next_with_brackets>       |
+  |	                  <arg_without_brackets> -> <value> <arg_next_without_brackets> |
+  |_________________________________________________________________________________|
 */
 	int retVal = value(token);
 
@@ -585,11 +634,21 @@ int arg (Token *token) {
 
 
 
+/**
+Funkcia pre stavy <arg_next_with_brackets> a <arg_next_without_brackets>.
 
+Kontroluje správnosť zápisu ďaľších argumentov pri volaní funkcie s argumentmi.
+Ak bola funkcia volaná so zátvorkou pred prvým argumentom, muí byť za posledným argumentom pravá zátvorka.
+V opačnom prípade za ním musí byť EOL.
+
+@params Token
+@return Chybový kód
+*/
 int arg_next (Token *token) {
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 14: <arg_next> -> , <value> <arg_next> |
-  |_________________________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 23 a 27: <arg_next_with_brackets> -> , <value> <arg_next_with_brackets>      |
+  |                   <arg_next_without_brackets -> , <value> <arg_next_without_brackets> |
+  |_______________________________________________________________________________________|
 */
 	if (token->type == COMMA) {																			//printf(", ");
 		GET_NEXT_TOKEN();
@@ -603,9 +662,9 @@ int arg_next (Token *token) {
 			return retVal;
 		}
 	}
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 15: <arg_next> -> epsilon |
-  |____________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 24: <arg_next_with_brackets> -> epsilon |
+  |__________________________________________________|
 */
 
 	else if (withBrackets && token->type == RIGHT_ROUND_BRACKET) {										//printf(") ");
@@ -613,6 +672,10 @@ int arg_next (Token *token) {
 
 		return ERR_OK;
 	}
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 24: <arg_next_without_brackets> -> epsilon |
+  |_____________________________________________________|
+*/
 	else if (!withBrackets && token->type == EOL) {
 		return ERR_OK;
 	}
@@ -623,13 +686,20 @@ int arg_next (Token *token) {
 
 
 
+/**
+Funkcia pre stavy <after_id> a <after_func_call>.
 
+Kontroluje syntaktickú správnosť volania funkcie, priraďovania do premennej a detekuje samostatné výrazy na riadku.
+
+@params Token
+@return Chybový kód
+*/
 int after_id (Token *token) {
 
 	int retVal = 0;
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 16: <after_id> -> ( <arg> ) |
-  |______________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 29: <after_id> -> <after_func_call> |
+  |______________________________________________|
 */
 
 	// Sémantická akcia
@@ -653,10 +723,10 @@ int after_id (Token *token) {
 	}
 	// Koniec sémantickej akcie
 
-	//VOLANIE FUNKCIE
-	//------------------------------
-	// Volanie funkcie so zatvorkami 
-	//------------------------------
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 33: <after_func_call> -> ( <arg_with_brackets> ) |
+  |___________________________________________________________|
+*/
 	if (token->type == LEFT_ROUND_BRACKET) {															//printf("( ");
 		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy)+END_OF_STRING);
 		strcpy(func_id_copy, id_copy);
@@ -677,9 +747,9 @@ int after_id (Token *token) {
 
 		GET_NEXT_TOKEN();
 
-    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  	  | Pravidlo 13: <arg> -> epsilon |
-  	  |_______________________________|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  	  | Pravidlo 22: <arg_with_brackets> -> epsilon |
+  	  |_____________________________________________|
      */
 		if (token->type == RIGHT_ROUND_BRACKET) {														//printf(") ");
 			// Sémantická kontrola
@@ -708,9 +778,10 @@ int after_id (Token *token) {
 		}
 
 	}
-	//-------------------------------------------
-	//Volanie funkcie s argumentami bez zatvoriek 
-	//-------------------------------------------
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 34: <after_func_call> -> <arg_without_brackets> |
+  |__________________________________________________________|
+*/
 	else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
 		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy)+END_OF_STRING);
 		strcpy(func_id_copy, id_copy);
@@ -723,9 +794,10 @@ int after_id (Token *token) {
 
 		return arg(token);
 	}
-	//----------------------------------------------
-	//Volanie funkcie bez argumentov a bez zatvoriek
-	//----------------------------------------------
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 29: <after_id> -> epsilon |
+  |____________________________________|
+*/
 	else if (token->type == EOL) {
 		func_id_copy = realloc(func_id_copy, sizeof(char)*strlen(id_copy));
 		strcpy(func_id_copy, id_copy);
@@ -744,7 +816,7 @@ int after_id (Token *token) {
 	}
 
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 17: <after_id> = <def_value> |
+  | Pravidlo 30: <after_id> = <def_value> |
   |_______________________________________|
 */
 	else if (token->type == ASSIGN) {																	//printf("= "); printf("\n\tID COPY: %s\n", id_copy);
@@ -793,14 +865,21 @@ int after_id (Token *token) {
 
 
 
+/**
+Funkcia pre stav <def_value>.
 
+Zabezpe4uje syntaktickú správnosť hodnot priradených do premennej.
+
+@params Token
+@return Chybový kód
+*/
 int def_value (Token *token) {
 
 	int retVal = 0;
 
-/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 19: <def_value> -> <expr> |
-  |____________________________________|
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 35: <def_value> -> <expression> |
+  |__________________________________________|
 */
 	if (token->type == INTEGER || token->type == FLOAT || token->type == STRING || token->type == LEFT_ROUND_BRACKET || 
 			(token->type == KEYWORD && strcmp(token->attribute, "nil") == 0 )) {						//printf("expr ");
@@ -819,9 +898,9 @@ int def_value (Token *token) {
 	}
 
 	else if (token->type == IDENTIFIER || token->type == FUNCTION_ONLY_ID) {																//printf("%s ", token->attribute);
-    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  	  | Pravidlo 20: <def_value> -> ID ( <arg> ) |
-  	  |__________________________________________|
+    /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  	  | Pravidlo 36: <def_value> -> ID <after_func_call> |
+  	  |__________________________________________________|
      */
 		// Sémantická akcia
 		// Pozriem sa, či sa nejedná o vstavanú funkciu
@@ -861,18 +940,18 @@ int def_value (Token *token) {
 			// Koniec sémantickej kontroly
 
             GET_NEXT_TOKEN();
-
-			//------------------------------
-			// Volanie funkcie so zatvorkami 
-			//------------------------------            
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 33: <after_func_call> -> ( <arg_with_brackets> ) |
+  |___________________________________________________________|
+*/
 			if (token->type == LEFT_ROUND_BRACKET) {													//printf("( ");
 				withBrackets = true;
 
 				GET_NEXT_TOKEN();	
-            /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  	  		  | Pravidlo 13: <arg> -> epsilon |
-  			  |_______________________________|
-             */
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 22: <arg_with_brackets> -> epsilon |
+  |_____________________________________________|
+*/
 				if (token->type == RIGHT_ROUND_BRACKET) {												//printf(") ");
 					// Sémantická kontrola
 					if ((strcmp(func_id_copy, "print") != 0) && expected_params != 0) {
@@ -915,10 +994,11 @@ int def_value (Token *token) {
 					}
 				}
 			}
-			//-------------------------------------------
-			//Volanie funkcie s argumentami bez zatvoriek
-			//-------------------------------------------
-			//Token obsahuje prvy argument funkcie
+
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 34: <after_func_call> -> <arg_without_brackets> |
+  |__________________________________________________________|
+*/
 			else if (token->type == IDENTIFIER || token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
 				withBrackets = false;	
 	       		expected_params = function_get_number_params(global_table, func_id_copy); /* Získaj počet params funkcie */ //printf("\nVolanie bez zátvoriek: Expected number params: %d\n", expected_params);
@@ -934,10 +1014,10 @@ int def_value (Token *token) {
 
 	       		return argRet;
 			}
-			//----------------------------------------------
-			//Volanie funkcie bez argumentov a bez zatvoriek
-			//----------------------------------------------
-			//Token obsahuje EOL
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 26: <arg_without_brackets> ->epsilon |
+  |_______________________________________________|
+*/
 			else if (token->type == EOL) {
 				expected_params = function_get_number_params(global_table, func_id_copy); // Získaj počet params funkcie
 			
@@ -959,6 +1039,10 @@ int def_value (Token *token) {
 				else return ERR_SEM_PARAM;
 			}
 	    }
+/*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
+  | Pravidlo 35: <def_value> -> <expression> |
+  |__________________________________________|
+ */
         else {
             // Výraz začínajúci premennou
 
@@ -990,10 +1074,17 @@ int def_value (Token *token) {
 	return retVal;
 }
 
+/**
+Funkcia pre stav <>.
 
+Kontroluje syntaktickú správnosť argumentov pri volaní funkcie.
+
+@params Token
+@return Chybový kód
+*/
 int value (Token *token) {
 /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
-  | Pravidlo 21 - 25: <value> -> INTEGER | FLOAT | STRING | NIL | ID |
+  | Pravidlo 37 - 41: <value> -> INTEGER | FLOAT | STRING | NIL | ID |
   |__________________________________________________________________|
 */
 	// Sémantická akcia
