@@ -530,14 +530,26 @@
      */
     void gen_chr();
 
+    /**
+     * @brief Vygenerovanie inštrukcie TYPE
+     *
+     * @param var1 Symbol prvého operandu
+     * @param var2 Symbol druhého operandu
+     * @return Chybový kód
+     */
     int gen_type(char *var1, char *var2);
 
-    char * one_param_generate(char *param_symbol, char *symbol2, tDataType symbol2_type, char **final_oper1, char **final_oper2);
-
+    /**
+     * @brief Vygenerovanie skoku JUMPIFEQ
+     *
+     * @param label Návestie
+     * @param var1 Premenná na porovnanie
+     * @param var2_complete Hodnota na porovnanie
+     */
     void gen_jumpifeq_general(char *label, char *var1, char *var2_complete);
 
     void automatic_conversion_generate(char *symbol1, char *symbol2, char **final_oper1, char **final_oper2);
 
-    void generate_dynamic_division(char *symbol1, char *symbol2, char *finalVar);
+    void generate_dynamic_division(char *symbol1, tDataType type1, char *symbol2, tDataType type2, char *finalVar);
 
 #endif

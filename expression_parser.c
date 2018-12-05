@@ -554,12 +554,18 @@ char* EvaluateNow(char* token_ID1, Token token_OP, char* token_ID2,  int *ErrorS
                         }
                     }
                 }
-                // TODO!
                 // Generovanie samotnej inštrukcie DIV/IDIV
-                if (typeFinal == T_INT) // Celočíselné delenie (IDIV)
-                    gen_idiv(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
-                else // Normálne delenie (DIV)
-                    gen_div(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2, token2, is_variable(*actual_function_ptr, token_ID2));
+                if (was_param) {
+                    generate_dynamic_division(token_ID1, token1, token_ID2, token2, var_name);
+                }
+                else {
+                    if (typeFinal == T_INT) // Celočíselné delenie (IDIV)
+                        gen_idiv(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2,
+                                 token2, is_variable(*actual_function_ptr, token_ID2));
+                    else // Normálne delenie (DIV)
+                        gen_div(var_name, token_ID1, token1, is_variable(*actual_function_ptr, token_ID1), token_ID2,
+                                token2, is_variable(*actual_function_ptr, token_ID2));
+                }
                 // Koniec generovania kódu
             }
             else {

@@ -779,6 +779,27 @@ void automatic_conversion_generate(char *symbol1, char *symbol2, char **final_op
 
 }
 
-void generate_dynamic_division(char *symbol1, char *symbol2, char *finalVar) {
+void generate_dynamic_division(char *symbol1, tDataType type1, char *symbol2, tDataType type2, char *finalVar) {
+    char *type_var = expr_parser_create_unique_name_with_prefix(*actual_function_ptr, "type_div"); // Získaj unikátne meno premenej na uchovanie typu
+    variable_set_defined(actual_function_ptr, type_var); // Zapíš do tabuľky symbolov
+    gen_defvar(type_var, (is_in_while > 0 ? &while_declaration_list : &instr_list) ); // Deklaruj premennú na uchovanie typu premennej
+    gen_type(type_var, symbol1); // vygenerovanie TYPE
 
+    char *division_float_label = get_and_set_unique_label(&label_table, "division_float");
+    char *division_end_label = get_and_set_unique_label(&label_table, "division_end");
+    gen_jumpifneq_general(division_float_label, type_var, "string@int");
+    // IDIV - celočíselné delenie
+
+    gen_idiv(finalVar, symbol1, type1, is_variable(*actual_function_ptr, symbol1), symbol2, type2, is_variable(*actual_function_ptr, symbol2));
+
+    gen_jump(division_end_label);
+    gen_label(division_float_label);
+    // DIV
+
+    gen_div(finalVar, symbol1, type1, is_variable(*actual_function_ptr, symbol1), symbol2, type2, is_variable(*actual_function_ptr, symbol2));
+
+    gen_label(division_end_label);
+
+    free(division_end_label);
+    free(division_float_label);
 }
