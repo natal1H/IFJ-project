@@ -201,6 +201,9 @@ int stat (Token *token) {
   | Pravidlo 3: <stat> -> DEF ID ( <params> ) EOL <stat_list> END |
   |_______________________________________________________________|
 */
+
+int retVal = 0;
+
 	if (token->type == KEYWORD) {
 		if (strcmp(token->attribute, "def") == 0) {														//rintf("def ");
 			GET_NEXT_TOKEN();
@@ -282,7 +285,7 @@ int stat (Token *token) {
 			// Získaj unikátny label ELSE
 			char *label_else = get_and_set_unique_label(&label_table, "else");
 			char *label_if_done = get_and_set_unique_label(&label_table, "id_end");
-			if (CallExpressionParser(token) == ERR_OK) {
+			if ( (retVal = CallExpressionParser(token)) == ERR_OK) {
 				// Generovanie kódu: JUMPIFEQ
 				gen_jumpifneq(label_else, finalVar);
 				// Koniec generovania kódu
@@ -325,6 +328,7 @@ int stat (Token *token) {
 					}
 				}
 			}
+			return retVal;
 		}
     /*|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^|
 	  | Pravidlo 5: WHILE <expr> DO EOL <stat_list> END |
