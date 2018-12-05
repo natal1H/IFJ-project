@@ -1113,7 +1113,7 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
 
             if(ExprList->Act->next != NULL) {
                 if (syntax_table[ExprList->Act->Token.type][ExprList->Act->next->Token.type] == false) {
-                    *ErrorStatus = true;
+                    *ErrorStatus = ERR_SYNTAX;
                 }
             }
 
@@ -1126,7 +1126,7 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
                      (syntax_table[LEFT_ROUND_BRACKET][COUNTER_OF_TOKEN] >= syntax_table[RIGHT_ROUND_BRACKET][COUNTER_OF_TOKEN] ) ){
                          syntax_table[RIGHT_ROUND_BRACKET][COUNTER_OF_TOKEN] += 1;
                   } else if(ExprList->Act->Token.type == RIGHT_ROUND_BRACKET){
-                         *ErrorStatus = true;
+                         *ErrorStatus = ERR_SYNTAX;
                   } else {
                          syntax_table[ExprList->Act->Token.type][COUNTER_OF_TOKEN] += 1;
                   }
@@ -1138,7 +1138,7 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
             } else { CouldBeTokenTheLastOne = false; }
 
             if(CouldBeTokenTheFristOne == true && syntax_table[ExprList->Act->Token.type][SUCCESSFUL_START] == 0 ){
-                *ErrorStatus = true;
+                *ErrorStatus = ERR_SYNTAX;
             }
             CouldBeTokenTheFristOne = false;
 
@@ -1224,7 +1224,7 @@ int FindRule(tDLList *ExprList, int *ErrorStatus) {
 
 
         ){
-            *ErrorStatus = true;
+            *ErrorStatus = ERR_SYNTAX;
         }
     return *ErrorStatus;
 }
