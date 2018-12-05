@@ -11,6 +11,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+bool expression;
+Token expression_token;
+
 
 /*
 	TODO:	Zmenit gramatiku: Zmenit vstupne znaky z ) na epsilon v <arg> <params> atd., pridat <after_id> -> epsilon
