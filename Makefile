@@ -9,7 +9,7 @@ $(EXECUTABLE): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(EXECUTABLE)
 
 zip:
-	zip xholko02.zip *.c *.h Makefile
+	zip xholko02.zip *.c *.h Makefile rozdeleni dokumentace.pdf
 
 clean:
 	rm -f $(EXECUTABLE)
