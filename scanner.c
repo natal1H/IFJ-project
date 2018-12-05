@@ -504,7 +504,6 @@ int get_next_token(Token *token) {
                     // TOKEN FLOAT
                     ungetc(c, stdin);
                     // Získaj správny tvar FLOAT
-                    printf("READ STRING: %s\n", read_string->string);
                     char *correctFloat = get_correct_float_format(read_string->string);
                     tstring_clear_string(read_string);
                     tstring_add_line(read_string, correctFloat);

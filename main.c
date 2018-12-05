@@ -23,8 +23,6 @@ int main() {
 //freopen("input.txt","r",stdin);
 //--------------------------------------
 
-    
-
     // inicializuj scanner najprv cez scanner_initialize()
     if ( scanner_initialize() != ERR_OK ) {
         // chyba pri inicializácii
